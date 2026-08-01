@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, session, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain, session, dialog, Tray, Menu, nativeImage } from 'electron';
 import * as path from 'path';
 import { pathToFileURL } from 'url';
 import { loadServerConfig } from './config';
@@ -33,6 +33,36 @@ const STATUS_POLL_INTERVAL_MS = 30_000;
 const config = loadServerConfig();
 let mainWindow: BrowserWindow | null = null;
 let statusInterval: NodeJS.Timeout | null = null;
+let tray: Tray | null = null;
+
+function createTray(): void {
+  const icon = nativeImage.createFromPath(path.join(__dirname, '..', '..', 'build', 'icon.ico'));
+  tray = new Tray(icon);
+  tray.setToolTip('Lunaria Launcher');
+  tray.setContextMenu(
+    Menu.buildFromTemplate([
+      {
+        label: 'Ouvrir',
+        click: () => {
+          if (mainWindow) {
+            if (mainWindow.isMinimized()) mainWindow.restore();
+            mainWindow.show();
+            mainWindow.focus();
+          }
+        },
+      },
+      { type: 'separator' },
+      { label: 'Quitter', click: () => app.quit() },
+    ])
+  );
+  tray.on('click', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.show();
+      mainWindow.focus();
+    }
+  });
+}
 
 function resolveAssetsBase(): string {
   // En dev, assets/ vit à la racine du projet. En packagé, il est copié à côté de
@@ -231,6 +261,7 @@ app.whenReady().then(() => {
 
   registerIpcHandlers();
   createWindow();
+  createTray();
   initAutoUpdater();
 
   app.on('activate', () => {
