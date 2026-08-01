@@ -27,6 +27,7 @@ const api = {
   play: () => ipcRenderer.invoke('launcher:play'),
   openDownload: () => ipcRenderer.invoke('launcher:openDownload'),
   openDiscord: () => ipcRenderer.invoke('launcher:openDiscord'),
+  openTiktok: () => ipcRenderer.invoke('launcher:openTiktok'),
   getNews: () => ipcRenderer.invoke('news:get'),
   quit: () => ipcRenderer.invoke('app:quit'),
   onStatusUpdate: (callback: (status: unknown) => void) => {

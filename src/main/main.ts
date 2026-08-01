@@ -23,7 +23,7 @@ import {
   setMusicMuted,
 } from './store';
 import { isFiveMInstalled, resolveFiveMPath } from './fivemLocator';
-import { connectToServer, openFiveMDownloadPage, openDiscord } from './launcher';
+import { connectToServer, openFiveMDownloadPage, openDiscord, openTiktok } from './launcher';
 import { fetchServerStatus } from './serverStatus';
 import { fetchNews } from './news';
 import { initAutoUpdater } from './updater';
@@ -198,6 +198,10 @@ function registerIpcHandlers(): void {
 
   ipcMain.handle('launcher:openDiscord', async () => {
     await openDiscord(config);
+  });
+
+  ipcMain.handle('launcher:openTiktok', async () => {
+    await openTiktok(config);
   });
 
   ipcMain.handle('news:get', async () => {

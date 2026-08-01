@@ -27,3 +27,7 @@ export async function openFiveMDownloadPage(): Promise<void> {
 export async function openDiscord(config: ServerConfig): Promise<void> {
   await shell.openExternal(config.discordUrl);
 }
+
+export async function openTiktok(config: ServerConfig): Promise<void> {
+  await shell.openExternal(config.tiktokUrl);
+}

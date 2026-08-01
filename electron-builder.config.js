@@ -11,6 +11,11 @@ module.exports = {
   appId: 'com.lunaria.launcher',
   productName: 'Lunaria Launcher',
   executableName: 'Lunaria Launcher',
+  // Nom de fichier de l'installeur SANS le numéro de version (contrairement au défaut
+  // d'electron-builder) : ça permet d'avoir un lien de téléchargement direct fixe
+  // (.../releases/latest/download/Lunaria-Launcher-Setup.exe) qui reste valide à chaque
+  // nouvelle release, sans jamais avoir à le changer sur le site/la page de téléchargement.
+  artifactName: 'Lunaria-Launcher-Setup.${ext}',
   directories: {
     output: 'release',
   },

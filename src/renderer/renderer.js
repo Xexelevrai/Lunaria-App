@@ -298,6 +298,10 @@
     window.lunaria.openDiscord();
   });
 
+  document.getElementById('tiktok-button').addEventListener('click', () => {
+    window.lunaria.openTiktok();
+  });
+
   // --- Paramètres ---
   // Ces contrôles ne modifient que le brouillon (draftSettings) + un aperçu visuel pour
   // le thème : rien n'est persisté avant le clic sur "Sauvegarder les paramètres".

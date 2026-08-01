@@ -8,6 +8,7 @@ export interface ServerConfig {
   statusBaseUrl: string;
   newsUrl: string;
   discordUrl: string;
+  tiktokUrl: string;
 }
 
 const DEFAULT_CONFIG: ServerConfig = {
@@ -16,6 +17,7 @@ const DEFAULT_CONFIG: ServerConfig = {
   statusBaseUrl: 'http://162.19.126.62:30121',
   newsUrl: '',
   discordUrl: 'https://discord.gg/BfuCxJquRw',
+  tiktokUrl: 'https://www.tiktok.com/@lunaria.wl',
 };
 
 function resolveConfigPath(): string {
