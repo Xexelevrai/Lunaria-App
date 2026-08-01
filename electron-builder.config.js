@@ -23,15 +23,22 @@ module.exports = {
   extraResources: [
     { from: 'config', to: 'config' },
     { from: 'assets', to: 'assets' },
+    // build/icon.ico sert aussi à définir l'icône .exe à la compilation (win.icon plus bas),
+    // mais ce n'est PAS le même mécanisme : sans cette entrée, le fichier n'existe pas dans
+    // l'app installée et le code qui le lit au runtime (icône de fenêtre, icône du tray) échoue
+    // silencieusement (icône vide dans la zone de notification).
+    { from: 'build/icon.ico', to: 'build/icon.ico' },
   ],
   win: {
     target: 'nsis',
     icon: 'build/icon.ico',
   },
   nsis: {
-    // Mode assisté (pas oneClick) pour que l'installeur propose la case "créer un raccourci
-    // sur le bureau" (cochée par défaut, décochable). On NE propose PAS de choisir le dossier
-    // d'installation (allowToChangeInstallationDirectory reste à false, la valeur par défaut) :
+    // Mode assisté (pas oneClick) : affiche l'écran de choix "pour moi / tous les utilisateurs"
+    // et la case "lancer à la fin" (cochée par défaut, décochable). Les raccourcis Bureau/Menu
+    // Démarrer sont créés automatiquement sans case à cocher dédiée (comportement par défaut
+    // d'electron-builder, comme la plupart des installeurs Electron). On NE propose PAS de
+    // choisir le dossier d'installation (allowToChangeInstallationDirectory reste à false) :
     // le chemin reste toujours le même, donc NSIS retrouve et met à jour la même installation
     // à chaque nouvelle version, sans jamais créer de doublon.
     oneClick: false,

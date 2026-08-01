@@ -35,23 +35,30 @@ let mainWindow: BrowserWindow | null = null;
 let statusInterval: NodeJS.Timeout | null = null;
 let tray: Tray | null = null;
 
+function resolveIconPath(): string {
+  // build/icon.ico n'est PAS embarqué dans l'app.asar : c'est un fichier extraResources
+  // (copié à côté de resources/), le chemin doit donc différer entre dev et packagé,
+  // comme pour resolveAssetsBase() ci-dessous.
+  return app.isPackaged
+    ? path.join(process.resourcesPath, 'build', 'icon.ico')
+    : path.join(app.getAppPath(), 'build', 'icon.ico');
+}
+
 function createTray(): void {
-  const icon = nativeImage.createFromPath(path.join(__dirname, '..', '..', 'build', 'icon.ico'));
+  const icon = nativeImage.createFromPath(resolveIconPath());
   tray = new Tray(icon);
   tray.setToolTip('Lunaria Launcher');
   tray.setContextMenu(
     Menu.buildFromTemplate([
+      { label: 'Lunaria Launcher', enabled: false },
+      { type: 'separator' },
       {
-        label: 'Ouvrir',
+        label: 'Redémarrer',
         click: () => {
-          if (mainWindow) {
-            if (mainWindow.isMinimized()) mainWindow.restore();
-            mainWindow.show();
-            mainWindow.focus();
-          }
+          app.relaunch();
+          app.quit();
         },
       },
-      { type: 'separator' },
       { label: 'Quitter', click: () => app.quit() },
     ])
   );
@@ -102,7 +109,7 @@ function createWindow(): void {
     show: false,
     autoHideMenuBar: true,
     backgroundColor: '#08050f',
-    icon: path.join(__dirname, '..', '..', 'build', 'icon.ico'),
+    icon: resolveIconPath(),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
