@@ -80,6 +80,21 @@ html, body {
   pointer-events: none;
 }
 
+/* Voile qui masque brièvement le changement de thème (au lieu d'un switch instantané) */
+.theme-transition-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at 50% 45%, rgba(241, 207, 127, 0.4), transparent 65%);
+  transition: opacity 0.25s ease;
+}
+
+.theme-transition-veil.active {
+  opacity: 1;
+}
+
 /* --- Views ---
    display:none garantit qu'une vue inactive ne peut jamais apparaître derrière la vue
    active, même sous forte charge (décodage vidéo) qui ralentirait un fondu en opacité. */
@@ -228,6 +243,18 @@ html, body {
   -webkit-app-region: no-drag;
 }
 
+.copy-address-btn {
+  width: 30px;
+  height: 30px;
+  font-size: 13px;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.copy-address-btn.copied {
+  color: #7cffb2;
+  border-color: rgba(124, 255, 178, 0.5);
+}
+
 .server-status {
   display: flex;
   align-items: center;
@@ -347,6 +374,16 @@ html, body {
 
 @keyframes spin-reverse {
   to { transform: rotate(-360deg); }
+}
+
+/* Pendant la connexion : les anneaux accélèrent pour donner un retour visuel actif
+   plutôt qu'un texte de bouton statique pendant l'attente. */
+.portal.connecting .rune-ring-outer {
+  animation-duration: 6s;
+}
+
+.portal.connecting .rune-ring-inner {
+  animation-duration: 3.5s;
 }
 
 /* --- Buttons --- */
@@ -836,4 +873,18 @@ html, body {
   justify-content: center;
   gap: 12px;
   margin-top: 20px;
+}
+
+.modal-box-wide {
+  max-width: 480px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.whats-new-body {
+  text-align: left;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  white-space: pre-wrap;
 }

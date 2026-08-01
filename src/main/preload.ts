@@ -31,6 +31,7 @@ const api = {
   getNews: () => ipcRenderer.invoke('news:get'),
   quit: () => ipcRenderer.invoke('app:quit'),
   installUpdate: () => ipcRenderer.invoke('update:install'),
+  getWhatsNew: () => ipcRenderer.invoke('app:getWhatsNew'),
   onStatusUpdate: (callback: (status: unknown) => void) => {
     ipcRenderer.on('status:update', (_event, status) => callback(status));
   },

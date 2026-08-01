@@ -12,6 +12,7 @@ interface StoreSchema {
   displayMode: DisplayMode;
   musicVolume: number;
   musicMuted: boolean;
+  lastSeenVersion: string | null;
 }
 
 const store = new Store<StoreSchema>({
@@ -24,6 +25,7 @@ const store = new Store<StoreSchema>({
     displayMode: 'fullscreen',
     musicVolume: 25,
     musicMuted: false,
+    lastSeenVersion: null,
   },
 });
 
@@ -93,4 +95,12 @@ export function getMusicMuted(): boolean {
 
 export function setMusicMuted(value: boolean): void {
   store.set('musicMuted', value);
+}
+
+export function getLastSeenVersion(): string | null {
+  return store.get('lastSeenVersion');
+}
+
+export function setLastSeenVersion(value: string): void {
+  store.set('lastSeenVersion', value);
 }

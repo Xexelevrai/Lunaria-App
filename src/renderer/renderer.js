@@ -50,6 +50,19 @@
   const updateBannerText = document.getElementById('update-banner-text');
   const updateRestartBtn = document.getElementById('update-restart-btn');
 
+  const themeVeil = document.getElementById('theme-transition-veil');
+  const portalEl = document.querySelector('.portal');
+  const copyServerBtn = document.getElementById('copy-server-address');
+  const whatsNewModal = document.getElementById('modal-whats-new');
+  const whatsNewTitle = document.getElementById('whats-new-title');
+  const whatsNewBody = document.getElementById('whats-new-body');
+  const whatsNewClose = document.getElementById('whats-new-close');
+
+  // Assignée par initParticles() plus bas ; ne peut être appelée que suite à un clic
+  // utilisateur (donc toujours après l'exécution synchrone initiale du script).
+  let spawnBurst = () => {};
+  let serverAddress = '';
+
   const { assetsBase, introEnabled, theme, musicVolume, musicMuted } = window.lunaria.bootData;
 
   const THEME_LOGOS = {
@@ -164,6 +177,18 @@
     document.body.setAttribute('data-theme', t);
     themeSwatches.forEach((sw) => sw.classList.toggle('active', sw.dataset.theme === t));
     brandLogo.src = `${assetsBase}/images/${THEME_LOGOS[t] || THEME_LOGOS.gold}`;
+  }
+
+  // Utilisé uniquement pour un changement de thème déclenché par l'utilisateur (clic sur
+  // un swatch) : applyTheme() seul reste instantané pour le boot/la revue des paramètres,
+  // où une transition serait un flash indésirable plutôt qu'un effet voulu.
+  function previewTheme(t) {
+    draftSettings.theme = t;
+    themeVeil.classList.add('active');
+    setTimeout(() => {
+      applyTheme(t);
+      setTimeout(() => themeVeil.classList.remove('active'), 220);
+    }, 140);
   }
 
   const SKIP_BUTTON_DELAY_MS = 4000;
@@ -281,11 +306,16 @@
   playButton.addEventListener('click', async () => {
     playButton.disabled = true;
     playButton.textContent = 'CONNEXION...';
+    portalEl.classList.add('connecting');
+    const rect = playButton.getBoundingClientRect();
+    spawnBurst(rect.left + rect.width / 2, rect.top + rect.height / 2);
+
     const result = await window.lunaria.play();
     if (!result.installed) {
       modal.classList.remove('hidden');
       playButton.disabled = false;
       playButton.textContent = 'JOUER';
+      portalEl.classList.remove('connecting');
       return;
     }
     // FiveM prend le relais : on referme le launcher pour laisser la place au jeu.
@@ -294,6 +324,25 @@
     // serveur) - ce délai (1 à 3 min) vient de FiveM/GTA V, pas du launcher.
     playButton.textContent = result.alreadyRunning ? 'CONNEXION...' : 'DÉMARRAGE DE FIVEM...';
     setTimeout(() => window.lunaria.quit(), 900);
+  });
+
+  copyServerBtn.addEventListener('click', async () => {
+    if (!serverAddress) return;
+    try {
+      await navigator.clipboard.writeText(serverAddress);
+      copyServerBtn.textContent = '✅';
+      copyServerBtn.classList.add('copied');
+      setTimeout(() => {
+        copyServerBtn.textContent = '📋';
+        copyServerBtn.classList.remove('copied');
+      }, 1500);
+    } catch {
+      // Presse-papier indisponible : pas critique, on ignore silencieusement.
+    }
+  });
+
+  whatsNewClose.addEventListener('click', () => {
+    whatsNewModal.classList.add('hidden');
   });
 
   modalCancel.addEventListener('click', () => modal.classList.add('hidden'));
@@ -384,8 +433,7 @@
 
   themeSwatches.forEach((sw) => {
     sw.addEventListener('click', () => {
-      draftSettings.theme = sw.dataset.theme;
-      applyTheme(sw.dataset.theme); // aperçu visuel immédiat, persisté seulement au Save
+      previewTheme(sw.dataset.theme); // aperçu visuel immédiat, persisté seulement au Save
     });
   });
 
@@ -435,9 +483,48 @@
       particles = Array.from({ length: count }, () => ({ ...makeParticle(), y: Math.random() * height }));
     }
 
+    // Étincelles éphémères (au clic sur JOUER) : distinctes de la poussière magique
+    // ambiante (p.burst), retirées du tableau une fois éteintes plutôt que recyclées.
+    function makeBurstParticle(x, y) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 1.2 + Math.random() * 2.8;
+      return {
+        burst: true,
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        r: 1 + Math.random() * 2,
+        alpha: 0.9,
+        decay: 0.018 + Math.random() * 0.02,
+        hue: '241,207,127',
+      };
+    }
+
     function tick() {
       ctx.clearRect(0, 0, width, height);
-      for (const p of particles) {
+      for (let i = particles.length - 1; i >= 0; i -= 1) {
+        const p = particles[i];
+
+        if (p.burst) {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vx *= 0.95;
+          p.vy *= 0.95;
+          p.alpha -= p.decay;
+          if (p.alpha <= 0) {
+            particles.splice(i, 1);
+            continue;
+          }
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${p.hue},${p.alpha})`;
+          ctx.shadowBlur = 6;
+          ctx.shadowColor = `rgba(${p.hue},${p.alpha})`;
+          ctx.fill();
+          continue;
+        }
+
         p.y -= p.speed;
         p.x += p.drift;
         p.twinklePhase += p.twinkleSpeed;
@@ -461,6 +548,12 @@
     window.addEventListener('resize', resize);
     init();
     requestAnimationFrame(tick);
+
+    spawnBurst = (x, y) => {
+      for (let i = 0; i < 20; i += 1) {
+        particles.push(makeBurstParticle(x, y));
+      }
+    };
   }
 
   async function init() {
@@ -475,6 +568,7 @@
     fivemPathText.textContent = initData.fivemPath || 'Non détecté — clique sur "Parcourir..." pour indiquer FiveM.exe';
     applyDisplayModeUI(initData.displayMode || 'fullscreen');
     appVersionEl.textContent = initData.appVersion ? `Lunaria Launcher — Version ${initData.appVersion}` : '';
+    serverAddress = (initData.config && initData.config.connectFallback) || '';
 
     autoConnectEnabled = confirmedSettings.autoConnect;
     autoConnectSettingLoaded = true;
@@ -482,6 +576,15 @@
 
     const news = await window.lunaria.getNews();
     renderNews(news);
+
+    const whatsNew = await window.lunaria.getWhatsNew();
+    if (whatsNew) {
+      whatsNewTitle.textContent = `Quoi de neuf — Version ${whatsNew.version}`;
+      whatsNewBody.textContent = whatsNew.notes && whatsNew.notes.trim()
+        ? whatsNew.notes
+        : 'Cette version apporte des corrections et améliorations.';
+      whatsNewModal.classList.remove('hidden');
+    }
   }
 
   initParticles();

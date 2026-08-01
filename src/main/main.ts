@@ -21,6 +21,8 @@ import {
   setMusicVolume,
   getMusicMuted,
   setMusicMuted,
+  getLastSeenVersion,
+  setLastSeenVersion,
 } from './store';
 import { isFiveMInstalled, resolveFiveMPath } from './fivemLocator';
 import { connectToServer, openFiveMDownloadPage, openDiscord, openTiktok, isFiveMRunning } from './launcher';
@@ -29,6 +31,8 @@ import { fetchNews } from './news';
 import { initAutoUpdater, installUpdateNow } from './updater';
 
 const STATUS_POLL_INTERVAL_MS = 30_000;
+const GITHUB_OWNER = 'Xexelevrai';
+const GITHUB_REPO = 'Lunaria-App';
 
 const config = loadServerConfig();
 let mainWindow: BrowserWindow | null = null;
@@ -129,6 +133,34 @@ function createWindow(): void {
   });
 
   startStatusPolling();
+}
+
+async function getWhatsNewIfAny(): Promise<{ version: string; notes: string } | null> {
+  // Pas de vraies releases GitHub en dev (pas de provider configuré) - éviter le
+  // popup à chaque changement de version locale pendant le développement.
+  if (!app.isPackaged) return null;
+
+  const currentVersion = app.getVersion();
+  const lastSeen = getLastSeenVersion();
+
+  // Première installation, ou déjà vue : on mémorise la version sans popup
+  // (rien de "nouveau" à annoncer pour une première ouverture ou un simple relancement).
+  if (lastSeen === null || lastSeen === currentVersion) {
+    setLastSeenVersion(currentVersion);
+    return null;
+  }
+
+  setLastSeenVersion(currentVersion);
+
+  try {
+    const res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases/tags/v${currentVersion}`);
+    if (!res.ok) return { version: currentVersion, notes: '' };
+    const data = (await res.json()) as { body?: string };
+    return { version: currentVersion, notes: typeof data.body === 'string' ? data.body : '' };
+  } catch (err) {
+    console.error('[whatsNew] Impossible de récupérer les notes de version', err);
+    return { version: currentVersion, notes: '' };
+  }
 }
 
 function startStatusPolling(): void {
@@ -253,6 +285,8 @@ function registerIpcHandlers(): void {
   ipcMain.handle('update:install', () => {
     installUpdateNow();
   });
+
+  ipcMain.handle('app:getWhatsNew', () => getWhatsNewIfAny());
 }
 
 app.whenReady().then(() => {
