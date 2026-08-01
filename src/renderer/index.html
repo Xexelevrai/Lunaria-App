@@ -36,7 +36,8 @@
         <div class="server-card">
           <div class="server-status">
             <span id="status-dot" class="status-dot offline"></span>
-            <span id="status-text">Vérification du serveur...</span>
+            <span id="status-text" class="hidden">Vérification du serveur...</span>
+            <span id="status-skeleton" class="status-skeleton"></span>
           </div>
           <div id="player-count" class="player-count"></div>
           <button id="copy-server-address" class="btn btn-icon copy-address-btn" title="Copier l'adresse du serveur">📋</button>
@@ -181,6 +182,17 @@
         </div>
         <label class="switch">
           <input type="checkbox" id="toggle-auto-connect" />
+          <span class="switch-track"><span class="switch-thumb"></span></span>
+        </label>
+      </div>
+
+      <div class="settings-row">
+        <div>
+          <h3>Mode faible consommation</h3>
+          <p class="settings-desc">Désactive les particules, les animations décoratives et le curseur personnalisé (utile sur PC plus modeste).</p>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="toggle-low-power" />
           <span class="switch-track"><span class="switch-thumb"></span></span>
         </label>
       </div>

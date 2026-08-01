@@ -23,6 +23,8 @@ import {
   setMusicMuted,
   getLastSeenVersion,
   setLastSeenVersion,
+  getLowPowerMode,
+  setLowPowerMode,
 } from './store';
 import { isFiveMInstalled, resolveFiveMPath } from './fivemLocator';
 import { connectToServer, openFiveMDownloadPage, openDiscord, openTiktok, isFiveMRunning } from './launcher';
@@ -186,6 +188,7 @@ function registerIpcHandlers(): void {
       theme: getTheme(),
       musicVolume: getMusicVolume(),
       musicMuted: getMusicMuted(),
+      lowPowerMode: getLowPowerMode(),
     };
   });
 
@@ -237,6 +240,11 @@ function registerIpcHandlers(): void {
   ipcMain.handle('settings:setMusicMuted', (_event, value: boolean) => {
     setMusicMuted(Boolean(value));
     return getMusicMuted();
+  });
+
+  ipcMain.handle('settings:setLowPowerMode', (_event, value: boolean) => {
+    setLowPowerMode(Boolean(value));
+    return getLowPowerMode();
   });
 
   ipcMain.handle('settings:chooseFiveMPath', async () => {

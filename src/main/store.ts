@@ -13,6 +13,7 @@ interface StoreSchema {
   musicVolume: number;
   musicMuted: boolean;
   lastSeenVersion: string | null;
+  lowPowerMode: boolean;
 }
 
 const store = new Store<StoreSchema>({
@@ -26,6 +27,7 @@ const store = new Store<StoreSchema>({
     musicVolume: 25,
     musicMuted: false,
     lastSeenVersion: null,
+    lowPowerMode: false,
   },
 });
 
@@ -103,4 +105,12 @@ export function getLastSeenVersion(): string | null {
 
 export function setLastSeenVersion(value: string): void {
   store.set('lastSeenVersion', value);
+}
+
+export function getLowPowerMode(): boolean {
+  return store.get('lowPowerMode');
+}
+
+export function setLowPowerMode(value: boolean): void {
+  store.set('lowPowerMode', value);
 }

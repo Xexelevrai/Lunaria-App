@@ -39,6 +39,9 @@
   const checkUpdateDesc = document.getElementById('check-update-desc');
   const DEFAULT_UPDATE_DESC = 'Vérifier manuellement si une nouvelle version est disponible.';
 
+  const toggleLowPower = document.getElementById('toggle-low-power');
+  const statusSkeleton = document.getElementById('status-skeleton');
+
   const displayModeButtons = document.querySelectorAll('.display-mode-btn');
 
   const autoconnectBanner = document.getElementById('autoconnect-banner');
@@ -62,12 +65,14 @@
   const whatsNewBody = document.getElementById('whats-new-body');
   const whatsNewClose = document.getElementById('whats-new-close');
 
-  // Assignée par initParticles() plus bas ; ne peut être appelée que suite à un clic
-  // utilisateur (donc toujours après l'exécution synchrone initiale du script).
+  // Assignées par initParticles() plus bas ; ne peuvent être appelées que suite à une
+  // interaction utilisateur (donc toujours après l'exécution synchrone initiale du script).
   let spawnBurst = () => {};
+  let spawnTrail = () => {};
+  let setParticlesLowPower = () => {};
   let serverAddress = '';
 
-  const { assetsBase, introEnabled, theme, musicVolume, musicMuted } = window.lunaria.bootData;
+  const { assetsBase, introEnabled, theme, musicVolume, musicMuted, lowPowerMode } = window.lunaria.bootData;
 
   const THEME_LOGOS = {
     gold: 'logo.png',
@@ -77,14 +82,20 @@
   // Les réglages de la page Paramètres (hors chemin FiveM et taille d'écran, qui
   // s'appliquent immédiatement) ne sont persistés qu'au clic sur "Sauvegarder" : les
   // contrôles modifient seulement ce brouillon + un aperçu visuel le cas échéant.
-  let confirmedSettings = { introEnabled: true, autoLaunch: false, autoConnect: false, theme: 'gold' };
+  let confirmedSettings = { introEnabled: true, autoLaunch: false, autoConnect: false, theme: 'gold', lowPowerMode: false };
   let draftSettings = { ...confirmedSettings };
+
+  function applyLowPower(enabled) {
+    document.body.classList.toggle('low-power', enabled);
+    setParticlesLowPower(enabled);
+  }
 
   function populateSettingsUI() {
     draftSettings = { ...confirmedSettings };
     toggleIntroEnabled.checked = draftSettings.introEnabled !== false;
     toggleAutoLaunch.checked = Boolean(draftSettings.autoLaunch);
     toggleAutoConnect.checked = Boolean(draftSettings.autoConnect);
+    toggleLowPower.checked = Boolean(draftSettings.lowPowerMode);
     applyTheme(draftSettings.theme || 'gold');
     settingsSaveStatus.classList.remove('visible');
     checkUpdateDesc.textContent = DEFAULT_UPDATE_DESC;
@@ -175,16 +186,36 @@
   // vue principale) - pas à chaque retour depuis les Paramètres, ce qui serait répétitif.
   let mainEntranceDone = false;
 
-  function showView(view) {
-    [viewIntro, viewMain, viewSettings].forEach((v) => v.classList.remove('active'));
+  function activateView(view) {
+    [viewIntro, viewMain, viewSettings].forEach((v) => v.classList.remove('active', 'leaving'));
     view.classList.add('active');
     if (view === viewMain && !mainEntranceDone) {
       mainEntranceDone = true;
       viewMain.classList.add('main-entrance');
       setTimeout(() => viewMain.classList.remove('main-entrance'), 1400);
     }
+    if (view === viewSettings) {
+      viewSettings.classList.add('settings-entrance');
+      setTimeout(() => viewSettings.classList.remove('settings-entrance'), 900);
+    }
     maybeStartAutoConnect();
     maybeStartMusic();
+  }
+
+  // Fondu enchaîné (fondu de sortie court, puis l'entrée classique view-in) uniquement
+  // entre menu principal <-> Paramètres, les deux vues qu'on traverse en va-et-vient
+  // pendant l'usage normal. L'intro garde son comportement instantané d'origine.
+  function showView(view) {
+    const current = [viewIntro, viewMain, viewSettings].find((v) => v.classList.contains('active') && v !== view);
+    const isMainSettingsSwap =
+      current && (current === viewMain || current === viewSettings) && (view === viewMain || view === viewSettings);
+
+    if (isMainSettingsSwap) {
+      current.classList.add('leaving');
+      setTimeout(() => activateView(view), 180);
+    } else {
+      activateView(view);
+    }
   }
 
   function applyTheme(t) {
@@ -228,7 +259,9 @@
   // mauvais thème) le temps d'un aller-retour IPC asynchrone.
   confirmedSettings.theme = theme || 'gold';
   confirmedSettings.introEnabled = introEnabled !== false;
+  confirmedSettings.lowPowerMode = Boolean(lowPowerMode);
   applyTheme(confirmedSettings.theme);
+  document.body.classList.toggle('low-power', confirmedSettings.lowPowerMode);
   toggleIntroEnabled.checked = confirmedSettings.introEnabled;
 
   if (introEnabled === false) {
@@ -268,8 +301,10 @@
     showView(viewSettings);
   });
   closeSettingsBtn.addEventListener('click', () => {
-    // Reviens à l'état confirmé si on quitte sans sauvegarder (ex : thème prévisualisé).
+    // Reviens à l'état confirmé si on quitte sans sauvegarder (ex : thème/mode faible
+    // consommation prévisualisés).
     applyTheme(confirmedSettings.theme || 'gold');
+    applyLowPower(confirmedSettings.lowPowerMode);
     showView(viewMain);
   });
 
@@ -278,6 +313,8 @@
   });
 
   function renderStatus(status) {
+    statusSkeleton.classList.add('hidden');
+    statusText.classList.remove('hidden');
     if (status.online) {
       statusDot.classList.add('online');
       statusDot.classList.remove('offline');
@@ -323,6 +360,17 @@
     playButton.style.setProperty('--my', `${((e.clientY - rect.top) / rect.height) * 100}%`);
   });
 
+  // Traînée de particules qui suit le curseur (limitée au menu principal, avec un
+  // throttle pour éviter de spawn une particule à chaque pixel de mousemove).
+  let lastTrailTime = 0;
+  document.addEventListener('mousemove', (e) => {
+    if (!viewMain.classList.contains('active')) return;
+    const now = performance.now();
+    if (now - lastTrailTime < 45) return;
+    lastTrailTime = now;
+    spawnTrail(e.clientX, e.clientY);
+  });
+
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter') return;
     if (!viewMain.classList.contains('active')) return;
@@ -352,6 +400,7 @@
     // Sinon, GTA V doit démarrer à froid (moteur, shaders, montage des ressources du
     // serveur) - ce délai (1 à 3 min) vient de FiveM/GTA V, pas du launcher.
     playButton.textContent = result.alreadyRunning ? 'CONNEXION...' : 'DÉMARRAGE DE FIVEM...';
+    document.body.classList.add('portal-opening');
     setTimeout(() => window.lunaria.quit(), 900);
   });
 
@@ -452,6 +501,11 @@
     if (!toggleAutoConnect.checked) cancelAutoConnect();
   });
 
+  toggleLowPower.addEventListener('change', () => {
+    draftSettings.lowPowerMode = toggleLowPower.checked;
+    applyLowPower(draftSettings.lowPowerMode); // aperçu visuel immédiat, persisté seulement au Save
+  });
+
   saveSettingsBtn.addEventListener('click', async () => {
     saveSettingsBtn.disabled = true;
     const previousLabel = saveSettingsBtn.textContent;
@@ -462,6 +516,7 @@
         window.lunaria.setAutoLaunch(draftSettings.autoLaunch),
         window.lunaria.setAutoConnect(draftSettings.autoConnect),
         window.lunaria.setTheme(draftSettings.theme),
+        window.lunaria.setLowPowerMode(draftSettings.lowPowerMode),
       ]);
       confirmedSettings = { ...draftSettings };
       if (!confirmedSettings.autoConnect) cancelAutoConnect();
@@ -503,6 +558,7 @@
     let particles = [];
     let width = 0;
     let height = 0;
+    let lowPower = confirmedSettings.lowPowerMode;
 
     function resize() {
       width = window.innerWidth;
@@ -527,6 +583,10 @@
 
     function init() {
       resize();
+      if (lowPower) {
+        particles = [];
+        return;
+      }
       const count = Math.min(70, Math.floor((width * height) / 18000));
       particles = Array.from({ length: count }, () => ({ ...makeParticle(), y: Math.random() * height }));
     }
@@ -549,12 +609,32 @@
       };
     }
 
+    // Traînée continue au survol : particules très légères, sans shadowBlur (coût CPU
+    // minime malgré la fréquence d'apparition), qui rétrécissent en s'effaçant.
+    function makeTrailParticle(x, y) {
+      return {
+        trail: true,
+        x: x + (Math.random() - 0.5) * 4,
+        y: y + (Math.random() - 0.5) * 4,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4 - 0.15,
+        r: 1 + Math.random() * 1.4,
+        alpha: 0.55,
+        decay: 0.02 + Math.random() * 0.015,
+        hue: Math.random() > 0.5 ? '241,207,127' : '233,224,242',
+      };
+    }
+
     function tick() {
       ctx.clearRect(0, 0, width, height);
+      if (lowPower) {
+        requestAnimationFrame(tick);
+        return;
+      }
       for (let i = particles.length - 1; i >= 0; i -= 1) {
         const p = particles[i];
 
-        if (p.burst) {
+        if (p.burst || p.trail) {
           p.x += p.vx;
           p.y += p.vy;
           p.vx *= 0.95;
@@ -565,10 +645,14 @@
             continue;
           }
           ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, p.r * (p.trail ? p.alpha / 0.55 : 1), 0, Math.PI * 2);
           ctx.fillStyle = `rgba(${p.hue},${p.alpha})`;
-          ctx.shadowBlur = 6;
-          ctx.shadowColor = `rgba(${p.hue},${p.alpha})`;
+          if (p.burst) {
+            ctx.shadowBlur = 6;
+            ctx.shadowColor = `rgba(${p.hue},${p.alpha})`;
+          } else {
+            ctx.shadowBlur = 0;
+          }
           ctx.fill();
           continue;
         }
@@ -598,9 +682,20 @@
     requestAnimationFrame(tick);
 
     spawnBurst = (x, y) => {
+      if (lowPower) return;
       for (let i = 0; i < 20; i += 1) {
         particles.push(makeBurstParticle(x, y));
       }
+    };
+
+    spawnTrail = (x, y) => {
+      if (lowPower) return;
+      particles.push(makeTrailParticle(x, y));
+    };
+
+    setParticlesLowPower = (enabled) => {
+      lowPower = enabled;
+      if (enabled) particles = [];
     };
   }
 

@@ -66,6 +66,7 @@ html, body {
   background-size: 130% 130%;
   background-position: 0% 0%;
   opacity: 0.6;
+  filter: blur(0.6px);
   animation: twinkle 6s ease-in-out infinite alternate, drift-stars 90s ease-in-out infinite alternate;
 }
 
@@ -143,6 +144,18 @@ html, body {
 @keyframes view-in {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+/* Fondu enchaîné entre menu principal et Paramètres uniquement (pas pendant l'intro,
+   dont le timing display:none est déjà géré séparément). La vue sortante garde
+   display:flex (donc .active) le temps de son fondu de sortie avant d'être basculée. */
+.view.leaving {
+  animation: view-out 0.18s ease forwards;
+}
+
+@keyframes view-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 .hidden {
@@ -342,12 +355,12 @@ html, body {
   height: clamp(220px, 29vmin, 340px);
   border-radius: 50%;
   background: radial-gradient(circle, var(--blob-b) 0%, transparent 70%);
-  animation: portal-pulse 4s ease-in-out infinite;
+  animation: portal-pulse 4.5s ease-in-out infinite;
 }
 
 @keyframes portal-pulse {
-  0%, 100% { opacity: 0.6; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.08); }
+  0%, 100% { opacity: 0.4; transform: scale(0.94); }
+  50% { opacity: 1; transform: scale(1.16); }
 }
 
 .rune-ring {
@@ -933,4 +946,143 @@ html, body {
   line-height: 1.6;
   color: var(--text-muted);
   white-space: pre-wrap;
+}
+
+/* --- Cascade d'apparition des lignes de Paramètres, à l'ouverture --- */
+.settings-entrance .settings-row {
+  opacity: 0;
+  animation: cascade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.settings-entrance .settings-row:nth-child(1) { animation-delay: 0.03s; }
+.settings-entrance .settings-row:nth-child(2) { animation-delay: 0.08s; }
+.settings-entrance .settings-row:nth-child(3) { animation-delay: 0.13s; }
+.settings-entrance .settings-row:nth-child(4) { animation-delay: 0.18s; }
+.settings-entrance .settings-row:nth-child(5) { animation-delay: 0.23s; }
+.settings-entrance .settings-row:nth-child(6) { animation-delay: 0.28s; }
+.settings-entrance .settings-row:nth-child(7) { animation-delay: 0.33s; }
+.settings-entrance .settings-row:nth-child(8) { animation-delay: 0.38s; }
+.settings-entrance .settings-row:nth-child(9) { animation-delay: 0.43s; }
+.settings-entrance .settings-row:nth-child(10) { animation-delay: 0.48s; }
+
+/* --- Skeleton loader pour le statut serveur, avant la première réponse --- */
+.status-skeleton {
+  display: inline-block;
+  width: 110px;
+  height: 13px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgba(233, 224, 242, 0.06) 25%, rgba(233, 224, 242, 0.18) 50%, rgba(233, 224, 242, 0.06) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* --- Reflet lumineux périodique sur le logo (au repos, de temps en temps) --- */
+.brand {
+  position: relative;
+  overflow: hidden;
+}
+
+.brand::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(75deg, transparent 0%, rgba(255, 255, 255, 0.45) 50%, transparent 100%);
+  transform: skewX(-20deg);
+  animation: logo-shine 7s ease-in-out infinite;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+@keyframes logo-shine {
+  0%, 15% { left: -150%; }
+  35%, 100% { left: 150%; }
+}
+
+/* --- Tremblement léger juste avant la fermeture (façon "le portail s'ouvre") --- */
+body.portal-opening {
+  animation: portal-shake 0.85s ease-in-out;
+}
+
+@keyframes portal-shake {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-2px, 1px); }
+  20% { transform: translate(2px, -1px); }
+  30% { transform: translate(-3px, 0); }
+  40% { transform: translate(3px, 1px); }
+  50% { transform: translate(-2px, -1px); }
+  60% { transform: translate(2px, 1px); }
+  70% { transform: translate(-1px, -1px); }
+  80% { transform: translate(1px, 1px); }
+  90% { transform: translate(-1px, 0); }
+}
+
+/* --- Curseur personnalisé (baguette magique dorée) --- */
+body {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><line x1="5" y1="29" x2="21" y2="13" stroke="%238b6a3a" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="29" x2="21" y2="13" stroke="%23d4af5a" stroke-width="1.4" stroke-linecap="round"/><path d="M25 3 L26.3 6.7 L30 8 L26.3 9.3 L25 13 L23.7 9.3 L20 8 L23.7 6.7 Z" fill="%23f1cf7f"/><circle cx="18" cy="18" r="1.1" fill="%23f1cf7f"/><circle cx="10" cy="24" r="0.9" fill="%23f1cf7f"/></svg>') 6 28, auto;
+}
+
+/* --- Glassmorphism renforcé sur les surfaces "carte" : flou plus marqué + reflet supérieur --- */
+.server-card,
+.settings-row,
+.news-item,
+.autoconnect-banner,
+.update-banner {
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.server-card::before,
+.settings-row::before,
+.news-item::before,
+.autoconnect-banner::before,
+.update-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+}
+
+/* --- Mode faible consommation : coupe les animations décoratives et le curseur custom --- */
+body.low-power {
+  cursor: auto;
+}
+
+body.low-power .stars,
+body.low-power .portal-glow,
+body.low-power .brand::after,
+body.low-power .status-dot.online {
+  animation: none !important;
+}
+
+body.low-power .particles {
+  display: none;
+}
+
+body.low-power .btn-play::after {
+  display: none;
+}
+
+body.low-power.portal-opening {
+  animation: none !important;
+}
+
+body.low-power .main-entrance .topbar,
+body.low-power .main-entrance .portal-wrapper,
+body.low-power .main-entrance .news-panel,
+body.low-power .settings-entrance .settings-row {
+  animation: none !important;
+  opacity: 1;
+  transform: none;
 }

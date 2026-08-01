@@ -6,6 +6,7 @@ interface BootData {
   theme: string;
   musicVolume: number;
   musicMuted: boolean;
+  lowPowerMode: boolean;
 }
 
 // Résolu de façon synchrone (avant même le premier paint) pour que le thème, le logo
@@ -23,6 +24,7 @@ const api = {
   setDisplayMode: (value: string) => ipcRenderer.invoke('settings:setDisplayMode', value),
   setMusicVolume: (value: number) => ipcRenderer.invoke('settings:setMusicVolume', value),
   setMusicMuted: (value: boolean) => ipcRenderer.invoke('settings:setMusicMuted', value),
+  setLowPowerMode: (value: boolean) => ipcRenderer.invoke('settings:setLowPowerMode', value),
   chooseFiveMPath: () => ipcRenderer.invoke('settings:chooseFiveMPath'),
   play: () => ipcRenderer.invoke('launcher:play'),
   openDownload: () => ipcRenderer.invoke('launcher:openDownload'),
