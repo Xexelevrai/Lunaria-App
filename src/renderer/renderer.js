@@ -181,7 +181,7 @@
     if (view === viewMain && !mainEntranceDone) {
       mainEntranceDone = true;
       viewMain.classList.add('main-entrance');
-      setTimeout(() => viewMain.classList.remove('main-entrance'), 1200);
+      setTimeout(() => viewMain.classList.remove('main-entrance'), 1400);
     }
     maybeStartAutoConnect();
     maybeStartMusic();

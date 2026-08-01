@@ -91,22 +91,22 @@ html, body {
 /* Apparition en cascade des éléments de la vue principale, une seule fois au premier
    affichage (classe ajoutée puis retirée en JS - pas à chaque retour depuis Paramètres). */
 @keyframes cascade-in {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(28px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.main-entrance .brand,
+.main-entrance .topbar,
 .main-entrance .portal-wrapper,
 .main-entrance .news-panel {
-  animation: cascade-in 0.6s ease both;
+  animation: cascade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .main-entrance .portal-wrapper {
-  animation-delay: 0.15s;
+  animation-delay: 0.2s;
 }
 
 .main-entrance .news-panel {
-  animation-delay: 0.3s;
+  animation-delay: 0.4s;
 }
 
 /* Voile qui masque brièvement le changement de thème (au lieu d'un switch instantané) */
