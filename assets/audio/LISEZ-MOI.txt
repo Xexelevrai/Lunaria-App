@@ -1,0 +1,10 @@
+Dépose ici deux fichiers audio, avec ces noms exacts :
+
+  background.mp3   -> musique de fond, jouée en boucle sur l'écran principal (bouton JOUER).
+                       Formats acceptés : mp3, ogg ou wav (garde l'extension .mp3 si possible,
+                       sinon dis-le pour qu'on ajuste le nom dans le code).
+
+  click2.mp3       -> petit son de clic joué à chaque clic sur un bouton (JOUER, Paramètres,
+                       Sauvegarder, thèmes, etc.). Un son court (<300ms) fonctionne mieux.
+
+Si ces fichiers sont absents, le launcher fonctionne quand même : simplement pas de son.

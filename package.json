@@ -1,0 +1,28 @@
+{
+  "name": "lunaria-launcher",
+  "productName": "Lunaria Launcher",
+  "version": "1.1.0",
+  "description": "Launcher officiel du serveur FiveM Lunaria",
+  "main": "dist/main/main.js",
+  "author": "Lunaria",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "npm run build && electron .",
+    "make-icon": "node build/make-icon.js",
+    "clean-release": "node -e \"require('fs').rmSync('release', { recursive: true, force: true })\"",
+    "dist": "npm run clean-release && npm run make-icon && npm run build && electron-builder --config electron-builder.config.js",
+    "release": "npm run clean-release && npm run make-icon && npm run build && electron-builder --config electron-builder.config.js --publish always"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "electron": "^31.0.2",
+    "electron-builder": "^24.13.3",
+    "typescript": "^5.5.2"
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0",
+    "electron-updater": "^6.2.1"
+  }
+}

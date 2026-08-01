@@ -1,0 +1,6 @@
+Dépose ici la vidéo d'introduction sous le nom exact :
+
+  intro.mp4
+
+Format recommandé : MP4 (H.264), 1920x1080 ou 1280x720, quelques dizaines de secondes.
+Ce fichier est joué automatiquement au tout premier lancement du launcher.

@@ -1,0 +1,6 @@
+Dépose ici les images suivantes :
+
+  logo.png   -> logo Lunaria (carré, fond transparent recommandé, ~256x256)
+  background.jpg -> fond d'écran optionnel (non utilisé par défaut, réservé pour une future évolution du thème)
+
+Si logo.png est absent, le launcher fonctionne quand même : le logo est simplement masqué.
