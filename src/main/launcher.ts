@@ -1,7 +1,19 @@
 import { shell } from 'electron';
-import { spawn } from 'child_process';
+import { spawn, exec } from 'child_process';
 import { ServerConfig } from './config';
 import { resolveFiveMPath } from './fivemLocator';
+
+export function isFiveMRunning(): Promise<boolean> {
+  return new Promise((resolve) => {
+    exec('tasklist /FI "IMAGENAME eq FiveM.exe" /NH', (err, stdout) => {
+      if (err) {
+        resolve(false);
+        return;
+      }
+      resolve(stdout.toLowerCase().includes('fivem.exe'));
+    });
+  });
+}
 
 export async function connectToServer(config: ServerConfig): Promise<boolean> {
   const exePath = resolveFiveMPath();

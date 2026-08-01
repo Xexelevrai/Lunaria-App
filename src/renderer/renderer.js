@@ -289,6 +289,10 @@
       return;
     }
     // FiveM prend le relais : on referme le launcher pour laisser la place au jeu.
+    // Si FiveM tourne déjà, la connexion est quasi immédiate (pas de redémarrage du jeu).
+    // Sinon, GTA V doit démarrer à froid (moteur, shaders, montage des ressources du
+    // serveur) - ce délai (1 à 3 min) vient de FiveM/GTA V, pas du launcher.
+    playButton.textContent = result.alreadyRunning ? 'CONNEXION...' : 'DÉMARRAGE DE FIVEM...';
     setTimeout(() => window.lunaria.quit(), 900);
   });
 

@@ -23,7 +23,7 @@ import {
   setMusicMuted,
 } from './store';
 import { isFiveMInstalled, resolveFiveMPath } from './fivemLocator';
-import { connectToServer, openFiveMDownloadPage, openDiscord, openTiktok } from './launcher';
+import { connectToServer, openFiveMDownloadPage, openDiscord, openTiktok, isFiveMRunning } from './launcher';
 import { fetchServerStatus } from './serverStatus';
 import { fetchNews } from './news';
 import { initAutoUpdater, installUpdateNow } from './updater';
@@ -225,8 +225,9 @@ function registerIpcHandlers(): void {
     if (!installed) {
       return { installed: false };
     }
+    const alreadyRunning = await isFiveMRunning();
     await connectToServer(config);
-    return { installed: true };
+    return { installed: true, alreadyRunning };
   });
 
   ipcMain.handle('launcher:openDownload', async () => {
