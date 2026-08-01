@@ -26,7 +26,7 @@ import { isFiveMInstalled, resolveFiveMPath } from './fivemLocator';
 import { connectToServer, openFiveMDownloadPage, openDiscord, openTiktok } from './launcher';
 import { fetchServerStatus } from './serverStatus';
 import { fetchNews } from './news';
-import { initAutoUpdater } from './updater';
+import { initAutoUpdater, installUpdateNow } from './updater';
 
 const STATUS_POLL_INTERVAL_MS = 30_000;
 
@@ -248,6 +248,10 @@ function registerIpcHandlers(): void {
   ipcMain.handle('app:quit', () => {
     app.quit();
   });
+
+  ipcMain.handle('update:install', () => {
+    installUpdateNow();
+  });
 }
 
 app.whenReady().then(() => {
@@ -269,7 +273,7 @@ app.whenReady().then(() => {
   registerIpcHandlers();
   createWindow();
   createTray();
-  initAutoUpdater();
+  initAutoUpdater(() => mainWindow);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

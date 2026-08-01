@@ -46,6 +46,10 @@
   const muteToggleBtn = document.getElementById('mute-toggle');
   const volumeSlider = document.getElementById('volume-slider');
 
+  const updateBanner = document.getElementById('update-banner');
+  const updateBannerText = document.getElementById('update-banner-text');
+  const updateRestartBtn = document.getElementById('update-restart-btn');
+
   const { assetsBase, introEnabled, theme, musicVolume, musicMuted } = window.lunaria.bootData;
 
   const THEME_LOGOS = {
@@ -300,6 +304,35 @@
 
   document.getElementById('tiktok-button').addEventListener('click', () => {
     window.lunaria.openTiktok();
+  });
+
+  updateRestartBtn.addEventListener('click', () => {
+    window.lunaria.installUpdate();
+  });
+
+  window.lunaria.onUpdateStatus((status) => {
+    switch (status.state) {
+      case 'available':
+        updateBannerText.textContent = `Mise à jour ${status.version} disponible, téléchargement...`;
+        updateRestartBtn.classList.add('hidden');
+        updateBanner.classList.remove('hidden');
+        break;
+      case 'downloading':
+        updateBannerText.textContent = `Téléchargement de la mise à jour... ${status.percent}%`;
+        updateRestartBtn.classList.add('hidden');
+        updateBanner.classList.remove('hidden');
+        break;
+      case 'downloaded':
+        updateBannerText.textContent = `Mise à jour ${status.version} prête.`;
+        updateRestartBtn.classList.remove('hidden');
+        updateBanner.classList.remove('hidden');
+        break;
+      case 'not-available':
+      case 'checking':
+      case 'error':
+        updateBanner.classList.add('hidden');
+        break;
+    }
   });
 
   // --- Paramètres ---

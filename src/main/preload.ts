@@ -30,8 +30,12 @@ const api = {
   openTiktok: () => ipcRenderer.invoke('launcher:openTiktok'),
   getNews: () => ipcRenderer.invoke('news:get'),
   quit: () => ipcRenderer.invoke('app:quit'),
+  installUpdate: () => ipcRenderer.invoke('update:install'),
   onStatusUpdate: (callback: (status: unknown) => void) => {
     ipcRenderer.on('status:update', (_event, status) => callback(status));
+  },
+  onUpdateStatus: (callback: (status: unknown) => void) => {
+    ipcRenderer.on('update:status', (_event, status) => callback(status));
   },
 };
 
