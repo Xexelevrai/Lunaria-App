@@ -35,6 +35,10 @@
   const settingsSaveStatus = document.getElementById('settings-save-status');
   const appVersionEl = document.getElementById('app-version');
 
+  const checkUpdateBtn = document.getElementById('check-update-btn');
+  const checkUpdateDesc = document.getElementById('check-update-desc');
+  const DEFAULT_UPDATE_DESC = 'Vérifier manuellement si une nouvelle version est disponible.';
+
   const displayModeButtons = document.querySelectorAll('.display-mode-btn');
 
   const autoconnectBanner = document.getElementById('autoconnect-banner');
@@ -83,6 +87,7 @@
     toggleAutoConnect.checked = Boolean(draftSettings.autoConnect);
     applyTheme(draftSettings.theme || 'gold');
     settingsSaveStatus.classList.remove('visible');
+    checkUpdateDesc.textContent = DEFAULT_UPDATE_DESC;
   }
 
   introVideo.src = `${assetsBase}/video/intro.mp4`;
@@ -166,9 +171,18 @@
     startAutoConnectCountdown();
   }
 
+  // N'affiche la cascade d'apparition qu'une seule fois (premier affichage réel de la
+  // vue principale) - pas à chaque retour depuis les Paramètres, ce qui serait répétitif.
+  let mainEntranceDone = false;
+
   function showView(view) {
     [viewIntro, viewMain, viewSettings].forEach((v) => v.classList.remove('active'));
     view.classList.add('active');
+    if (view === viewMain && !mainEntranceDone) {
+      mainEntranceDone = true;
+      viewMain.classList.add('main-entrance');
+      setTimeout(() => viewMain.classList.remove('main-entrance'), 1200);
+    }
     maybeStartAutoConnect();
     maybeStartMusic();
   }
@@ -303,6 +317,21 @@
 
   autoconnectCancelBtn.addEventListener('click', cancelAutoConnect);
 
+  playButton.addEventListener('mousemove', (e) => {
+    const rect = playButton.getBoundingClientRect();
+    playButton.style.setProperty('--mx', `${((e.clientX - rect.left) / rect.width) * 100}%`);
+    playButton.style.setProperty('--my', `${((e.clientY - rect.top) / rect.height) * 100}%`);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    if (!viewMain.classList.contains('active')) return;
+    if (!modal.classList.contains('hidden')) return;
+    if (!whatsNewModal.classList.contains('hidden')) return;
+    if (playButton.disabled) return;
+    playButton.click();
+  });
+
   playButton.addEventListener('click', async () => {
     playButton.disabled = true;
     playButton.textContent = 'CONNEXION...';
@@ -363,27 +392,46 @@
     window.lunaria.installUpdate();
   });
 
+  checkUpdateBtn.addEventListener('click', () => {
+    checkUpdateBtn.disabled = true;
+    checkUpdateDesc.textContent = 'Vérification en cours...';
+    window.lunaria.checkForUpdates();
+  });
+
   window.lunaria.onUpdateStatus((status) => {
     switch (status.state) {
+      case 'checking':
+        checkUpdateDesc.textContent = 'Vérification en cours...';
+        break;
       case 'available':
         updateBannerText.textContent = `Mise à jour ${status.version} disponible, téléchargement...`;
         updateRestartBtn.classList.add('hidden');
         updateBanner.classList.remove('hidden');
+        checkUpdateDesc.textContent = `Mise à jour ${status.version} disponible, téléchargement...`;
+        checkUpdateBtn.disabled = false;
         break;
       case 'downloading':
         updateBannerText.textContent = `Téléchargement de la mise à jour... ${status.percent}%`;
         updateRestartBtn.classList.add('hidden');
         updateBanner.classList.remove('hidden');
+        checkUpdateDesc.textContent = `Téléchargement... ${status.percent}%`;
         break;
       case 'downloaded':
         updateBannerText.textContent = `Mise à jour ${status.version} prête.`;
         updateRestartBtn.classList.remove('hidden');
         updateBanner.classList.remove('hidden');
+        checkUpdateDesc.textContent = `Mise à jour ${status.version} prête — redémarre pour l'installer.`;
+        checkUpdateBtn.disabled = false;
         break;
       case 'not-available':
-      case 'checking':
+        updateBanner.classList.add('hidden');
+        checkUpdateDesc.textContent = 'Aucune mise à jour disponible. Tu utilises déjà la dernière version.';
+        checkUpdateBtn.disabled = false;
+        break;
       case 'error':
         updateBanner.classList.add('hidden');
+        checkUpdateDesc.textContent = 'Impossible de vérifier les mises à jour pour le moment.';
+        checkUpdateBtn.disabled = false;
         break;
     }
   });

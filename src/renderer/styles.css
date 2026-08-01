@@ -63,9 +63,10 @@ html, body {
     radial-gradient(1.5px 1.5px at 55% 40%, rgba(233,224,242,0.3), transparent),
     radial-gradient(1px 1px at 10% 65%, rgba(233,224,242,0.35), transparent),
     radial-gradient(1px 1px at 95% 85%, rgba(241,207,127,0.35), transparent);
-  background-size: 100% 100%;
+  background-size: 130% 130%;
+  background-position: 0% 0%;
   opacity: 0.6;
-  animation: twinkle 6s ease-in-out infinite alternate;
+  animation: twinkle 6s ease-in-out infinite alternate, drift-stars 90s ease-in-out infinite alternate;
 }
 
 @keyframes twinkle {
@@ -73,11 +74,39 @@ html, body {
   to { opacity: 0.75; }
 }
 
+/* Dérive très lente du fond étoilé - subtile, pas un vrai parallax, juste pour éviter
+   un fond totalement figé derrière la poussière magique déjà animée du canvas. */
+@keyframes drift-stars {
+  from { background-position: 0% 0%; }
+  to { background-position: 6% 4%; }
+}
+
 .particles {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
+}
+
+/* Apparition en cascade des éléments de la vue principale, une seule fois au premier
+   affichage (classe ajoutée puis retirée en JS - pas à chaque retour depuis Paramètres). */
+@keyframes cascade-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.main-entrance .brand,
+.main-entrance .portal-wrapper,
+.main-entrance .news-panel {
+  animation: cascade-in 0.6s ease both;
+}
+
+.main-entrance .portal-wrapper {
+  animation-delay: 0.15s;
+}
+
+.main-entrance .news-panel {
+  animation-delay: 0.3s;
 }
 
 /* Voile qui masque brièvement le changement de thème (au lieu d'un switch instantané) */
@@ -402,6 +431,7 @@ html, body {
 .btn-play {
   position: relative;
   z-index: 1;
+  overflow: hidden;
   padding: clamp(16px, 2.4vmin, 24px) clamp(56px, 9vmin, 104px);
   font-size: clamp(18px, 2.6vmin, 27px);
   font-weight: 700;
@@ -415,6 +445,22 @@ html, body {
 .btn-play:hover {
   box-shadow: 0 0 44px rgba(212, 175, 90, 0.6);
   transform: translateY(-2px);
+}
+
+/* Halo qui suit le curseur (--mx/--my mis à jour en JS au mousemove) */
+.btn-play::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle 130px at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.32), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+.btn-play:hover::after {
+  opacity: 1;
 }
 
 .btn-play:disabled {

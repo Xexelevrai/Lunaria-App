@@ -28,7 +28,7 @@ import { isFiveMInstalled, resolveFiveMPath } from './fivemLocator';
 import { connectToServer, openFiveMDownloadPage, openDiscord, openTiktok, isFiveMRunning } from './launcher';
 import { fetchServerStatus } from './serverStatus';
 import { fetchNews } from './news';
-import { initAutoUpdater, installUpdateNow } from './updater';
+import { initAutoUpdater, installUpdateNow, checkForUpdatesManually } from './updater';
 
 const STATUS_POLL_INTERVAL_MS = 30_000;
 const GITHUB_OWNER = 'Xexelevrai';
@@ -284,6 +284,10 @@ function registerIpcHandlers(): void {
 
   ipcMain.handle('update:install', () => {
     installUpdateNow();
+  });
+
+  ipcMain.handle('update:check', () => {
+    checkForUpdatesManually();
   });
 
   ipcMain.handle('app:getWhatsNew', () => getWhatsNewIfAny());

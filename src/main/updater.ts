@@ -9,12 +9,16 @@ export type UpdateStatus =
   | { state: 'downloaded'; version: string }
   | { state: 'error' };
 
-function sendStatus(getWindow: () => BrowserWindow | null, status: UpdateStatus): void {
-  const win = getWindow();
+let windowGetter: () => BrowserWindow | null = () => null;
+
+function sendStatus(status: UpdateStatus): void {
+  const win = windowGetter();
   if (win) win.webContents.send('update:status', status);
 }
 
 export function initAutoUpdater(getWindow: () => BrowserWindow | null): void {
+  windowGetter = getWindow;
+
   if (!app.isPackaged) {
     // Pas de vérification de mise à jour en développement (pas de provider configuré).
     return;
@@ -23,16 +27,14 @@ export function initAutoUpdater(getWindow: () => BrowserWindow | null): void {
   autoUpdater.logger = console;
   autoUpdater.autoDownload = true;
 
-  autoUpdater.on('checking-for-update', () => sendStatus(getWindow, { state: 'checking' }));
-  autoUpdater.on('update-available', (info) => sendStatus(getWindow, { state: 'available', version: info.version }));
-  autoUpdater.on('update-not-available', () => sendStatus(getWindow, { state: 'not-available' }));
-  autoUpdater.on('download-progress', (progress) =>
-    sendStatus(getWindow, { state: 'downloading', percent: Math.round(progress.percent) })
-  );
-  autoUpdater.on('update-downloaded', (info) => sendStatus(getWindow, { state: 'downloaded', version: info.version }));
+  autoUpdater.on('checking-for-update', () => sendStatus({ state: 'checking' }));
+  autoUpdater.on('update-available', (info) => sendStatus({ state: 'available', version: info.version }));
+  autoUpdater.on('update-not-available', () => sendStatus({ state: 'not-available' }));
+  autoUpdater.on('download-progress', (progress) => sendStatus({ state: 'downloading', percent: Math.round(progress.percent) }));
+  autoUpdater.on('update-downloaded', (info) => sendStatus({ state: 'downloaded', version: info.version }));
   autoUpdater.on('error', (err) => {
     console.error('[updater] Erreur de mise à jour', err);
-    sendStatus(getWindow, { state: 'error' });
+    sendStatus({ state: 'error' });
   });
 
   autoUpdater.checkForUpdates().catch((err) => {
@@ -42,4 +44,18 @@ export function initAutoUpdater(getWindow: () => BrowserWindow | null): void {
 
 export function installUpdateNow(): void {
   autoUpdater.quitAndInstall();
+}
+
+export function checkForUpdatesManually(): void {
+  if (!app.isPackaged) {
+    // Pas de provider configuré en dev : on simule une réponse pour que le bouton
+    // "Vérifier les mises à jour" des Paramètres ait un retour visuel cohérent.
+    sendStatus({ state: 'not-available' });
+    return;
+  }
+
+  autoUpdater.checkForUpdates().catch((err) => {
+    console.error('[updater] Vérification manuelle impossible', err);
+    sendStatus({ state: 'error' });
+  });
 }
