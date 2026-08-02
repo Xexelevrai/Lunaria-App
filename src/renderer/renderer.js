@@ -96,6 +96,7 @@
   // interaction utilisateur (donc toujours après l'exécution synchrone initiale du script).
   let spawnBurst = () => {};
   let spawnTrail = () => {};
+  let spawnDraw = () => {};
   let setParticlesLowPower = () => {};
   let serverAddress = '';
 
@@ -669,6 +670,33 @@
     spawnTrail(e.clientX, e.clientY);
   });
 
+  // Tracé magique : clic maintenu + déplacement dans le vide (pas sur un bouton/une
+  // carte, pour ne pas gêner les interactions normales) dessine une traînée de
+  // particules plus dense et lumineuse, qui s'estompe peu après. Marche sur toutes les
+  // vues, contrairement à la traînée passive au survol ci-dessus (limitée au menu).
+  const DRAW_BLOCKED_SELECTOR =
+    'button, input, a, .server-card, .settings-row, .quiz-card, .modal-box, .theme-swatch, .display-mode-btn, .social-button';
+  let isDrawingActive = false;
+
+  document.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
+    if (e.target.closest(DRAW_BLOCKED_SELECTOR)) return;
+    isDrawingActive = true;
+    spawnDraw(e.clientX, e.clientY);
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDrawingActive) return;
+    spawnDraw(e.clientX, e.clientY);
+  });
+
+  document.addEventListener('mouseup', () => {
+    isDrawingActive = false;
+  });
+  window.addEventListener('blur', () => {
+    isDrawingActive = false;
+  });
+
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter') return;
     if (!viewMain.classList.contains('active')) return;
@@ -923,6 +951,22 @@
       };
     }
 
+    // Tracé magique au clic maintenu : particules plus grosses/lumineuses que la traînée
+    // passive, quasi immobiles (juste une légère dérive), avec un léger flou lumineux.
+    function makeDrawParticle(x, y) {
+      return {
+        draw: true,
+        x: x + (Math.random() - 0.5) * 3,
+        y: y + (Math.random() - 0.5) * 3,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15,
+        r: 1.5 + Math.random() * 1.8,
+        alpha: 0.85,
+        decay: 0.012 + Math.random() * 0.01,
+        hue: Math.random() > 0.5 ? '241,207,127' : '233,224,242',
+      };
+    }
+
     function tick() {
       ctx.clearRect(0, 0, width, height);
       if (lowPower) {
@@ -932,7 +976,7 @@
       for (let i = particles.length - 1; i >= 0; i -= 1) {
         const p = particles[i];
 
-        if (p.burst || p.trail) {
+        if (p.burst || p.trail || p.draw) {
           p.x += p.vx;
           p.y += p.vy;
           p.vx *= 0.95;
@@ -942,11 +986,15 @@
             particles.splice(i, 1);
             continue;
           }
+          const baseAlpha = p.trail ? 0.55 : p.draw ? 0.85 : 1;
           ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r * (p.trail ? p.alpha / 0.55 : 1), 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, p.r * (p.trail || p.draw ? p.alpha / baseAlpha : 1), 0, Math.PI * 2);
           ctx.fillStyle = `rgba(${p.hue},${p.alpha})`;
           if (p.burst) {
             ctx.shadowBlur = 6;
+            ctx.shadowColor = `rgba(${p.hue},${p.alpha})`;
+          } else if (p.draw) {
+            ctx.shadowBlur = 5;
             ctx.shadowColor = `rgba(${p.hue},${p.alpha})`;
           } else {
             ctx.shadowBlur = 0;
@@ -989,6 +1037,11 @@
     spawnTrail = (x, y) => {
       if (lowPower) return;
       particles.push(makeTrailParticle(x, y));
+    };
+
+    spawnDraw = (x, y) => {
+      if (lowPower) return;
+      particles.push(makeDrawParticle(x, y));
     };
 
     setParticlesLowPower = (enabled) => {

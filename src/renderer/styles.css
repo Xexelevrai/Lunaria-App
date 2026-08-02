@@ -48,6 +48,10 @@ html, body {
   color: var(--text-main);
   background: var(--bg);
   transition: background 0.4s ease;
+  /* Un launcher n'est pas un document à sélectionner : évite le surlignage bleu du
+     texte au clic-glisser (visible sur le statut serveur, les Paramètres, etc.). */
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .stars {
