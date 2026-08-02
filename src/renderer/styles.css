@@ -115,6 +115,106 @@ html, body {
   pointer-events: none;
 }
 
+/* --- Décor du thème Sombre (catacombe) --- */
+/* Masqué par défaut sur tous les thèmes ; affiché uniquement en data-theme="dark". Posé
+   au-dessus de toute l'interface (mais sous le voile de transition de thème) puisque
+   pointer-events:none le rend totalement transparent aux clics, quelle que soit sa pile. */
+.dark-decor {
+  display: none;
+}
+
+body[data-theme='dark'] .dark-decor {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.dark-vignette,
+.dark-fog,
+.dark-flicker,
+.dark-grain {
+  position: absolute;
+  inset: 0;
+}
+
+/* Assombrit les bords pour resserrer le regard vers le centre, façon tunnel de
+   catacombe, plutôt qu'un simple recolorage plat. */
+.dark-vignette {
+  background: radial-gradient(ellipse at 50% 46%, transparent 32%, rgba(0, 0, 0, 0.4) 78%, rgba(0, 0, 0, 0.72) 100%);
+}
+
+/* Brume rasante qui dérive très lentement au sol, comme dans une crypte humide. */
+.dark-fog {
+  background: radial-gradient(ellipse 70% 40% at 50% 112%, rgba(150, 145, 138, 0.14) 0%, transparent 70%);
+  animation: dark-fog-drift 22s ease-in-out infinite alternate;
+}
+
+@keyframes dark-fog-drift {
+  from { transform: translateX(-3%); }
+  to { transform: translateX(3%); }
+}
+
+/* Vacillement irrégulier façon torche/bougie - volontairement saccadé (pas une simple
+   sinusoïde) pour ne pas ressembler à la respiration déjà utilisée ailleurs dans l'UI. */
+.dark-flicker {
+  background: #000;
+  opacity: 0;
+  animation: dark-flicker 6.5s linear infinite;
+}
+
+@keyframes dark-flicker {
+  0%, 100% { opacity: 0.02; }
+  4% { opacity: 0.09; }
+  7% { opacity: 0.03; }
+  12% { opacity: 0.07; }
+  18% { opacity: 0.02; }
+  46% { opacity: 0.02; }
+  50% { opacity: 0.1; }
+  54% { opacity: 0.04; }
+  61% { opacity: 0.08; }
+  68% { opacity: 0.02; }
+}
+
+/* Toiles d'araignée discrètes dans deux coins - le vrai élément de "décor" qui change,
+   au-delà d'une simple palette de couleurs. */
+.dark-cobweb {
+  position: absolute;
+  width: clamp(90px, 11vmin, 150px);
+  height: clamp(90px, 11vmin, 150px);
+  opacity: 0.55;
+}
+
+.dark-cobweb-tl {
+  top: 0;
+  left: 0;
+}
+
+.dark-cobweb-br {
+  bottom: 0;
+  right: 0;
+  transform: rotate(180deg);
+}
+
+/* Grain fin façon vieille pellicule, pour casser le côté trop "propre" d'un simple
+   dégradé numérique. */
+.dark-grain {
+  filter: url(#dark-grain-filter);
+  opacity: 1;
+  mix-blend-mode: overlay;
+}
+
+body.low-power .dark-fog,
+body.low-power .dark-flicker {
+  animation: none !important;
+  opacity: 0 !important;
+}
+
+body.low-power .dark-grain {
+  display: none;
+}
+
 /* Apparition en cascade des éléments de la vue principale, une seule fois au premier
    affichage (classe ajoutée puis retirée en JS - pas à chaque retour depuis Paramètres). */
 @keyframes cascade-in {
