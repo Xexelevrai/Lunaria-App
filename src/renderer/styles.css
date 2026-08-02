@@ -1320,6 +1320,17 @@ body.low-power .quiz-answer-btn {
   background: linear-gradient(90deg, var(--gold), var(--gold-bright));
 }
 
+.quiz-next-btn {
+  margin-top: 14px;
+  font-size: 12px;
+  padding: 6px 14px;
+  opacity: 0.75;
+}
+
+.quiz-next-btn:hover {
+  opacity: 1;
+}
+
 .quiz-joker-btn {
   margin-top: 20px;
   font-size: 13px;

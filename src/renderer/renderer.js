@@ -64,6 +64,7 @@
   const quizExplanationTimerEl = document.getElementById('quiz-explanation-timer');
   const quizExplanationTimerFill = document.getElementById('quiz-explanation-timer-fill');
   const quizJokerBtn = document.getElementById('quiz-joker-btn');
+  const quizNextBtn = document.getElementById('quiz-next-btn');
   const quizRuneProgressFill = document.getElementById('quiz-rune-progress-fill');
   const quizCorrectSound = document.getElementById('quiz-correct-sound');
   const quizWrongSound = document.getElementById('quiz-wrong-sound');
@@ -167,6 +168,7 @@
   let quizIndex = 0;
   let quizScore = 0;
   let quizJokerUsed = false;
+  let quizAdvanceTimeout = null;
 
   function shuffle(arr) {
     const a = [...arr];
@@ -206,6 +208,7 @@
     quizExplanationTimerEl.classList.add('hidden');
     quizExplanationTimerFill.style.transition = 'none';
     quizExplanationTimerFill.style.width = '0%';
+    quizNextBtn.classList.add('hidden');
     quizAnswersEl.innerHTML = '';
     current.answers.forEach((answer, i) => {
       const btn = document.createElement('button');
@@ -247,15 +250,21 @@
     void quizExplanationTimerFill.offsetWidth;
     quizExplanationTimerFill.style.transition = `width ${QUIZ_EXPLANATION_DELAY_MS}ms linear`;
     quizExplanationTimerFill.style.width = '100%';
+    quizNextBtn.classList.remove('hidden');
 
-    setTimeout(() => {
-      quizIndex += 1;
-      if (quizIndex < quizQuestions.length) {
-        renderQuizQuestion();
-      } else {
-        showQuizResult();
-      }
-    }, QUIZ_EXPLANATION_DELAY_MS);
+    quizAdvanceTimeout = setTimeout(advanceQuiz, QUIZ_EXPLANATION_DELAY_MS);
+  }
+
+  // Passe à la question suivante (ou au résultat) - appelé soit par le minuteur de
+  // l'explication, soit immédiatement via le bouton "Passer".
+  function advanceQuiz() {
+    clearTimeout(quizAdvanceTimeout);
+    quizIndex += 1;
+    if (quizIndex < quizQuestions.length) {
+      renderQuizQuestion();
+    } else {
+      showQuizResult();
+    }
   }
 
   function handleQuizJoker() {
@@ -292,6 +301,7 @@
   }
 
   function startQuiz() {
+    clearTimeout(quizAdvanceTimeout);
     const pool = shuffle(QUIZ_QUESTIONS).slice(0, QUIZ_LENGTH);
     quizQuestions = pool.map((item) => {
       const correctText = item.answers[item.correct];
@@ -593,10 +603,12 @@
   quizStartBtn.addEventListener('click', startQuiz);
   quizReplayBtn.addEventListener('click', startQuiz);
   quizBackBtn.addEventListener('click', () => {
+    clearTimeout(quizAdvanceTimeout);
     showView(viewMain);
     crossfadeMusic(bgMusic, quizMusic);
   });
   quizJokerBtn.addEventListener('click', handleQuizJoker);
+  quizNextBtn.addEventListener('click', advanceQuiz);
   closeSettingsBtn.addEventListener('click', () => {
     // Reviens à l'état confirmé si on quitte sans sauvegarder (ex : thème/mode faible
     // consommation prévisualisés).
