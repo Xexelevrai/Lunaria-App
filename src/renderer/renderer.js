@@ -73,6 +73,7 @@
   const autoconnectCancelBtn = document.getElementById('autoconnect-cancel');
 
   const bgMusic = document.getElementById('bg-music');
+  const quizMusic = document.getElementById('quiz-music');
   const clickSound = document.getElementById('click-sound');
   const muteToggleBtn = document.getElementById('mute-toggle');
   const volumeSlider = document.getElementById('volume-slider');
@@ -211,7 +212,7 @@
       } else {
         showQuizResult();
       }
-    }, 2200);
+    }, 4200);
   }
 
   function handleQuizJoker() {
@@ -288,16 +289,24 @@
 
   introVideo.src = `${assetsBase}/video/intro.mp4`;
   bgMusic.src = `${assetsBase}/audio/background.mp3`;
+  quizMusic.src = `${assetsBase}/audio/background-quizz.mp3`;
   clickSound.src = `${assetsBase}/audio/click2.mp3`;
   quizCorrectSound.src = `${assetsBase}/audio/valider.mp3`;
   quizWrongSound.src = `${assetsBase}/audio/refuser.mp3`;
 
   // --- Musique de fond (démarre en arrivant sur la vue principale, jamais pendant l'intro) ---
+  // musicTargetVolume/musicIsMuted sont la source de vérité pour le volume "voulu" par
+  // l'utilisateur : bgMusic et quizMusic s'y réfèrent tous les deux, y compris pendant un
+  // fondu (où .volume s'écarte temporairement de la cible le temps de la transition).
   let musicStarted = false;
-  bgMusic.volume = Math.min(100, Math.max(0, musicVolume ?? 25)) / 100;
-  bgMusic.muted = Boolean(musicMuted);
+  let musicTargetVolume = Math.min(100, Math.max(0, musicVolume ?? 25)) / 100;
+  let musicIsMuted = Boolean(musicMuted);
+  bgMusic.volume = musicTargetVolume;
+  bgMusic.muted = musicIsMuted;
+  quizMusic.volume = 0;
+  quizMusic.muted = musicIsMuted;
   volumeSlider.value = String(musicVolume ?? 25);
-  muteToggleBtn.textContent = bgMusic.muted ? '🔇' : '🔊';
+  muteToggleBtn.textContent = musicIsMuted ? '🔇' : '🔊';
 
   function maybeStartMusic() {
     if (musicStarted || !viewMain.classList.contains('active')) return;
@@ -309,23 +318,57 @@
     });
   }
 
+  // Fondu enchaîné entre bgMusic et quizMusic, pour ne pas couper la musique net en
+  // entrant/sortant du quiz.
+  function fadeAudioVolume(el, target, duration) {
+    const start = el.volume;
+    const startTime = performance.now();
+    function step(now) {
+      const t = Math.min(1, (now - startTime) / duration);
+      el.volume = Math.min(1, Math.max(0, start + (target - start) * t));
+      if (t < 1) {
+        requestAnimationFrame(step);
+      } else if (target === 0) {
+        el.pause();
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  function crossfadeMusic(nextEl, prevEl) {
+    const target = musicIsMuted ? 0 : musicTargetVolume;
+    if (nextEl.paused) {
+      nextEl.volume = 0;
+      nextEl.play().catch(() => {});
+    }
+    fadeAudioVolume(nextEl, target, 900);
+    fadeAudioVolume(prevEl, 0, 900);
+  }
+
   function playClickSound() {
     clickSound.currentTime = 0;
     clickSound.play().catch(() => {});
   }
 
   document.addEventListener('click', (e) => {
-    if (e.target.closest('button')) playClickSound();
+    const btn = e.target.closest('button');
+    // Les réponses du quiz ont leur propre retour sonore (valider/refuser) : pas besoin
+    // du clic générique en plus, ça superposerait les deux sons.
+    if (btn && !btn.classList.contains('quiz-answer-btn')) playClickSound();
   });
 
   muteToggleBtn.addEventListener('click', () => {
-    bgMusic.muted = !bgMusic.muted;
-    muteToggleBtn.textContent = bgMusic.muted ? '🔇' : '🔊';
-    window.lunaria.setMusicMuted(bgMusic.muted);
+    musicIsMuted = !musicIsMuted;
+    bgMusic.muted = musicIsMuted;
+    quizMusic.muted = musicIsMuted;
+    muteToggleBtn.textContent = musicIsMuted ? '🔇' : '🔊';
+    window.lunaria.setMusicMuted(musicIsMuted);
   });
 
   volumeSlider.addEventListener('input', () => {
-    bgMusic.volume = Number(volumeSlider.value) / 100;
+    musicTargetVolume = Number(volumeSlider.value) / 100;
+    bgMusic.volume = musicTargetVolume;
+    quizMusic.volume = musicTargetVolume;
   });
   volumeSlider.addEventListener('change', () => {
     window.lunaria.setMusicVolume(Number(volumeSlider.value));
@@ -498,11 +541,18 @@
     quizResultEl.classList.add('hidden');
     updateQuizBestScoreDisplay();
     showView(viewQuiz);
+    crossfadeMusic(quizMusic, bgMusic);
   });
-  closeQuizBtn.addEventListener('click', () => showView(viewMain));
+  closeQuizBtn.addEventListener('click', () => {
+    showView(viewMain);
+    crossfadeMusic(bgMusic, quizMusic);
+  });
   quizStartBtn.addEventListener('click', startQuiz);
   quizReplayBtn.addEventListener('click', startQuiz);
-  quizBackBtn.addEventListener('click', () => showView(viewMain));
+  quizBackBtn.addEventListener('click', () => {
+    showView(viewMain);
+    crossfadeMusic(bgMusic, quizMusic);
+  });
   quizJokerBtn.addEventListener('click', handleQuizJoker);
   closeSettingsBtn.addEventListener('click', () => {
     // Reviens à l'état confirmé si on quitte sans sauvegarder (ex : thème/mode faible
