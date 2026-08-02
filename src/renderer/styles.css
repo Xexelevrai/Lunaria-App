@@ -1040,18 +1040,27 @@ body.portal-opening {
   90% { transform: translate(-1px, 0); }
 }
 
-/* --- Curseur personnalisé (baguette magique dorée) --- */
+/* --- Curseur personnalisé (baguette magique dorée, avec une légère lueur autour de
+   l'étoile) --- */
 body {
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><line x1="5" y1="29" x2="21" y2="13" stroke="%238b6a3a" stroke-width="3" stroke-linecap="round"/><line x1="5" y1="29" x2="21" y2="13" stroke="%23d4af5a" stroke-width="1.4" stroke-linecap="round"/><path d="M25 3 L26.3 6.7 L30 8 L26.3 9.3 L25 13 L23.7 9.3 L20 8 L23.7 6.7 Z" fill="%23f1cf7f"/><circle cx="18" cy="18" r="1.1" fill="%23f1cf7f"/><circle cx="10" cy="24" r="0.9" fill="%23f1cf7f"/></svg>') 6 28, auto;
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><defs><filter id="g" x="-100%25" y="-100%25" width="300%25" height="300%25"><feGaussianBlur stdDeviation="3.2"/></filter></defs><circle cx="30" cy="10" r="6" fill="%23f1cf7f" opacity="0.35" filter="url(%23g)"/><line x1="8" y1="34" x2="26" y2="16" stroke="%238b6a3a" stroke-width="3" stroke-linecap="round"/><line x1="8" y1="34" x2="26" y2="16" stroke="%23d4af5a" stroke-width="1.4" stroke-linecap="round"/><path d="M30 5 L31.3 8.7 L35 10 L31.3 11.3 L30 15 L28.7 11.3 L25 10 L28.7 8.7 Z" fill="%23f1cf7f"/><circle cx="22" cy="20" r="1.1" fill="%23f1cf7f"/><circle cx="13" cy="27" r="0.9" fill="%23f1cf7f"/></svg>') 9 33, auto;
 }
 
 /* --- Glassmorphism renforcé sur les surfaces "carte" : flou plus marqué + reflet supérieur --- */
 .server-card,
 .settings-row,
 .news-item,
-.autoconnect-banner,
-.update-banner {
+.autoconnect-banner {
   position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+/* .update-banner a déjà position:absolute dans sa propre règle (plus haut) : lui
+   réappliquer position:relative ici le remettait dans le flux flex normal de #view-main
+   (flex-direction:column, align-items:stretch par défaut), ce qui l'étirait sur toute
+   la largeur - d'où la barre pleine largeur au lieu d'une pastille centrée. */
+.update-banner {
   overflow: hidden;
   backdrop-filter: blur(10px);
 }
