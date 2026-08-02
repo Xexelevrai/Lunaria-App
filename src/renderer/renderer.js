@@ -192,6 +192,12 @@
     const current = quizQuestions[quizIndex];
     quizProgressText.textContent = `Question ${quizIndex + 1} / ${quizQuestions.length}`;
     quizQuestionText.textContent = current.q;
+    // Redémarre l'animation d'apparition à chaque question : la classe doit être retirée
+    // puis un reflow forcé avant de la remettre, sinon le navigateur fusionne les deux
+    // changements et l'animation ne rejoue pas.
+    quizQuestionText.classList.remove('quiz-question-text-anim');
+    void quizQuestionText.offsetWidth;
+    quizQuestionText.classList.add('quiz-question-text-anim');
     quizExplanationEl.classList.add('hidden');
     quizExplanationEl.textContent = '';
     quizExplanationTimerEl.classList.add('hidden');

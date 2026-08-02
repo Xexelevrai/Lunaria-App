@@ -1113,6 +1113,13 @@ body.low-power .settings-entrance .settings-row {
   transform: none;
 }
 
+body.low-power .quiz-question-text-anim,
+body.low-power .quiz-answer-btn {
+  animation: none !important;
+  opacity: 1;
+  transform: none;
+}
+
 /* --- Quiz --- */
 .topbar-side-right {
   gap: 8px;
@@ -1197,6 +1204,22 @@ body.low-power .settings-entrance .settings-row {
   margin: 0 0 28px;
   line-height: 1.4;
 }
+
+/* Apparition douce de la question et des réponses à chaque nouvelle question (au lieu
+   d'un remplacement brutal du texte) */
+.quiz-question-text-anim {
+  animation: cascade-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.quiz-answer-btn {
+  opacity: 0;
+  animation: cascade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.quiz-answers .quiz-answer-btn:nth-child(1) { animation-delay: 0.06s; }
+.quiz-answers .quiz-answer-btn:nth-child(2) { animation-delay: 0.12s; }
+.quiz-answers .quiz-answer-btn:nth-child(3) { animation-delay: 0.18s; }
+.quiz-answers .quiz-answer-btn:nth-child(4) { animation-delay: 0.24s; }
 
 .quiz-answers {
   display: flex;
