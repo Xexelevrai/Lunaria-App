@@ -61,6 +61,8 @@
   const quizReplayBtn = document.getElementById('quiz-replay-btn');
   const quizBackBtn = document.getElementById('quiz-back-btn');
   const quizExplanationEl = document.getElementById('quiz-explanation');
+  const quizExplanationTimerEl = document.getElementById('quiz-explanation-timer');
+  const quizExplanationTimerFill = document.getElementById('quiz-explanation-timer-fill');
   const quizJokerBtn = document.getElementById('quiz-joker-btn');
   const quizRuneProgressFill = document.getElementById('quiz-rune-progress-fill');
   const quizCorrectSound = document.getElementById('quiz-correct-sound');
@@ -157,6 +159,7 @@
   ];
 
   const QUIZ_LENGTH = 10;
+  const QUIZ_EXPLANATION_DELAY_MS = 7000;
   const QUIZ_BEST_SCORE_KEY = 'lunaria-quiz-best';
   const QUIZ_RING_CIRCUMFERENCE = 2 * Math.PI * 42;
   let quizQuestions = [];
@@ -191,6 +194,9 @@
     quizQuestionText.textContent = current.q;
     quizExplanationEl.classList.add('hidden');
     quizExplanationEl.textContent = '';
+    quizExplanationTimerEl.classList.add('hidden');
+    quizExplanationTimerFill.style.transition = 'none';
+    quizExplanationTimerFill.style.width = '0%';
     quizAnswersEl.innerHTML = '';
     current.answers.forEach((answer, i) => {
       const btn = document.createElement('button');
@@ -221,6 +227,18 @@
     updateQuizRing();
     quizExplanationEl.textContent = current.exp;
     quizExplanationEl.classList.remove('hidden');
+
+    // Jauge qui se remplit de gauche à droite sur toute la durée d'attente, pour montrer
+    // visuellement quand la question suivante va arriver. Le reset (transition:none, 0%)
+    // doit être suivi d'un reflow forcé avant de fixer la cible, sinon le navigateur
+    // fusionne les deux changements et l'animation ne se joue jamais.
+    quizExplanationTimerEl.classList.remove('hidden');
+    quizExplanationTimerFill.style.transition = 'none';
+    quizExplanationTimerFill.style.width = '0%';
+    void quizExplanationTimerFill.offsetWidth;
+    quizExplanationTimerFill.style.transition = `width ${QUIZ_EXPLANATION_DELAY_MS}ms linear`;
+    quizExplanationTimerFill.style.width = '100%';
+
     setTimeout(() => {
       quizIndex += 1;
       if (quizIndex < quizQuestions.length) {
@@ -228,7 +246,7 @@
       } else {
         showQuizResult();
       }
-    }, 4200);
+    }, QUIZ_EXPLANATION_DELAY_MS);
   }
 
   function handleQuizJoker() {
