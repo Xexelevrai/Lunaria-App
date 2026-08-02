@@ -155,7 +155,14 @@ body[data-theme='dark'] .dark-decor {
    autour du curseur - --cursor-x/--cursor-y sont mis à jour en JS sur <html>, avec un
    repli au centre tant qu'aucun mousemove n'a encore eu lieu. */
 .dark-cursor-glow {
-  background: radial-gradient(circle 420px at var(--cursor-x, 50%) var(--cursor-y, 50%), rgba(var(--glow-rgb), 0.16), transparent 68%);
+  background: radial-gradient(
+    circle 850px at var(--cursor-x, 50%) var(--cursor-y, 50%),
+    rgba(var(--glow-rgb), 0.4) 0%,
+    rgba(var(--glow-rgb), 0.22) 12%,
+    rgba(var(--glow-rgb), 0.1) 32%,
+    rgba(var(--glow-rgb), 0.03) 60%,
+    transparent 100%
+  );
 }
 
 /* Assombrit les bords pour resserrer le regard vers le centre, façon tunnel de
