@@ -987,23 +987,35 @@ html, body {
   overflow: hidden;
 }
 
+/* Le reflet est masqué à la silhouette exacte du logo (--logo-mask, mis à jour en JS à
+   chaque changement de thème) : sans ce masque, le reflet balaie tout le rectangle du
+   conteneur .brand, y compris les zones transparentes autour des lettres. Le pseudo-
+   élément couvre tout le conteneur (inset:0, position fixe) et c'est le dégradé lui-même
+   qui se déplace via background-position, pas l'élément - le masque reste donc toujours
+   correctement aligné sur le logo pendant le balayage. */
 .brand::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: -150%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(75deg, transparent 0%, rgba(255, 255, 255, 0.45) 50%, transparent 100%);
-  transform: skewX(-20deg);
+  inset: 0;
+  background: linear-gradient(75deg, transparent 42%, rgba(255, 255, 255, 0.9) 50%, transparent 58%);
+  background-size: 300% 100%;
+  background-position: 200% 0;
   animation: logo-shine 7s ease-in-out infinite;
   mix-blend-mode: overlay;
   pointer-events: none;
+  -webkit-mask-image: var(--logo-mask, none);
+  mask-image: var(--logo-mask, none);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
 }
 
 @keyframes logo-shine {
-  0%, 15% { left: -150%; }
-  35%, 100% { left: 150%; }
+  0%, 15% { background-position: 200% 0; }
+  35%, 100% { background-position: -100% 0; }
 }
 
 /* --- Tremblement léger juste avant la fermeture (façon "le portail s'ouvre") --- */

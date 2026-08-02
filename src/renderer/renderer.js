@@ -10,6 +10,7 @@
   const introSkip = document.getElementById('intro-skip');
 
   const brandLogo = document.getElementById('brand-logo');
+  const brandEl = document.querySelector('.brand');
   const playButton = document.getElementById('play-button');
   const statusDot = document.getElementById('status-dot');
   const statusText = document.getElementById('status-text');
@@ -222,6 +223,9 @@
     document.body.setAttribute('data-theme', t);
     themeSwatches.forEach((sw) => sw.classList.toggle('active', sw.dataset.theme === t));
     brandLogo.src = `${assetsBase}/images/${THEME_LOGOS[t] || THEME_LOGOS.gold}`;
+    // Le reflet du logo (.brand::after) est masqué à cette même image pour rester
+    // cantonné aux lettres visibles - doit rester synchronisé à chaque changement de thème.
+    brandEl.style.setProperty('--logo-mask', `url(${brandLogo.src})`);
   }
 
   // Utilisé uniquement pour un changement de thème déclenché par l'utilisateur (clic sur
@@ -407,7 +411,7 @@
   copyServerBtn.addEventListener('click', async () => {
     if (!serverAddress) return;
     try {
-      await navigator.clipboard.writeText(serverAddress);
+      await navigator.clipboard.writeText(`connect ${serverAddress}`);
       copyServerBtn.textContent = '✅';
       copyServerBtn.classList.add('copied');
       setTimeout(() => {
@@ -695,7 +699,13 @@
 
     setParticlesLowPower = (enabled) => {
       lowPower = enabled;
-      if (enabled) particles = [];
+      if (enabled) {
+        particles = [];
+      } else {
+        // Repeuple la poussière magique ambiante en sortant du mode faible consommation :
+        // sans ça, le tableau reste vide indéfiniment (rien ne le repeuple tout seul).
+        init();
+      }
     };
   }
 
