@@ -1,7 +1,7 @@
 {
   "name": "lunaria-launcher",
   "productName": "Lunaria Launcher",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Launcher officiel du serveur FiveM Lunaria",
   "main": "dist/main/main.js",
   "author": "Lunaria",

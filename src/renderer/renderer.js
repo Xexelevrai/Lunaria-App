@@ -182,16 +182,18 @@
     quizBestScoreEl.textContent = best ? `Meilleur score : ${best} / ${QUIZ_LENGTH}` : '';
   }
 
-  // L'anneau se remplit selon le score (bonnes réponses / total), pas juste la
-  // progression - il reste donc partiellement vide si des réponses sont fausses.
-  function updateQuizRing() {
-    const ratio = quizQuestions.length ? quizScore / quizQuestions.length : 0;
+  // L'anneau suit la progression dans le quiz (questions répondues / total), en phase
+  // avec le texte "Question X / Y" : il est donc plein une fois la dernière question
+  // répondue, peu importe le score.
+  function updateQuizRing(answeredCount) {
+    const ratio = quizQuestions.length ? answeredCount / quizQuestions.length : 0;
     quizRuneProgressFill.style.strokeDashoffset = String(QUIZ_RING_CIRCUMFERENCE * (1 - ratio));
   }
 
   function renderQuizQuestion() {
     const current = quizQuestions[quizIndex];
     quizProgressText.textContent = `Question ${quizIndex + 1} / ${quizQuestions.length}`;
+    updateQuizRing(quizIndex);
     quizQuestionText.textContent = current.q;
     // Redémarre l'animation d'apparition à chaque question : la classe doit être retirée
     // puis un reflow forcé avant de la remettre, sinon le navigateur fusionne les deux
@@ -231,7 +233,7 @@
       quizWrongSound.currentTime = 0;
       quizWrongSound.play().catch(() => {});
     }
-    updateQuizRing();
+    updateQuizRing(quizIndex + 1);
     quizExplanationEl.textContent = current.exp;
     quizExplanationEl.classList.remove('hidden');
 
@@ -299,7 +301,7 @@
     quizIndex = 0;
     quizScore = 0;
     quizJokerUsed = false;
-    quizRuneProgressFill.style.strokeDashoffset = String(QUIZ_RING_CIRCUMFERENCE);
+    updateQuizRing(0);
     quizStartEl.classList.add('hidden');
     quizResultEl.classList.add('hidden');
     quizQuestionEl.classList.remove('hidden');
@@ -677,24 +679,29 @@
   const DRAW_BLOCKED_SELECTOR =
     'button, input, a, .server-card, .settings-row, .quiz-card, .modal-box, .theme-swatch, .display-mode-btn, .social-button';
   let isDrawingActive = false;
+  let lastDrawPoint = null;
 
   document.addEventListener('mousedown', (e) => {
     if (e.button !== 0) return;
     if (e.target.closest(DRAW_BLOCKED_SELECTOR)) return;
     isDrawingActive = true;
-    spawnDraw(e.clientX, e.clientY);
+    lastDrawPoint = { x: e.clientX, y: e.clientY };
+    spawnDraw(e.clientX, e.clientY, e.clientX, e.clientY);
   });
 
   document.addEventListener('mousemove', (e) => {
     if (!isDrawingActive) return;
-    spawnDraw(e.clientX, e.clientY);
+    spawnDraw(lastDrawPoint.x, lastDrawPoint.y, e.clientX, e.clientY);
+    lastDrawPoint = { x: e.clientX, y: e.clientY };
   });
 
   document.addEventListener('mouseup', () => {
     isDrawingActive = false;
+    lastDrawPoint = null;
   });
   window.addEventListener('blur', () => {
     isDrawingActive = false;
+    lastDrawPoint = null;
   });
 
   document.addEventListener('keydown', (e) => {
@@ -951,18 +958,19 @@
       };
     }
 
-    // Tracé magique au clic maintenu : particules plus grosses/lumineuses que la traînée
-    // passive, quasi immobiles (juste une légère dérive), avec un léger flou lumineux.
-    function makeDrawParticle(x, y) {
+    // Tracé magique au clic maintenu : segment de ligne continu entre deux positions
+    // successives du curseur (plutôt que des points isolés), qui s'estompe un peu plus
+    // lentement que la traînée passive au survol.
+    function makeDrawSegment(x1, y1, x2, y2) {
       return {
-        draw: true,
-        x: x + (Math.random() - 0.5) * 3,
-        y: y + (Math.random() - 0.5) * 3,
-        vx: (Math.random() - 0.5) * 0.15,
-        vy: (Math.random() - 0.5) * 0.15,
-        r: 1.5 + Math.random() * 1.8,
-        alpha: 0.85,
-        decay: 0.012 + Math.random() * 0.01,
+        segment: true,
+        x1,
+        y1,
+        x2,
+        y2,
+        width: 2.2 + Math.random() * 1,
+        alpha: 0.9,
+        decay: 0.011 + Math.random() * 0.006,
         hue: Math.random() > 0.5 ? '241,207,127' : '233,224,242',
       };
     }
@@ -976,7 +984,25 @@
       for (let i = particles.length - 1; i >= 0; i -= 1) {
         const p = particles[i];
 
-        if (p.burst || p.trail || p.draw) {
+        if (p.segment) {
+          p.alpha -= p.decay;
+          if (p.alpha <= 0) {
+            particles.splice(i, 1);
+            continue;
+          }
+          ctx.beginPath();
+          ctx.moveTo(p.x1, p.y1);
+          ctx.lineTo(p.x2, p.y2);
+          ctx.lineCap = 'round';
+          ctx.lineWidth = p.width;
+          ctx.strokeStyle = `rgba(${p.hue},${p.alpha})`;
+          ctx.shadowBlur = 6;
+          ctx.shadowColor = `rgba(${p.hue},${p.alpha})`;
+          ctx.stroke();
+          continue;
+        }
+
+        if (p.burst || p.trail) {
           p.x += p.vx;
           p.y += p.vy;
           p.vx *= 0.95;
@@ -986,15 +1012,12 @@
             particles.splice(i, 1);
             continue;
           }
-          const baseAlpha = p.trail ? 0.55 : p.draw ? 0.85 : 1;
+          const baseAlpha = p.trail ? 0.55 : 1;
           ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r * (p.trail || p.draw ? p.alpha / baseAlpha : 1), 0, Math.PI * 2);
+          ctx.arc(p.x, p.y, p.r * (p.trail ? p.alpha / baseAlpha : 1), 0, Math.PI * 2);
           ctx.fillStyle = `rgba(${p.hue},${p.alpha})`;
           if (p.burst) {
             ctx.shadowBlur = 6;
-            ctx.shadowColor = `rgba(${p.hue},${p.alpha})`;
-          } else if (p.draw) {
-            ctx.shadowBlur = 5;
             ctx.shadowColor = `rgba(${p.hue},${p.alpha})`;
           } else {
             ctx.shadowBlur = 0;
@@ -1039,9 +1062,9 @@
       particles.push(makeTrailParticle(x, y));
     };
 
-    spawnDraw = (x, y) => {
+    spawnDraw = (x1, y1, x2, y2) => {
       if (lowPower) return;
-      particles.push(makeDrawParticle(x, y));
+      particles.push(makeDrawSegment(x1, y1, x2, y2));
     };
 
     setParticlesLowPower = (enabled) => {
