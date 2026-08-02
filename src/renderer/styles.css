@@ -430,6 +430,8 @@ html, body {
 
 /* --- Buttons --- */
 .btn {
+  position: relative;
+  overflow: hidden;
   cursor: pointer;
   border: none;
   border-radius: var(--radius);
@@ -441,10 +443,25 @@ html, body {
   transform: scale(0.97);
 }
 
+/* Halo qui suit le curseur, commun à tous les boutons (--mx/--my mis à jour en JS par
+   délégation d'événement sur mousemove, voir renderer.js). */
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle 130px at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.32), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+.btn:hover::after {
+  opacity: 1;
+}
+
 .btn-play {
-  position: relative;
   z-index: 1;
-  overflow: hidden;
   padding: clamp(16px, 2.4vmin, 24px) clamp(56px, 9vmin, 104px);
   font-size: clamp(18px, 2.6vmin, 27px);
   font-weight: 700;
@@ -458,22 +475,6 @@ html, body {
 .btn-play:hover {
   box-shadow: 0 0 44px rgba(212, 175, 90, 0.6);
   transform: translateY(-2px);
-}
-
-/* Halo qui suit le curseur (--mx/--my mis à jour en JS au mousemove) */
-.btn-play::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle 130px at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.32), transparent 70%);
-  opacity: 0;
-  transition: opacity 0.25s ease;
-  pointer-events: none;
-  mix-blend-mode: overlay;
-}
-
-.btn-play:hover::after {
-  opacity: 1;
 }
 
 .btn-play:disabled {
@@ -1095,7 +1096,7 @@ body.low-power .particles {
   display: none;
 }
 
-body.low-power .btn-play::after {
+body.low-power .btn::after {
   display: none;
 }
 

@@ -558,10 +558,14 @@
 
   autoconnectCancelBtn.addEventListener('click', cancelAutoConnect);
 
-  playButton.addEventListener('mousemove', (e) => {
-    const rect = playButton.getBoundingClientRect();
-    playButton.style.setProperty('--mx', `${((e.clientX - rect.left) / rect.width) * 100}%`);
-    playButton.style.setProperty('--my', `${((e.clientY - rect.top) / rect.height) * 100}%`);
+  // Halo qui suit le curseur, délégué sur tous les boutons (.btn) plutôt que branché
+  // un par un - s'applique automatiquement à JOUER, Commencer, et tous les autres.
+  document.addEventListener('mousemove', (e) => {
+    const btn = e.target.closest('.btn');
+    if (!btn) return;
+    const rect = btn.getBoundingClientRect();
+    btn.style.setProperty('--mx', `${((e.clientX - rect.left) / rect.width) * 100}%`);
+    btn.style.setProperty('--my', `${((e.clientY - rect.top) / rect.height) * 100}%`);
   });
 
   // Traînée de particules qui suit le curseur (limitée au menu principal, avec un
