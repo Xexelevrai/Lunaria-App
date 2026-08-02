@@ -2,6 +2,8 @@
   const viewIntro = document.getElementById('view-intro');
   const viewMain = document.getElementById('view-main');
   const viewSettings = document.getElementById('view-settings');
+  const viewQuiz = document.getElementById('view-quiz');
+  const ALL_VIEWS = [viewIntro, viewMain, viewSettings, viewQuiz];
 
   const introVideo = document.getElementById('intro-video');
   const introOverlay = document.getElementById('intro-overlay');
@@ -43,6 +45,22 @@
   const toggleLowPower = document.getElementById('toggle-low-power');
   const statusSkeleton = document.getElementById('status-skeleton');
 
+  const openQuizBtn = document.getElementById('open-quiz');
+  const closeQuizBtn = document.getElementById('close-quiz');
+  const quizStartEl = document.getElementById('quiz-start');
+  const quizQuestionEl = document.getElementById('quiz-question');
+  const quizResultEl = document.getElementById('quiz-result');
+  const quizBestScoreEl = document.getElementById('quiz-best-score');
+  const quizStartBtn = document.getElementById('quiz-start-btn');
+  const quizProgressText = document.getElementById('quiz-progress-text');
+  const quizProgressFill = document.getElementById('quiz-progress-fill');
+  const quizQuestionText = document.getElementById('quiz-question-text');
+  const quizAnswersEl = document.getElementById('quiz-answers');
+  const quizResultTitle = document.getElementById('quiz-result-title');
+  const quizResultScore = document.getElementById('quiz-result-score');
+  const quizReplayBtn = document.getElementById('quiz-replay-btn');
+  const quizBackBtn = document.getElementById('quiz-back-btn');
+
   const displayModeButtons = document.querySelectorAll('.display-mode-btn');
 
   const autoconnectBanner = document.getElementById('autoconnect-banner');
@@ -79,6 +97,132 @@
     gold: 'logo.png',
     silver: 'logo2.png',
   };
+
+  // Banque de questions du quiz, tirée du lore "L'Histoire de Brumelune". `correct` est
+  // l'index (dans `answers`) de la bonne réponse ; les réponses sont mélangées à chaque
+  // partie dans startQuiz(), donc l'ordre ci-dessous n'a pas d'importance.
+  const QUIZ_QUESTIONS = [
+    { q: "Comment s'appelle l'enchantement qui rend Brumelune invisible aux non-mages ?", answers: ['Le Sceau', 'Le Voile', 'La Brume', "L'Écrin"], correct: 1 },
+    { q: 'Que retient le Voile, en plus de cacher les sorciers ?', answers: ['Rien d\'autre', 'Des créatures marines', 'Un océan de magie brute, informe et affamée', 'Les non-mages'], correct: 2 },
+    { q: "Qui a fondé l'Académie Lunaria ?", answers: ['Grim Blackwood', 'Merlin', 'Makarov', 'Le Conseil'], correct: 1 },
+    { q: 'Combien de disciples Merlin a-t-il réunis pour bâtir l\'école ?', answers: ['3', '4', '5', '7'], correct: 2 },
+    { q: 'Combien de ces disciples ont fondé une maison ?', answers: ['3', '4', '5', '2'], correct: 1 },
+    { q: 'Quelle fondatrice a sauvé un phénix des flammes noires ?', answers: ['Lyra Aérion', 'Maëve Arden', 'Isandro Tanora', 'Lyra Hydras'], correct: 1 },
+    { q: 'Quelle créature est associée à la maison Hydras ?', answers: ['Un dragon', 'Une hydre', 'Un serpent', 'Un kraken'], correct: 1 },
+    { q: "Comment Aldéric Hydras a-t-il vaincu l'hydre ?", answers: ['Par la force', 'En la piégeant', 'En parlant à chaque tête et en jouant sur leurs rivalités', "Grâce à un sortilège de Merlin"], correct: 2 },
+    { q: 'Quelle fondatrice a appris le langage des hippogriffes ?', answers: ['Maëve Arden', 'Lyra Aérion', 'Isandro Tanora', 'Grim Blackwood'], correct: 1 },
+    { q: 'Quel grand sortilège Lyra Aérion a-t-elle créé ?', answers: ['Le sortilège du phénix', 'Le sortilège de brume qui cache l\'île', 'Le pacte de l\'hydre', 'Le Gel'], correct: 1 },
+    { q: 'Quelle créature accompagne Isandro Tanora ?', answers: ['Un hibou', 'Un phénix', 'Un tanuki (esprit métamorphe)', 'Un hippogriffe'], correct: 2 },
+    { q: "Combien d'années Isandro a-t-il passé à réparer les fondations de l'école ?", answers: ['1 an', '3 ans', '7 ans', '10 ans'], correct: 2 },
+    { q: 'Quelle maison honore "ceux qui restent, travaillent et rient malgré tout" ?', answers: ['Arden', 'Hydras', 'Aérion', 'Tanora'], correct: 3 },
+    { q: 'Quelle maison honore "ceux qui avancent quand tout brûle" ?', answers: ['Arden', 'Hydras', 'Aérion', 'Tanora'], correct: 0 },
+    { q: 'Comment était surnommé Grim Blackwood avant que son nom ne soit révélé ?', answers: ['Le Traître', 'Le Cinquième Disciple', "L'Ombre", 'Le Voilé'], correct: 1 },
+    { q: 'Quelle question obsédait Grim Blackwood ?', answers: ["Comment vaincre l'hydre ?", 'Pourquoi nous cachons-nous ?', 'Qui est le plus doué ?', 'Où est le Voile ?'], correct: 1 },
+    { q: 'Comment s\'appelle la bataille finale entre Grim et les quatre fondateurs ?', answers: ['La Bataille de Brumelune', 'La Bataille des Cendres', 'Le Siège du Voile', 'La Nuit Noire'], correct: 1 },
+    { q: "Qu'est-il arrivé aux quatre fondateurs lors de cette bataille ?", answers: ['Ils ont banni Grim', 'Ils sont morts au combat, ensemble', 'Ils ont fui', 'Ils ont scellé le Voile'], correct: 1 },
+    { q: 'Qu\'est devenu Merlin après la mort de ses disciples ?', answers: ['Il a fondé une nouvelle école', 'Il a marché seul vers la forêt et n\'est jamais revenu', 'Il a emprisonné Grim', 'Il est resté diriger l\'école'], correct: 1 },
+    { q: "Quelle école sœur de Lunaria a été fondée sur le continent ?", answers: ['Voilenoire', 'Arcanhem', 'Brumelune', 'Tanoria'], correct: 1 },
+    { q: "Qu'est-il arrivé à Arcanhem il y a cent ans ?", answers: ['Elle a brûlé', 'Elle a été dévorée par la brume noire, élèves compris', 'Elle a fermé faute d\'élèves', 'Elle a fusionné avec Lunaria'], correct: 1 },
+    { q: 'Comment s\'appelle le cercle de mages noirs fondé par Grim ?', answers: ['Les Ombres', 'Les Voilés', 'Les Cendres', 'Le Gel'], correct: 1 },
+    { q: 'Quelle stratégie les Voilés ont-ils utilisée contre Lunaria ?', answers: ['Attaquer les élèves', 'Assassiner/corrompre les professeurs un à un', 'Détruire le Voile directement', 'Négocier avec le gouvernement'], correct: 1 },
+    { q: "Comment s'appelle la période de cent ans sans écoles de magie ?", answers: ['Le Grand Silence', 'Le Siècle Noir', 'L\'Âge du Voile', 'La Grande Fermeture'], correct: 1 },
+    { q: 'Comment s\'appelle la loi interdisant toute pratique magique non encadrée durant cette période ?', answers: ['Le Sceau', 'Le Gel', 'L\'Interdit', 'Le Voile Noir'], correct: 1 },
+    { q: 'Qui est le nouveau directeur chargé de rouvrir Lunaria ?', answers: ['Merlin', 'Grim', 'Makarov', 'Aldéric'], correct: 2 },
+    { q: 'Quel âge minimum faut-il pour intégrer la nouvelle Lunaria ?', answers: ['16 ans', '18 ans', '21 ans', 'Aucune limite'], correct: 1 },
+    { q: 'Que cherche "quelqu\'un" dans la brume, selon les rumeurs ?', answers: ['Le corps de Merlin', 'Les quatre reliques des fondateurs qui maintiennent le Voile', "L'entrée d'Arcanhem", 'Le tanuki'], correct: 1 },
+  ];
+
+  const QUIZ_LENGTH = 10;
+  const QUIZ_BEST_SCORE_KEY = 'lunaria-quiz-best';
+  let quizQuestions = [];
+  let quizIndex = 0;
+  let quizScore = 0;
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function updateQuizBestScoreDisplay() {
+    const best = localStorage.getItem(QUIZ_BEST_SCORE_KEY);
+    quizBestScoreEl.textContent = best ? `Meilleur score : ${best} / ${QUIZ_LENGTH}` : '';
+  }
+
+  function renderQuizQuestion() {
+    const current = quizQuestions[quizIndex];
+    quizProgressText.textContent = `Question ${quizIndex + 1} / ${quizQuestions.length}`;
+    quizProgressFill.style.width = `${(quizIndex / quizQuestions.length) * 100}%`;
+    quizQuestionText.textContent = current.q;
+    quizAnswersEl.innerHTML = '';
+    current.answers.forEach((answer, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'btn quiz-answer-btn';
+      btn.textContent = answer;
+      btn.addEventListener('click', () => handleQuizAnswer(i, btn));
+      quizAnswersEl.appendChild(btn);
+    });
+  }
+
+  function handleQuizAnswer(index, btn) {
+    const current = quizQuestions[quizIndex];
+    const buttons = quizAnswersEl.querySelectorAll('.quiz-answer-btn');
+    buttons.forEach((b) => { b.disabled = true; });
+    if (index === current.correctIndex) {
+      btn.classList.add('correct');
+      quizScore += 1;
+    } else {
+      btn.classList.add('incorrect');
+      buttons[current.correctIndex].classList.add('correct');
+    }
+    setTimeout(() => {
+      quizIndex += 1;
+      if (quizIndex < quizQuestions.length) {
+        renderQuizQuestion();
+      } else {
+        showQuizResult();
+      }
+    }, 1100);
+  }
+
+  function showQuizResult() {
+    quizQuestionEl.classList.add('hidden');
+    quizResultEl.classList.remove('hidden');
+    quizProgressFill.style.width = '100%';
+    const total = quizQuestions.length;
+    quizResultScore.textContent = `${quizScore} / ${total} bonnes réponses`;
+
+    let title;
+    if (quizScore === total) title = '✦ Score parfait ! Un vrai sorcier de Lunaria. ✦';
+    else if (quizScore >= total * 0.7) title = 'Bien joué !';
+    else if (quizScore >= total * 0.4) title = 'Pas mal, révise un peu le lore !';
+    else title = "Retourne lire l'histoire de Brumelune...";
+    quizResultTitle.textContent = title;
+
+    const best = Number(localStorage.getItem(QUIZ_BEST_SCORE_KEY) || 0);
+    if (quizScore > best) {
+      localStorage.setItem(QUIZ_BEST_SCORE_KEY, String(quizScore));
+    }
+    updateQuizBestScoreDisplay();
+  }
+
+  function startQuiz() {
+    const pool = shuffle(QUIZ_QUESTIONS).slice(0, QUIZ_LENGTH);
+    quizQuestions = pool.map((item) => {
+      const correctText = item.answers[item.correct];
+      const shuffledAnswers = shuffle(item.answers);
+      return { q: item.q, answers: shuffledAnswers, correctIndex: shuffledAnswers.indexOf(correctText) };
+    });
+    quizIndex = 0;
+    quizScore = 0;
+    quizStartEl.classList.add('hidden');
+    quizResultEl.classList.add('hidden');
+    quizQuestionEl.classList.remove('hidden');
+    renderQuizQuestion();
+  }
 
   // Les réglages de la page Paramètres (hors chemin FiveM et taille d'écran, qui
   // s'appliquent immédiatement) ne sont persistés qu'au clic sur "Sauvegarder" : les
@@ -188,7 +332,7 @@
   let mainEntranceDone = false;
 
   function activateView(view) {
-    [viewIntro, viewMain, viewSettings].forEach((v) => v.classList.remove('active', 'leaving'));
+    ALL_VIEWS.forEach((v) => v.classList.remove('active', 'leaving'));
     view.classList.add('active');
     if (view === viewMain && !mainEntranceDone) {
       mainEntranceDone = true;
@@ -203,15 +347,16 @@
     maybeStartMusic();
   }
 
-  // Fondu enchaîné (fondu de sortie court, puis l'entrée classique view-in) uniquement
-  // entre menu principal <-> Paramètres, les deux vues qu'on traverse en va-et-vient
-  // pendant l'usage normal. L'intro garde son comportement instantané d'origine.
-  function showView(view) {
-    const current = [viewIntro, viewMain, viewSettings].find((v) => v.classList.contains('active') && v !== view);
-    const isMainSettingsSwap =
-      current && (current === viewMain || current === viewSettings) && (view === viewMain || view === viewSettings);
+  // Fondu enchaîné (fondu de sortie court, puis l'entrée classique view-in) entre les
+  // vues qu'on traverse en va-et-vient pendant l'usage normal (menu, Paramètres, Quiz).
+  // L'intro garde son comportement instantané d'origine.
+  const FADEABLE_VIEWS = [viewMain, viewSettings, viewQuiz];
 
-    if (isMainSettingsSwap) {
+  function showView(view) {
+    const current = ALL_VIEWS.find((v) => v.classList.contains('active') && v !== view);
+    const isFadeSwap = current && FADEABLE_VIEWS.includes(current) && FADEABLE_VIEWS.includes(view);
+
+    if (isFadeSwap) {
       current.classList.add('leaving');
       setTimeout(() => activateView(view), 180);
     } else {
@@ -304,6 +449,18 @@
     populateSettingsUI();
     showView(viewSettings);
   });
+
+  openQuizBtn.addEventListener('click', () => {
+    quizStartEl.classList.remove('hidden');
+    quizQuestionEl.classList.add('hidden');
+    quizResultEl.classList.add('hidden');
+    updateQuizBestScoreDisplay();
+    showView(viewQuiz);
+  });
+  closeQuizBtn.addEventListener('click', () => showView(viewMain));
+  quizStartBtn.addEventListener('click', startQuiz);
+  quizReplayBtn.addEventListener('click', startQuiz);
+  quizBackBtn.addEventListener('click', () => showView(viewMain));
   closeSettingsBtn.addEventListener('click', () => {
     // Reviens à l'état confirmé si on quitte sans sauvegarder (ex : thème/mode faible
     // consommation prévisualisés).
