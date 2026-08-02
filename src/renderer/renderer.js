@@ -725,6 +725,14 @@
     btn.style.setProperty('--my', `${((e.clientY - rect.top) / rect.height) * 100}%`);
   });
 
+  // Position de la grande lueur du thème Sombre (.dark-cursor-glow), qui suit la souris
+  // comme une torche. Posé sur <html> pour rester lisible depuis n'importe quel élément ;
+  // ne coûte rien sur les autres thèmes puisque ce calque reste display:none.
+  document.addEventListener('mousemove', (e) => {
+    document.documentElement.style.setProperty('--cursor-x', `${e.clientX}px`);
+    document.documentElement.style.setProperty('--cursor-y', `${e.clientY}px`);
+  });
+
   // Traînée de particules qui suit le curseur (limitée au menu principal, avec un
   // throttle pour éviter de spawn une particule à chaque pixel de mousemove).
   let lastTrailTime = 0;

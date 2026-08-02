@@ -49,7 +49,7 @@ body[data-theme='dark'] {
   --border-gold: rgba(150, 143, 135, 0.28);
   --accent-violet: #2e2b28;
   --blob-a: rgba(70, 66, 61, 0.32);
-  --blob-b: rgba(150, 145, 138, 0.14);
+  --blob-b: rgba(150, 145, 138, 0.045);
   --glow-rgb: 190, 184, 176;
   --online: #6ee7a8;
   --offline: #e06a6a;
@@ -101,6 +101,17 @@ html, body {
   to { opacity: 0.75; }
 }
 
+/* Thème sombre : le ciel étoilé reste à peine visible, pour laisser la lueur de la
+   souris être la vraie source de lumière du décor plutôt qu'un fond déjà éclairé. */
+body[data-theme='dark'] .stars {
+  animation-name: twinkle-dim, drift-stars;
+}
+
+@keyframes twinkle-dim {
+  from { opacity: 0.08; }
+  to { opacity: 0.16; }
+}
+
 /* Dérive très lente du fond étoilé - subtile, pas un vrai parallax, juste pour éviter
    un fond totalement figé derrière la poussière magique déjà animée du canvas. */
 @keyframes drift-stars {
@@ -131,12 +142,20 @@ body[data-theme='dark'] .dark-decor {
   pointer-events: none;
 }
 
+.dark-cursor-glow,
 .dark-vignette,
 .dark-fog,
 .dark-flicker,
 .dark-grain {
   position: absolute;
   inset: 0;
+}
+
+/* Grande lueur qui suit la souris, comme une torche éclairant le fond très sombre
+   autour du curseur - --cursor-x/--cursor-y sont mis à jour en JS sur <html>, avec un
+   repli au centre tant qu'aucun mousemove n'a encore eu lieu. */
+.dark-cursor-glow {
+  background: radial-gradient(circle 420px at var(--cursor-x, 50%) var(--cursor-y, 50%), rgba(var(--glow-rgb), 0.16), transparent 68%);
 }
 
 /* Assombrit les bords pour resserrer le regard vers le centre, façon tunnel de
