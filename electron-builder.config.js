@@ -49,5 +49,9 @@ module.exports = {
     provider: 'github',
     owner: 'Xexelevrai',
     repo: 'Lunaria-App',
+    // 'release' au lieu du défaut 'draft' : publie directement la release au lieu de la
+    // laisser en brouillon (qui demandait auparavant un clic manuel, ou un appel API à
+    // la main). S'applique aussi bien à un `npm run release` local qu'à GitHub Actions.
+    releaseType: 'release',
   },
 };
