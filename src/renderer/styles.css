@@ -1059,6 +1059,7 @@ body.low-power .dark-grain {
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
 }
 
 .modal-box {
@@ -1086,6 +1087,7 @@ body.low-power .dark-grain {
 
 .modal-actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
   margin-top: 20px;

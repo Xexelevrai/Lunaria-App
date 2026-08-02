@@ -33,6 +33,10 @@
   const modal = document.getElementById('modal-not-installed');
   const modalCancel = document.getElementById('modal-cancel');
   const modalDownload = document.getElementById('modal-download');
+  const unsavedSettingsModal = document.getElementById('modal-unsaved-settings');
+  const unsavedDiscardBtn = document.getElementById('unsaved-discard-btn');
+  const unsavedCancelBtn = document.getElementById('unsaved-cancel-btn');
+  const unsavedSaveBtn = document.getElementById('unsaved-save-btn');
 
   const saveSettingsBtn = document.getElementById('save-settings');
   const settingsSaveStatus = document.getElementById('settings-save-status');
@@ -661,12 +665,49 @@
   });
   quizJokerBtn.addEventListener('click', handleQuizJoker);
   quizNextBtn.addEventListener('click', advanceQuiz);
-  closeSettingsBtn.addEventListener('click', () => {
-    // Reviens à l'état confirmé si on quitte sans sauvegarder (ex : thème/mode faible
-    // consommation prévisualisés).
+  // Reviens à l'état confirmé si on quitte sans sauvegarder (ex : thème/mode faible
+  // consommation prévisualisés).
+  function leaveSettingsView() {
     applyTheme(confirmedSettings.theme || 'gold');
     applyLowPower(confirmedSettings.lowPowerMode);
     showView(viewMain);
+  }
+
+  function hasUnsavedSettingsChanges() {
+    return (
+      draftSettings.introEnabled !== confirmedSettings.introEnabled ||
+      draftSettings.autoLaunch !== confirmedSettings.autoLaunch ||
+      draftSettings.autoConnect !== confirmedSettings.autoConnect ||
+      draftSettings.theme !== confirmedSettings.theme ||
+      draftSettings.lowPowerMode !== confirmedSettings.lowPowerMode
+    );
+  }
+
+  // Point d'entrée commun pour quitter Paramètres (bouton ← ou touche Échap) : demande
+  // confirmation seulement s'il reste des modifications non sauvegardées.
+  function attemptLeaveSettings() {
+    if (hasUnsavedSettingsChanges()) {
+      unsavedSettingsModal.classList.remove('hidden');
+    } else {
+      leaveSettingsView();
+    }
+  }
+
+  closeSettingsBtn.addEventListener('click', attemptLeaveSettings);
+
+  unsavedDiscardBtn.addEventListener('click', () => {
+    unsavedSettingsModal.classList.add('hidden');
+    leaveSettingsView();
+  });
+
+  unsavedCancelBtn.addEventListener('click', () => {
+    unsavedSettingsModal.classList.add('hidden');
+  });
+
+  unsavedSaveBtn.addEventListener('click', async () => {
+    unsavedSettingsModal.classList.add('hidden');
+    await saveSettings();
+    leaveSettingsView();
   });
 
   replayIntroBtn.addEventListener('click', () => {
@@ -783,6 +824,20 @@
     if (!whatsNewModal.classList.contains('hidden')) return;
     if (playButton.disabled) return;
     playButton.click();
+  });
+
+  // Échap : ferme la pop-up de confirmation si elle est ouverte (comme "Annuler"), sinon
+  // agit comme le bouton ← pour quitter Paramètres (avec la même vérification des
+  // modifications non enregistrées).
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (!unsavedSettingsModal.classList.contains('hidden')) {
+      unsavedSettingsModal.classList.add('hidden');
+      return;
+    }
+    if (viewSettings.classList.contains('active')) {
+      attemptLeaveSettings();
+    }
   });
 
   playButton.addEventListener('click', async () => {
@@ -911,7 +966,7 @@
     applyLowPower(draftSettings.lowPowerMode); // aperçu visuel immédiat, persisté seulement au Save
   });
 
-  saveSettingsBtn.addEventListener('click', async () => {
+  async function saveSettings() {
     saveSettingsBtn.disabled = true;
     const previousLabel = saveSettingsBtn.textContent;
     saveSettingsBtn.textContent = 'Enregistrement...';
@@ -932,7 +987,9 @@
       saveSettingsBtn.disabled = false;
       saveSettingsBtn.textContent = previousLabel;
     }
-  });
+  }
+
+  saveSettingsBtn.addEventListener('click', saveSettings);
 
   chooseFivemPathBtn.addEventListener('click', async () => {
     const newPath = await window.lunaria.chooseFiveMPath();
