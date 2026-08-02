@@ -1148,6 +1148,9 @@ body.low-power .settings-entrance .settings-row {
 }
 
 .quiz-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin-bottom: 20px;
 }
 
