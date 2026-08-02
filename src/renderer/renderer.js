@@ -60,6 +60,11 @@
   const quizResultScore = document.getElementById('quiz-result-score');
   const quizReplayBtn = document.getElementById('quiz-replay-btn');
   const quizBackBtn = document.getElementById('quiz-back-btn');
+  const quizExplanationEl = document.getElementById('quiz-explanation');
+  const quizJokerBtn = document.getElementById('quiz-joker-btn');
+  const quizRuneProgressFill = document.getElementById('quiz-rune-progress-fill');
+  const quizCorrectSound = document.getElementById('quiz-correct-sound');
+  const quizWrongSound = document.getElementById('quiz-wrong-sound');
 
   const displayModeButtons = document.querySelectorAll('.display-mode-btn');
 
@@ -101,42 +106,46 @@
   // Banque de questions du quiz, tirée du lore "L'Histoire de Brumelune". `correct` est
   // l'index (dans `answers`) de la bonne réponse ; les réponses sont mélangées à chaque
   // partie dans startQuiz(), donc l'ordre ci-dessous n'a pas d'importance.
+  // `exp` : explication affichée après la réponse, reformulée uniquement à partir du
+  // texte du lore fourni par l'utilisateur ("L'Histoire de Brumelune") - rien d'inventé.
   const QUIZ_QUESTIONS = [
-    { q: "Comment s'appelle l'enchantement qui rend Brumelune invisible aux non-mages ?", answers: ['Le Sceau', 'Le Voile', 'La Brume', "L'Écrin"], correct: 1 },
-    { q: 'Que retient le Voile, en plus de cacher les sorciers ?', answers: ['Rien d\'autre', 'Des créatures marines', 'Un océan de magie brute, informe et affamée', 'Les non-mages'], correct: 2 },
-    { q: "Qui a fondé l'Académie Lunaria ?", answers: ['Grim Blackwood', 'Merlin', 'Makarov', 'Le Conseil'], correct: 1 },
-    { q: 'Combien de disciples Merlin a-t-il réunis pour bâtir l\'école ?', answers: ['3', '4', '5', '7'], correct: 2 },
-    { q: 'Combien de ces disciples ont fondé une maison ?', answers: ['3', '4', '5', '2'], correct: 1 },
-    { q: 'Quelle fondatrice a sauvé un phénix des flammes noires ?', answers: ['Lyra Aérion', 'Maëve Arden', 'Isandro Tanora', 'Lyra Hydras'], correct: 1 },
-    { q: 'Quelle créature est associée à la maison Hydras ?', answers: ['Un dragon', 'Une hydre', 'Un serpent', 'Un kraken'], correct: 1 },
-    { q: "Comment Aldéric Hydras a-t-il vaincu l'hydre ?", answers: ['Par la force', 'En la piégeant', 'En parlant à chaque tête et en jouant sur leurs rivalités', "Grâce à un sortilège de Merlin"], correct: 2 },
-    { q: 'Quelle fondatrice a appris le langage des hippogriffes ?', answers: ['Maëve Arden', 'Lyra Aérion', 'Isandro Tanora', 'Grim Blackwood'], correct: 1 },
-    { q: 'Quel grand sortilège Lyra Aérion a-t-elle créé ?', answers: ['Le sortilège du phénix', 'Le sortilège de brume qui cache l\'île', 'Le pacte de l\'hydre', 'Le Gel'], correct: 1 },
-    { q: 'Quelle créature accompagne Isandro Tanora ?', answers: ['Un hibou', 'Un phénix', 'Un tanuki (esprit métamorphe)', 'Un hippogriffe'], correct: 2 },
-    { q: "Combien d'années Isandro a-t-il passé à réparer les fondations de l'école ?", answers: ['1 an', '3 ans', '7 ans', '10 ans'], correct: 2 },
-    { q: 'Quelle maison honore "ceux qui restent, travaillent et rient malgré tout" ?', answers: ['Arden', 'Hydras', 'Aérion', 'Tanora'], correct: 3 },
-    { q: 'Quelle maison honore "ceux qui avancent quand tout brûle" ?', answers: ['Arden', 'Hydras', 'Aérion', 'Tanora'], correct: 0 },
-    { q: 'Comment était surnommé Grim Blackwood avant que son nom ne soit révélé ?', answers: ['Le Traître', 'Le Cinquième Disciple', "L'Ombre", 'Le Voilé'], correct: 1 },
-    { q: 'Quelle question obsédait Grim Blackwood ?', answers: ["Comment vaincre l'hydre ?", 'Pourquoi nous cachons-nous ?', 'Qui est le plus doué ?', 'Où est le Voile ?'], correct: 1 },
-    { q: 'Comment s\'appelle la bataille finale entre Grim et les quatre fondateurs ?', answers: ['La Bataille de Brumelune', 'La Bataille des Cendres', 'Le Siège du Voile', 'La Nuit Noire'], correct: 1 },
-    { q: "Qu'est-il arrivé aux quatre fondateurs lors de cette bataille ?", answers: ['Ils ont banni Grim', 'Ils sont morts au combat, ensemble', 'Ils ont fui', 'Ils ont scellé le Voile'], correct: 1 },
-    { q: 'Qu\'est devenu Merlin après la mort de ses disciples ?', answers: ['Il a fondé une nouvelle école', 'Il a marché seul vers la forêt et n\'est jamais revenu', 'Il a emprisonné Grim', 'Il est resté diriger l\'école'], correct: 1 },
-    { q: "Quelle école sœur de Lunaria a été fondée sur le continent ?", answers: ['Voilenoire', 'Arcanhem', 'Brumelune', 'Tanoria'], correct: 1 },
-    { q: "Qu'est-il arrivé à Arcanhem il y a cent ans ?", answers: ['Elle a brûlé', 'Elle a été dévorée par la brume noire, élèves compris', 'Elle a fermé faute d\'élèves', 'Elle a fusionné avec Lunaria'], correct: 1 },
-    { q: 'Comment s\'appelle le cercle de mages noirs fondé par Grim ?', answers: ['Les Ombres', 'Les Voilés', 'Les Cendres', 'Le Gel'], correct: 1 },
-    { q: 'Quelle stratégie les Voilés ont-ils utilisée contre Lunaria ?', answers: ['Attaquer les élèves', 'Assassiner/corrompre les professeurs un à un', 'Détruire le Voile directement', 'Négocier avec le gouvernement'], correct: 1 },
-    { q: "Comment s'appelle la période de cent ans sans écoles de magie ?", answers: ['Le Grand Silence', 'Le Siècle Noir', 'L\'Âge du Voile', 'La Grande Fermeture'], correct: 1 },
-    { q: 'Comment s\'appelle la loi interdisant toute pratique magique non encadrée durant cette période ?', answers: ['Le Sceau', 'Le Gel', 'L\'Interdit', 'Le Voile Noir'], correct: 1 },
-    { q: 'Qui est le nouveau directeur chargé de rouvrir Lunaria ?', answers: ['Merlin', 'Grim', 'Makarov', 'Aldéric'], correct: 2 },
-    { q: 'Quel âge minimum faut-il pour intégrer la nouvelle Lunaria ?', answers: ['16 ans', '18 ans', '21 ans', 'Aucune limite'], correct: 1 },
-    { q: 'Que cherche "quelqu\'un" dans la brume, selon les rumeurs ?', answers: ['Le corps de Merlin', 'Les quatre reliques des fondateurs qui maintiennent le Voile', "L'entrée d'Arcanhem", 'Le tanuki'], correct: 1 },
+    { q: "Comment s'appelle l'enchantement qui rend Brumelune invisible aux non-mages ?", answers: ['Le Sceau', 'Le Voile', 'La Brume', "L'Écrin"], correct: 1, exp: "Le Voile est l'enchantement millénaire qui rend l'île invisible aux non-mages et sert de frontière avec l'entre-monde de brume." },
+    { q: 'Que retient le Voile, en plus de cacher les sorciers ?', answers: ['Rien d\'autre', 'Des créatures marines', 'Un océan de magie brute, informe et affamée', 'Les non-mages'], correct: 2, exp: "Au-delà du Voile s'étend un entre-monde de brume, un océan de magie brute, informe et affamée, que le Voile retient." },
+    { q: "Qui a fondé l'Académie Lunaria ?", answers: ['Grim Blackwood', 'Merlin', 'Makarov', 'Le Conseil'], correct: 1, exp: "Merlin fonda l'Académie Lunaria sur l'île de Brumelune et en devint le premier directeur." },
+    { q: 'Combien de disciples Merlin a-t-il réunis pour bâtir l\'école ?', answers: ['3', '4', '5', '7'], correct: 2, exp: "Merlin fit appel à ses cinq plus brillants disciples pour bâtir l'Académie Lunaria." },
+    { q: 'Combien de ces disciples ont fondé une maison ?', answers: ['3', '4', '5', '2'], correct: 1, exp: "Quatre des cinq disciples fondèrent chacun une maison à son image ; le cinquième, Grim Blackwood, n'en fonda pas." },
+    { q: 'Quelle fondatrice a sauvé un phénix des flammes noires ?', answers: ['Lyra Aérion', 'Maëve Arden', 'Isandro Tanora', 'Lyra Hydras'], correct: 1, exp: "Maëve Arden entra dans les flammes noires pour sauver un phénix empoisonné par la magie noire, et le ramena à la vie à l'aube." },
+    { q: 'Quelle créature est associée à la maison Hydras ?', answers: ['Un dragon', 'Une hydre', 'Un serpent', 'Un kraken'], correct: 1, exp: "Une hydre ancestrale hantait les eaux de Brumelune ; Aldéric Hydras en fit la gardienne de ces eaux." },
+    { q: "Comment Aldéric Hydras a-t-il vaincu l'hydre ?", answers: ['Par la force', 'En la piégeant', 'En parlant à chaque tête et en jouant sur leurs rivalités', "Grâce à un sortilège de Merlin"], correct: 2, exp: "Aldéric découvrit que les douze têtes de l'hydre se disputaient et se jalousaient ; il joua sur leurs rivalités pour les diviser plutôt que de les combattre." },
+    { q: 'Quelle fondatrice a appris le langage des hippogriffes ?', answers: ['Maëve Arden', 'Lyra Aérion', 'Isandro Tanora', 'Grim Blackwood'], correct: 1, exp: "Lyra Aérion passa un hiver entier sur les falaises à observer et apprendre le langage des hippogriffes, fait de gestes et de regards." },
+    { q: 'Quel grand sortilège Lyra Aérion a-t-elle créé ?', answers: ['Le sortilège du phénix', 'Le sortilège de brume qui cache l\'île', 'Le pacte de l\'hydre', 'Le Gel'], correct: 1, exp: "C'est Lyra Aérion qui tissa le grand sortilège de brume cachant l'île aux non-mages, celui qui donna son nom à Brumelune." },
+    { q: 'Quelle créature accompagne Isandro Tanora ?', answers: ['Un hibou', 'Un phénix', 'Un tanuki (esprit métamorphe)', 'Un hippogriffe'], correct: 2, exp: "Isandro Tanora est accompagné d'un tanuki, un vieux esprit métamorphe, farceur et ancien." },
+    { q: "Combien d'années Isandro a-t-il passé à réparer les fondations de l'école ?", answers: ['1 an', '3 ans', '7 ans', '10 ans'], correct: 2, exp: "Isandro passa sept ans à souder la roche malade des fondations de l'école, sort après sort." },
+    { q: 'Quelle maison honore "ceux qui restent, travaillent et rient malgré tout" ?', answers: ['Arden', 'Hydras', 'Aérion', 'Tanora'], correct: 3, exp: "La devise de la maison Tanora honore ceux qui restent, travaillent et rient malgré tout, à l'image d'Isandro et de son tanuki." },
+    { q: 'Quelle maison honore "ceux qui avancent quand tout brûle" ?', answers: ['Arden', 'Hydras', 'Aérion', 'Tanora'], correct: 0, exp: "La devise de la maison Arden honore ceux qui avancent quand tout brûle, en écho au sauvetage du phénix par Maëve." },
+    { q: 'Comment était surnommé Grim Blackwood avant que son nom ne soit révélé ?', answers: ['Le Traître', 'Le Cinquième Disciple', "L'Ombre", 'Le Voilé'], correct: 1, exp: "Avant que les archives ne révèlent son nom, on l'appelait le Cinquième Disciple, ou celui dont Merlin ne dit jamais le nom." },
+    { q: 'Quelle question obsédait Grim Blackwood ?', answers: ["Comment vaincre l'hydre ?", 'Pourquoi nous cachons-nous ?', 'Qui est le plus doué ?', 'Où est le Voile ?'], correct: 1, exp: "Grim Blackwood portait sans cesse la question : « Pourquoi nous cachons-nous ? »" },
+    { q: 'Comment s\'appelle la bataille finale entre Grim et les quatre fondateurs ?', answers: ['La Bataille de Brumelune', 'La Bataille des Cendres', 'Le Siège du Voile', 'La Nuit Noire'], correct: 1, exp: "L'affrontement final entre Grim et les quatre fondateurs, sur le plateau dominant l'école, est appelé la Bataille des Cendres." },
+    { q: "Qu'est-il arrivé aux quatre fondateurs lors de cette bataille ?", answers: ['Ils ont banni Grim', 'Ils sont morts au combat, ensemble', 'Ils ont fui', 'Ils ont scellé le Voile'], correct: 1, exp: "Les quatre fondateurs remportèrent la bataille mais moururent au combat, ensemble, comme ils avaient bâti l'école." },
+    { q: 'Qu\'est devenu Merlin après la mort de ses disciples ?', answers: ['Il a fondé une nouvelle école', 'Il a marché seul vers la forêt et n\'est jamais revenu', 'Il a emprisonné Grim', 'Il est resté diriger l\'école'], correct: 1, exp: "Après la mort de ses disciples, Merlin confia l'école au Conseil puis marcha seul vers la forêt de Brumelune et ne revint jamais." },
+    { q: "Quelle école sœur de Lunaria a été fondée sur le continent ?", answers: ['Voilenoire', 'Arcanhem', 'Brumelune', 'Tanoria'], correct: 1, exp: "Arcanhem est l'école sœur de Lunaria, fondée sur le continent." },
+    { q: "Qu'est-il arrivé à Arcanhem il y a cent ans ?", answers: ['Elle a brûlé', 'Elle a été dévorée par la brume noire, élèves compris', 'Elle a fermé faute d\'élèves', 'Elle a fusionné avec Lunaria'], correct: 1, exp: "Il y a cent ans, la brume noire a déferlé sur Arcanhem et dévoré l'école entière : tours, archives et sept cents élèves endormis." },
+    { q: 'Comment s\'appelle le cercle de mages noirs fondé par Grim ?', answers: ['Les Ombres', 'Les Voilés', 'Les Cendres', 'Le Gel'], correct: 1, exp: "Grim fonda les Voilés, un cercle de mages noirs recrutés parmi les déçus et les humiliés." },
+    { q: 'Quelle stratégie les Voilés ont-ils utilisée contre Lunaria ?', answers: ['Attaquer les élèves', 'Assassiner/corrompre les professeurs un à un', 'Détruire le Voile directement', 'Négocier avec le gouvernement'], correct: 1, exp: "Les Voilés ont assassiné et corrompu les professeurs de Lunaria un à un, pour priver une génération de sorciers de tout maître." },
+    { q: "Comment s'appelle la période de cent ans sans écoles de magie ?", answers: ['Le Grand Silence', 'Le Siècle Noir', 'L\'Âge du Voile', 'La Grande Fermeture'], correct: 1, exp: "Décapitée par la perte de ses professeurs et de ses écoles, cette période de cent ans est appelée le Siècle Noir." },
+    { q: 'Comment s\'appelle la loi interdisant toute pratique magique non encadrée durant cette période ?', answers: ['Le Sceau', 'Le Gel', 'L\'Interdit', 'Le Voile Noir'], correct: 1, exp: "Le gouvernement de la magie imposa le Gel, l'interdiction de toute pratique magique non encadrée, durant le Siècle Noir." },
+    { q: 'Qui est le nouveau directeur chargé de rouvrir Lunaria ?', answers: ['Merlin', 'Grim', 'Makarov', 'Aldéric'], correct: 2, exp: "Le gouvernement de la magie a nommé Makarov nouveau directeur, chargé de rouvrir l'Académie Lunaria." },
+    { q: 'Quel âge minimum faut-il pour intégrer la nouvelle Lunaria ?', answers: ['16 ans', '18 ans', '21 ans', 'Aucune limite'], correct: 1, exp: "Les premiers admis de la nouvelle Lunaria sont des adultes de 18 ans et plus, qui ont grandi pendant le Gel sans formation." },
+    { q: 'Que cherche "quelqu\'un" dans la brume, selon les rumeurs ?', answers: ['Le corps de Merlin', 'Les quatre reliques des fondateurs qui maintiennent le Voile', "L'entrée d'Arcanhem", 'Le tanuki'], correct: 1, exp: "Les quatre reliques des fondateurs sont les ancres qui maintiennent le Voile autour de l'île, et quelqu'un les cherche dans la brume." },
   ];
 
   const QUIZ_LENGTH = 10;
   const QUIZ_BEST_SCORE_KEY = 'lunaria-quiz-best';
+  const QUIZ_RING_CIRCUMFERENCE = 2 * Math.PI * 42;
   let quizQuestions = [];
   let quizIndex = 0;
   let quizScore = 0;
+  let quizJokerUsed = false;
 
   function shuffle(arr) {
     const a = [...arr];
@@ -152,11 +161,19 @@
     quizBestScoreEl.textContent = best ? `Meilleur score : ${best} / ${QUIZ_LENGTH}` : '';
   }
 
+  // L'anneau se remplit selon le score (bonnes réponses / total), pas juste la
+  // progression - il reste donc partiellement vide si des réponses sont fausses.
+  function updateQuizRing() {
+    const ratio = quizQuestions.length ? quizScore / quizQuestions.length : 0;
+    quizRuneProgressFill.style.strokeDashoffset = String(QUIZ_RING_CIRCUMFERENCE * (1 - ratio));
+  }
+
   function renderQuizQuestion() {
     const current = quizQuestions[quizIndex];
     quizProgressText.textContent = `Question ${quizIndex + 1} / ${quizQuestions.length}`;
-    quizProgressFill.style.width = `${(quizIndex / quizQuestions.length) * 100}%`;
     quizQuestionText.textContent = current.q;
+    quizExplanationEl.classList.add('hidden');
+    quizExplanationEl.textContent = '';
     quizAnswersEl.innerHTML = '';
     current.answers.forEach((answer, i) => {
       const btn = document.createElement('button');
@@ -165,19 +182,28 @@
       btn.addEventListener('click', () => handleQuizAnswer(i, btn));
       quizAnswersEl.appendChild(btn);
     });
+    quizJokerBtn.disabled = quizJokerUsed;
   }
 
   function handleQuizAnswer(index, btn) {
     const current = quizQuestions[quizIndex];
     const buttons = quizAnswersEl.querySelectorAll('.quiz-answer-btn');
     buttons.forEach((b) => { b.disabled = true; });
+    quizJokerBtn.disabled = true;
     if (index === current.correctIndex) {
       btn.classList.add('correct');
       quizScore += 1;
+      quizCorrectSound.currentTime = 0;
+      quizCorrectSound.play().catch(() => {});
     } else {
       btn.classList.add('incorrect');
       buttons[current.correctIndex].classList.add('correct');
+      quizWrongSound.currentTime = 0;
+      quizWrongSound.play().catch(() => {});
     }
+    updateQuizRing();
+    quizExplanationEl.textContent = current.exp;
+    quizExplanationEl.classList.remove('hidden');
     setTimeout(() => {
       quizIndex += 1;
       if (quizIndex < quizQuestions.length) {
@@ -185,13 +211,25 @@
       } else {
         showQuizResult();
       }
-    }, 1100);
+    }, 2200);
+  }
+
+  function handleQuizJoker() {
+    if (quizJokerUsed) return;
+    const current = quizQuestions[quizIndex];
+    const buttons = Array.from(quizAnswersEl.querySelectorAll('.quiz-answer-btn'));
+    const wrongButtons = buttons.filter((b, i) => i !== current.correctIndex && !b.disabled);
+    if (wrongButtons.length === 0) return;
+    const toEliminate = wrongButtons[Math.floor(Math.random() * wrongButtons.length)];
+    toEliminate.disabled = true;
+    toEliminate.classList.add('eliminated');
+    quizJokerUsed = true;
+    quizJokerBtn.disabled = true;
   }
 
   function showQuizResult() {
     quizQuestionEl.classList.add('hidden');
     quizResultEl.classList.remove('hidden');
-    quizProgressFill.style.width = '100%';
     const total = quizQuestions.length;
     quizResultScore.textContent = `${quizScore} / ${total} bonnes réponses`;
 
@@ -214,10 +252,12 @@
     quizQuestions = pool.map((item) => {
       const correctText = item.answers[item.correct];
       const shuffledAnswers = shuffle(item.answers);
-      return { q: item.q, answers: shuffledAnswers, correctIndex: shuffledAnswers.indexOf(correctText) };
+      return { q: item.q, exp: item.exp, answers: shuffledAnswers, correctIndex: shuffledAnswers.indexOf(correctText) };
     });
     quizIndex = 0;
     quizScore = 0;
+    quizJokerUsed = false;
+    quizRuneProgressFill.style.strokeDashoffset = String(QUIZ_RING_CIRCUMFERENCE);
     quizStartEl.classList.add('hidden');
     quizResultEl.classList.add('hidden');
     quizQuestionEl.classList.remove('hidden');
@@ -249,6 +289,8 @@
   introVideo.src = `${assetsBase}/video/intro.mp4`;
   bgMusic.src = `${assetsBase}/audio/background.mp3`;
   clickSound.src = `${assetsBase}/audio/click2.mp3`;
+  quizCorrectSound.src = `${assetsBase}/audio/valider.mp3`;
+  quizWrongSound.src = `${assetsBase}/audio/refuser.mp3`;
 
   // --- Musique de fond (démarre en arrivant sur la vue principale, jamais pendant l'intro) ---
   let musicStarted = false;
@@ -461,6 +503,7 @@
   quizStartBtn.addEventListener('click', startQuiz);
   quizReplayBtn.addEventListener('click', startQuiz);
   quizBackBtn.addEventListener('click', () => showView(viewMain));
+  quizJokerBtn.addEventListener('click', handleQuizJoker);
   closeSettingsBtn.addEventListener('click', () => {
     // Reviens à l'état confirmé si on quitte sans sauvegarder (ex : thème/mode faible
     // consommation prévisualisés).
