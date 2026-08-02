@@ -997,11 +997,11 @@ html, body {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(75deg, transparent 42%, rgba(255, 255, 255, 0.9) 50%, transparent 58%);
-  background-size: 300% 100%;
-  background-position: 200% 0;
-  animation: logo-shine 7s ease-in-out infinite;
-  mix-blend-mode: overlay;
+  background: linear-gradient(75deg, transparent 42%, rgba(255, 255, 255, 0.75) 50%, transparent 58%);
+  background-size: 250% 100%;
+  background-position: -20% 0;
+  opacity: 0;
+  animation: logo-shine 6.5s ease-in-out infinite;
   pointer-events: none;
   -webkit-mask-image: var(--logo-mask, none);
   mask-image: var(--logo-mask, none);
@@ -1013,9 +1013,13 @@ html, body {
   mask-position: center;
 }
 
+/* L'opacité (pas seulement la position du dégradé) pilote la visibilité : garantit un
+   repos réellement invisible entre deux passages, plutôt que de dépendre du calcul de
+   position du dégradé pour "sortir du cadre" (ce qui restait visible trop longtemps). */
 @keyframes logo-shine {
-  0%, 15% { background-position: 200% 0; }
-  35%, 100% { background-position: -100% 0; }
+  0%, 78% { opacity: 0; background-position: -20% 0; }
+  85% { opacity: 1; background-position: 60% 0; }
+  92%, 100% { opacity: 0; background-position: 140% 0; }
 }
 
 /* --- Tremblement léger juste avant la fermeture (façon "le portail s'ouvre") --- */
