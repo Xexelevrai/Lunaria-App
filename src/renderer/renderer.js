@@ -964,20 +964,21 @@
       canvas.height = height;
     }
 
-    // Thème sombre : la poussière magique ambiante devient des cendres (gris/braise), avec
-    // une dérive latérale un peu plus marquée pour évoquer des flocons de cendre qui
-    // tombent en tourbillonnant plutôt qu'une poussière dorée qui monte tout droit.
+    // Thème sombre : la poussière magique ambiante devient des cendres grises (jamais
+    // ambrées) qui tombent tout doucement plutôt que de monter, avec un léger tangage
+    // latéral pour évoquer des flocons de cendre qui voltigent en retombant.
     function makeParticle() {
       const isDark = document.body.getAttribute('data-theme') === 'dark';
       return {
+        ash: isDark,
         x: Math.random() * width,
-        y: height + Math.random() * 40,
+        y: isDark ? Math.random() * -40 : height + Math.random() * 40,
         r: 0.6 + Math.random() * 1.8,
-        speed: 0.15 + Math.random() * 0.35,
-        drift: (Math.random() - 0.5) * (isDark ? 0.55 : 0.3),
+        speed: isDark ? 0.04 + Math.random() * 0.07 : 0.15 + Math.random() * 0.35,
+        drift: (Math.random() - 0.5) * (isDark ? 0.45 : 0.3),
         alpha: 0.15 + Math.random() * 0.45,
         hue: isDark
-          ? (Math.random() > 0.22 ? '150,140,132' : '196,90,40')
+          ? (Math.random() > 0.5 ? '160,155,148' : '128,123,117')
           : (Math.random() > 0.5 ? '212,175,90' : '233,224,242'),
         twinkleSpeed: 0.01 + Math.random() * 0.02,
         twinklePhase: Math.random() * Math.PI * 2,
@@ -1045,6 +1046,23 @@
       };
     }
 
+    // Fumée discrète du thème sombre : grand nuage très diffus (dégradé radial, pas de
+    // cercle net) qui monte à peine en dérivant, et met du temps à s'effacer. N'apparaît
+    // que de temps en temps (voir scheduleSmoke plus bas), jamais en continu.
+    function makeSmokeParticle() {
+      return {
+        smoke: true,
+        x: Math.random() * width,
+        y: height + 60 + Math.random() * 60,
+        r: 70 + Math.random() * 90,
+        vx: (Math.random() - 0.5) * 0.1,
+        vy: -(0.045 + Math.random() * 0.045),
+        alpha: 0.05 + Math.random() * 0.035,
+        decay: 0.0003 + Math.random() * 0.0002,
+        hue: '150,145,138',
+      };
+    }
+
     function tick() {
       ctx.clearRect(0, 0, width, height);
       if (lowPower) {
@@ -1072,6 +1090,25 @@
           continue;
         }
 
+        if (p.smoke) {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.alpha -= p.decay;
+          if (p.alpha <= 0) {
+            particles.splice(i, 1);
+            continue;
+          }
+          const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+          grad.addColorStop(0, `rgba(${p.hue},${p.alpha})`);
+          grad.addColorStop(1, `rgba(${p.hue},0)`);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = grad;
+          ctx.shadowBlur = 0;
+          ctx.fill();
+          continue;
+        }
+
         if (p.burst || p.trail) {
           p.x += p.vx;
           p.y += p.vy;
@@ -1096,7 +1133,13 @@
           continue;
         }
 
-        p.y -= p.speed;
+        // Cendres (thème sombre) : tombent doucement vers le bas et se recyclent en haut.
+        // Poussière magique (autres thèmes) : monte et se recycle en bas, comme avant.
+        if (p.ash) {
+          p.y += p.speed;
+        } else {
+          p.y -= p.speed;
+        }
         p.x += p.drift;
         p.twinklePhase += p.twinkleSpeed;
         const twinkle = (Math.sin(p.twinklePhase) + 1) / 2;
@@ -1109,16 +1152,33 @@
         ctx.shadowColor = `rgba(${p.hue},${alpha})`;
         ctx.fill();
 
-        if (p.y < -10) {
+        if (p.ash) {
+          if (p.y > height + 10) {
+            Object.assign(p, makeParticle(), { y: -10 });
+          }
+        } else if (p.y < -10) {
           Object.assign(p, makeParticle(), { y: height + 10 });
         }
       }
       requestAnimationFrame(tick);
     }
 
+    // Fait apparaître un nuage de fumée de temps en temps (jamais en continu), et
+    // uniquement quand le thème sombre est actif et hors mode faible consommation.
+    function scheduleSmoke() {
+      const delay = 10000 + Math.random() * 9000;
+      setTimeout(() => {
+        if (!lowPower && document.body.getAttribute('data-theme') === 'dark') {
+          particles.push(makeSmokeParticle());
+        }
+        scheduleSmoke();
+      }, delay);
+    }
+
     window.addEventListener('resize', resize);
     init();
     requestAnimationFrame(tick);
+    scheduleSmoke();
 
     spawnBurst = (x, y) => {
       if (lowPower) return;
