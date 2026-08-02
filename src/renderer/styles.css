@@ -157,10 +157,10 @@ body[data-theme='dark'] .dark-decor {
 .dark-cursor-glow {
   background: radial-gradient(
     circle 850px at var(--cursor-x, 50%) var(--cursor-y, 50%),
-    rgba(var(--glow-rgb), 0.4) 0%,
-    rgba(var(--glow-rgb), 0.22) 12%,
-    rgba(var(--glow-rgb), 0.1) 32%,
-    rgba(var(--glow-rgb), 0.03) 60%,
+    rgba(var(--glow-rgb), 0.2) 0%,
+    rgba(var(--glow-rgb), 0.11) 12%,
+    rgba(var(--glow-rgb), 0.05) 32%,
+    rgba(var(--glow-rgb), 0.015) 60%,
     transparent 100%
   );
 }
