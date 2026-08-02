@@ -177,26 +177,6 @@ body[data-theme='dark'] .dark-decor {
   68% { opacity: 0.02; }
 }
 
-/* Toiles d'araignée discrètes dans deux coins - le vrai élément de "décor" qui change,
-   au-delà d'une simple palette de couleurs. */
-.dark-cobweb {
-  position: absolute;
-  width: clamp(90px, 11vmin, 150px);
-  height: clamp(90px, 11vmin, 150px);
-  opacity: 0.55;
-}
-
-.dark-cobweb-tl {
-  top: 0;
-  left: 0;
-}
-
-.dark-cobweb-br {
-  bottom: 0;
-  right: 0;
-  transform: rotate(180deg);
-}
-
 /* Grain fin façon vieille pellicule, pour casser le côté trop "propre" d'un simple
    dégradé numérique. */
 .dark-grain {
