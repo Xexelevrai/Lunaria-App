@@ -222,7 +222,7 @@
     if (wrongButtons.length === 0) return;
     const toEliminate = wrongButtons[Math.floor(Math.random() * wrongButtons.length)];
     toEliminate.disabled = true;
-    toEliminate.classList.add('eliminated');
+    toEliminate.classList.add('revelio');
     quizJokerUsed = true;
     quizJokerBtn.disabled = true;
   }

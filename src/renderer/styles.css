@@ -1233,9 +1233,23 @@ body.low-power .settings-entrance .settings-row {
   color: var(--offline);
 }
 
-.quiz-answer-btn.eliminated {
-  opacity: 0.35;
-  text-decoration: line-through;
+/* Animation du Sortilège Revelio : la réponse tremble (comme touchée par le sort) puis
+   se dissipe en fondu, plutôt qu'une simple case grisée instantanée. */
+.quiz-answer-btn.revelio {
+  animation: revelio-shake-fade 0.7s ease-in-out forwards;
+  pointer-events: none;
+}
+
+@keyframes revelio-shake-fade {
+  0% { transform: translateX(0); opacity: 1; box-shadow: none; }
+  8% { transform: translateX(-6px); border-color: var(--gold-bright); box-shadow: 0 0 14px var(--gold); }
+  16% { transform: translateX(6px); }
+  24% { transform: translateX(-6px); }
+  32% { transform: translateX(6px); }
+  40% { transform: translateX(-4px); }
+  48% { transform: translateX(4px); }
+  56% { transform: translateX(0); opacity: 1; }
+  100% { transform: translateX(0); opacity: 0.25; text-decoration: line-through; box-shadow: none; }
 }
 
 /* Explication affichée après la réponse, discrète (petit texte, italique, en bas) */
