@@ -33,6 +33,23 @@ body[data-theme='silver'] {
   --offline: #e06a6a;
 }
 
+/* Thème débloqué en obtenant 10/10 au quiz : cendres, braises éteintes, aucune trace de
+   l'or ou de l'argent des deux autres thèmes. */
+body[data-theme='dark'] {
+  --bg: #030303;
+  --bg-elevated: rgba(160, 150, 145, 0.035);
+  --text-main: #c7c0ba;
+  --text-muted: #6c655f;
+  --gold: #6b6259;
+  --gold-bright: #a89c8f;
+  --border-gold: rgba(107, 98, 89, 0.28);
+  --accent-violet: #2e2b28;
+  --blob-a: rgba(50, 45, 40, 0.35);
+  --blob-b: rgba(90, 45, 20, 0.15);
+  --online: #6ee7a8;
+  --offline: #e06a6a;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -715,6 +732,7 @@ html, body {
 }
 
 .theme-swatch {
+  position: relative;
   width: 34px;
   height: 34px;
   border-radius: 50%;
@@ -734,6 +752,29 @@ html, body {
 
 .theme-swatch-gold { background: linear-gradient(135deg, #f1cf7f, #08050f); }
 .theme-swatch-silver { background: linear-gradient(135deg, #c9c9c6, #0a0a0a); }
+.theme-swatch-dark { background: linear-gradient(135deg, #4a4038, #000000); }
+
+/* Le thème sombre reste visible mais verrouillé (grisé, cadenas) tant que le quiz n'a
+   pas été réussi avec un score parfait - il se débloque à vie une fois obtenu. */
+.theme-swatch.locked {
+  opacity: 0.35;
+  filter: grayscale(1);
+  cursor: not-allowed;
+}
+
+.theme-swatch.locked:hover {
+  transform: none;
+}
+
+.theme-swatch.locked::after {
+  content: '🔒';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
 
 /* --- Bandeau de connexion automatique --- */
 .autoconnect-banner {

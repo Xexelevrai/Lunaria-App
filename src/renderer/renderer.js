@@ -99,6 +99,7 @@
   let spawnTrail = () => {};
   let spawnDraw = () => {};
   let setParticlesLowPower = () => {};
+  let setParticlesTheme = () => {};
   let serverAddress = '';
 
   const { assetsBase, introEnabled, theme, musicVolume, musicMuted, lowPowerMode } = window.lunaria.bootData;
@@ -106,7 +107,51 @@
   const THEME_LOGOS = {
     gold: 'logo.png',
     silver: 'logo2.png',
+    dark: 'logo3.png',
   };
+
+  // Piste de musique du menu principal selon le thème - seul le thème sombre a sa propre
+  // ambiance (Background-dark.mp3) ; les autres partagent la piste par défaut.
+  const MENU_MUSIC_TRACKS = {
+    gold: 'background.mp3',
+    silver: 'background.mp3',
+    dark: 'Background-dark.mp3',
+  };
+  let currentMenuMusicTrack = null;
+
+  function applyMenuMusicForTheme(t) {
+    const track = MENU_MUSIC_TRACKS[t] || MENU_MUSIC_TRACKS.gold;
+    if (track === currentMenuMusicTrack) return;
+    currentMenuMusicTrack = track;
+    const wasPlaying = !bgMusic.paused;
+    bgMusic.src = `${assetsBase}/audio/${track}`;
+    if (wasPlaying) {
+      bgMusic.currentTime = 0;
+      bgMusic.play().catch(() => {});
+    }
+  }
+
+  const DARK_THEME_UNLOCK_KEY = 'lunaria-dark-theme-unlocked';
+  const darkThemeSwatch = document.querySelector('.theme-swatch-dark');
+
+  function isDarkThemeUnlocked() {
+    return localStorage.getItem(DARK_THEME_UNLOCK_KEY) === '1';
+  }
+
+  function refreshDarkThemeSwatchLock() {
+    const unlocked = isDarkThemeUnlocked();
+    darkThemeSwatch.classList.toggle('locked', !unlocked);
+    darkThemeSwatch.disabled = !unlocked;
+    darkThemeSwatch.title = unlocked ? 'Sombre' : 'Sombre — débloqué en obtenant 10/10 au quiz';
+  }
+
+  function unlockDarkTheme() {
+    if (isDarkThemeUnlocked()) return;
+    localStorage.setItem(DARK_THEME_UNLOCK_KEY, '1');
+    refreshDarkThemeSwatchLock();
+  }
+
+  refreshDarkThemeSwatchLock();
 
   // Banque de questions du quiz, tirée du lore "L'Histoire de Brumelune". `correct` est
   // l'index (dans `answers`) de la bonne réponse ; les réponses sont mélangées à chaque
@@ -287,8 +332,13 @@
     quizResultScore.textContent = `${quizScore} / ${total} bonnes réponses`;
 
     let title;
-    if (quizScore === total) title = '✦ Score parfait ! Un vrai sorcier de Lunaria. ✦';
-    else if (quizScore >= total * 0.7) title = 'Bien joué !';
+    if (quizScore === total) {
+      const justUnlocked = !isDarkThemeUnlocked();
+      unlockDarkTheme();
+      title = justUnlocked
+        ? '✦ Score parfait ! Thème Sombre débloqué à vie. ✦'
+        : '✦ Score parfait ! Un vrai sorcier de Lunaria. ✦';
+    } else if (quizScore >= total * 0.7) title = 'Bien joué !';
     else if (quizScore >= total * 0.4) title = 'Pas mal, révise un peu le lore !';
     else title = "Retourne lire l'histoire de Brumelune...";
     quizResultTitle.textContent = title;
@@ -509,6 +559,8 @@
     // Le reflet du logo (.brand::after) est masqué à cette même image pour rester
     // cantonné aux lettres visibles - doit rester synchronisé à chaque changement de thème.
     brandEl.style.setProperty('--logo-mask', `url(${brandLogo.src})`);
+    applyMenuMusicForTheme(t);
+    setParticlesTheme();
   }
 
   // Utilisé uniquement pour un changement de thème déclenché par l'utilisateur (clic sur
@@ -912,15 +964,21 @@
       canvas.height = height;
     }
 
+    // Thème sombre : la poussière magique ambiante devient des cendres (gris/braise), avec
+    // une dérive latérale un peu plus marquée pour évoquer des flocons de cendre qui
+    // tombent en tourbillonnant plutôt qu'une poussière dorée qui monte tout droit.
     function makeParticle() {
+      const isDark = document.body.getAttribute('data-theme') === 'dark';
       return {
         x: Math.random() * width,
         y: height + Math.random() * 40,
         r: 0.6 + Math.random() * 1.8,
         speed: 0.15 + Math.random() * 0.35,
-        drift: (Math.random() - 0.5) * 0.3,
+        drift: (Math.random() - 0.5) * (isDark ? 0.55 : 0.3),
         alpha: 0.15 + Math.random() * 0.45,
-        hue: Math.random() > 0.5 ? '212,175,90' : '233,224,242',
+        hue: isDark
+          ? (Math.random() > 0.22 ? '150,140,132' : '196,90,40')
+          : (Math.random() > 0.5 ? '212,175,90' : '233,224,242'),
         twinkleSpeed: 0.01 + Math.random() * 0.02,
         twinklePhase: Math.random() * Math.PI * 2,
       };
@@ -1088,6 +1146,12 @@
         // sans ça, le tableau reste vide indéfiniment (rien ne le repeuple tout seul).
         init();
       }
+    };
+
+    // Re-seed immédiat de la poussière ambiante lors d'un changement de thème (sinon les
+    // particules déjà en vol ne recolorent qu'au fil de leur recyclage naturel).
+    setParticlesTheme = () => {
+      if (!lowPower) init();
     };
   }
 
