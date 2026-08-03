@@ -33,6 +33,10 @@
   <div id="theme-transition-veil" class="theme-transition-veil"></div>
   <audio id="bg-music" loop></audio>
   <audio id="quiz-music" loop></audio>
+  <audio id="faq-music" loop></audio>
+  <!-- Couche sonore additionnelle qui se superpose à bg-music (jamais seule) : calée sur
+       le même instant de lecture, elle apparaît en fondu uniquement dans les Paramètres. -->
+  <audio id="settings-music" loop></audio>
   <audio id="click-sound"></audio>
   <audio id="quiz-correct-sound"></audio>
   <audio id="quiz-wrong-sound"></audio>
@@ -68,6 +72,7 @@
         <img id="brand-logo" alt="Lunaria" class="logo" />
       </div>
       <div class="topbar-side topbar-side-right">
+        <button id="open-faq" class="btn btn-icon" title="FAQ Lunaria">❓</button>
         <button id="open-quiz" class="btn btn-icon" title="Quiz Lunaria">📜</button>
         <button id="open-settings" class="btn btn-icon" title="Paramètres">⚙</button>
       </div>
@@ -287,6 +292,286 @@
           <button id="quiz-replay-btn" class="btn btn-secondary">Rejouer</button>
           <button id="quiz-back-btn" class="btn btn-primary">Retour au menu</button>
         </div>
+      </div>
+    </main>
+  </section>
+
+  <!-- Vue FAQ -->
+  <section id="view-faq" class="view">
+    <header class="topbar">
+      <button id="close-faq" class="btn btn-icon" title="Retour">←</button>
+      <span class="brand-name">FAQ Lunaria</span>
+      <div class="topbar-side topbar-side-right"></div>
+    </header>
+    <main class="main-content faq-content">
+      <div class="faq-wrap">
+
+        <header class="faq-header">
+          <div class="faq-eyebrow">Université Magique</div>
+          <h1 class="faq-title">Lunaria</h1>
+          <p class="faq-subtitle">Foire aux questions — tout ce qu'il faut savoir avant de franchir les grilles.</p>
+          <svg class="faq-seal" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="1" />
+            <circle cx="50" cy="50" r="38" fill="none" stroke="currentColor" stroke-width="0.5" />
+            <polygon points="50,10 61,38 91,38 67,56 76,86 50,68 24,86 33,56 9,38 39,38" fill="none" stroke="currentColor" stroke-width="0.6" />
+          </svg>
+        </header>
+
+        <div class="faq-category-title"><h2>L'univers</h2></div>
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-q"><span>Qu'est-ce que Lunaria ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>Lunaria est un serveur RP magique avec un univers entièrement original. Pas de Harry Potter, pas de Poudlard, pas de baguette empruntée sous le manteau : ici, tout est pensé pour vous depuis les fondations.</p>
+              <p>Vous incarnez un sorcier ou une sorcière sur l'<strong>île de Brumelune</strong>, terre ancestrale du monde magique, dissimulée aux non-mages par un antique enchantement : le <strong>Voile</strong>. C'est là, entre falaises et forêts brumeuses, que se dresse l'Académie Lunaria.</p>
+              <p>Vos choix, vos rencontres et vos actes façonnent directement votre histoire, et celle des autres. L'aventure repose sur l'interprétation, la narration, les relations entre personnages, les mystères et les conséquences bien réelles de vos décisions. <span class="faq-whisper">Autrement dit : ici, on ne se contente pas de dire "j'agite ma baguette", il faut vivre la scène.</span></p>
+            </div></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q"><span>Quelle est l'histoire de Lunaria ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>L'Académie fut fondée il y a des siècles par <strong>Merlin</strong> et quatre de ses disciples, qui donnèrent chacun leur nom à une maison. Une école pensée pour que la magie s'enseigne à tous, et non plus en secret de maître à apprenti.</p>
+              <p>Lunaria a connu son âge d'or... puis une longue période sombre, connue sous le nom de <strong>Siècle Noir</strong>, durant laquelle l'école fut fermée et son domaine scellé. Les raisons exactes de cette chute, elles, se racontent au fil du RP — et pas dans une FAQ.</p>
+              <p>Aujourd'hui, les grilles rouvrent enfin sous la direction d'un nouveau responsable, <strong>Makarov</strong>, nommé par le gouvernement de la magie pour relever l'école de ses cendres. <span class="faq-whisper">Et comme dans toute bonne académie qui rouvre après un siècle de silence, il paraît que certains murs ont encore des choses à raconter.</span></p>
+            </div></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q"><span>Sur quelle plateforme joue-t-on ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>Lunaria se joue sur GTA V, via FiveM. L'univers de Los Santos sert simplement de décor technique à notre monde magique — considérez ça comme un sortilège de camouflage à très grande échelle.</p>
+              <p>Pour nous rejoindre, il vous faudra :</p>
+              <ul>
+                <li>Une copie de GTA V sur PC (Steam, Epic Games ou Rockstar Launcher)</li>
+                <li>FiveM installé</li>
+                <li>Un ordinateur capable de faire tourner le tout sans invoquer plus de lag qu'un sortilège raté</li>
+              </ul>
+            </div></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q"><span>Quel type de RP propose le serveur ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>Un RP narratif, immersif et évolutif. Les intrigues, les relations entre personnages, les cours, les événements et les découvertes sont au cœur de l'expérience.</p>
+              <p>Le RP magique repose surtout sur la création de scènes, le développement de votre personnage et sa progression dans le temps — pas sur qui lance le plus gros sort le plus vite.</p>
+            </div></div>
+          </div>
+        </div>
+
+        <div class="faq-category-title"><h2>Rejoindre Lunaria</h2></div>
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-q"><span>Quel âge ont les élèves ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>Lunaria est une université magique : tous les étudiants ont au minimum 18 ans. Il n'est donc pas possible d'incarner un enfant, ni un adolescent — les cours de sortilèges avancés ne sont pas une garderie.</p>
+            </div></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q"><span>Le micro est-il obligatoire ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>Oui. Lunaria est un serveur RP vocal, et un micro fonctionnel et de qualité correcte est indispensable pour vivre pleinement l'expérience et interagir avec les autres joueurs.</p>
+              <p>Nous ne demandons pas d'être comédien professionnel — simplement d'être impliqué dans votre personnage et vos scènes. <span class="faq-whisper">Un accent mystérieux est un bonus, pas une obligation.</span></p>
+            </div></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q"><span>Puis-je jouer autre chose qu'un étudiant ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>Bien sûr. L'univers tourne autour de Lunaria, mais vous n'êtes pas obligé d'y être inscrit. Vous pourrez notamment incarner :</p>
+              <ul>
+                <li>Professeur</li>
+                <li>Surveillant</li>
+                <li>Employé ou commerçant</li>
+                <li>Chef d'entreprise</li>
+                <li>Fonctionnaire du Congrès magique</li>
+                <li>Simple habitant du monde magique</li>
+              </ul>
+              <p>De quoi vivre une aventure différente, sans jamais toucher un manuel scolaire.</p>
+            </div></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q"><span>Puis-je créer une famille ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>Oui, les dossiers de famille sont autorisés, avec quelques règles pour préserver l'équilibre du RP :</p>
+              <ul>
+                <li>Les places sont limitées</li>
+                <li>Les dossiers seront étudiés avec davantage d'attention</li>
+              </ul>
+              <p>Toute forme de favoritisme, de win RP ou de manque de fair-play sera sévèrement sanctionnée. On veut des liens familiaux touchants, pas une dynastie qui monopolise l'intrigue.</p>
+            </div></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q"><span>Puis-je inventer le background que je veux ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>Vous disposez d'une grande liberté de création. Votre personnage peut venir d'une famille de sorciers, d'un milieu modeste, d'une région reculée, ou d'un environnement où la magie vient tout juste d'être découverte.</p>
+              <p>La seule condition : que votre histoire reste cohérente avec l'univers, et raisonnable pour un personnage débutant. <span class="faq-whisper">Descendant secret d'un empereur magique disparu depuis mille ans, en revanche, c'est non — voir la question suivante.</span></p>
+            </div></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q"><span>Puis-je créer un personnage ultra puissant dès le départ ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>Non. Seront systématiquement refusés les personnages du type :</p>
+              <ul>
+                <li>Élu d'une ancienne prophétie</li>
+                <li>Héritier d'un pouvoir légendaire</li>
+                <li>Possesseur d'un artefact surpuissant</li>
+                <li>Maître d'une magie inconnue</li>
+                <li>Sauveur du monde autoproclamé</li>
+              </ul>
+              <p>Lunaria est un univers collectif où chacun construit son histoire progressivement. Les pouvoirs rares, les secrets et les responsabilités importantes se gagnent par le RP, pas sur une fiche de personnage remplie un peu trop généreusement.</p>
+            </div></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q"><span>Je n'ai jamais fait de RP magique, est-ce un problème ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>Pas du tout. Personne ne naît en sachant lancer un sort correctement — ça s'apprend, comme tout le reste. L'important, c'est de bien connaître le lore et le règlement avant de vous lancer, et de ne surtout pas hésiter à poser des questions si un point vous échappe.</p>
+              <p>C'est d'ailleurs pour ça que commencer en tant qu'élève est le plus simple pour débuter : tout y est enseigné et expliqué au fil des cours, à votre rythme, aux côtés d'autres nouveaux venus. <span class="faq-whisper">Difficile de mieux tomber quand on part de zéro que dans une école — c'est un peu tout l'intérêt du concept.</span></p>
+            </div></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q"><span>Peut-on travailler en dehors de l'école ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>Oui. Beaucoup d'emplois se trouvent évidemment à l'Académie elle-même — professeur, directeur, surveillant, et bien d'autres — mais Brumelune ne s'arrête pas aux grilles de Lunaria.</p>
+              <p>En dehors, on trouve notamment :</p>
+              <ul>
+                <li>Des entreprises de potions</li>
+                <li>Des boutiques de balais et de baguettes</li>
+                <li>Des vendeurs de graines et de plantes</li>
+                <li>Des tavernes et restaurants</li>
+                <li>Une banque</li>
+                <li>Le ministère de la magie, qui regroupe à lui seul de nombreux métiers différents</li>
+                <li>Des médicomages</li>
+              </ul>
+              <p>Un channel dédié sur le Discord recense les emplois disponibles à tout moment. <span class="faq-whisper">De quoi trouver sa place, même si l'idée de corriger des copies toute la journée ne vous fait pas rêver.</span></p>
+              <p>À noter : ces emplois sont réservés à ceux qui ne sont plus étudiants. Le temps de leurs études, les élèves ne peuvent pas travailler et reçoivent à la place une bourse d'études qui leur permet de vivre décemment sur l'île.</p>
+            </div></div>
+          </div>
+        </div>
+
+        <div class="faq-category-title"><h2>Les quatre maisons</h2></div>
+        <div class="faq-houses">
+          <div class="faq-house-card faq-house-arden">
+            <h3>Arden</h3>
+            <p class="faq-house-founder">Fondée par Maëve Arden — liée au phénix</p>
+            <p>Courageux, passionnés et loyaux. Ils avancent avec conviction et n'hésitent jamais à défendre leurs idéaux — quitte à foncer avant de réfléchir.</p>
+          </div>
+          <div class="faq-house-card faq-house-aerion">
+            <h3>Aerion</h3>
+            <p class="faq-house-founder">Fondée par Lyra Aérion — liée à l'hippogriffe</p>
+            <p>Curieux, créatifs et réfléchis. Les Aerion cherchent sans relâche à comprendre le monde qui les entoure, un mystère à la fois.</p>
+          </div>
+          <div class="faq-house-card faq-house-tanora">
+            <h3>Tanora</h3>
+            <p class="faq-house-founder">Fondée par Isandro Tanora — lié au tanuki</p>
+            <p>Solidaires, protecteurs et profondément attachés à l'entraide. Le collectif et la persévérance priment toujours sur l'exploit individuel.</p>
+          </div>
+          <div class="faq-house-card faq-house-hydras">
+            <h3>Hydras</h3>
+            <p class="faq-house-founder">Fondée par Aldéric Hydras — liée à l'hydre</p>
+            <p>Ambitieux, stratèges et déterminés. Ils excellent dans l'art de l'anticipation — et n'oublient jamais une dette, ni une faveur.</p>
+          </div>
+        </div>
+        <p class="faq-houses-note">Les légendes complètes de chaque fondateur se découvrent en jeu, pas ici.</p>
+
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-q"><span>Comment fonctionne la répartition dans les maisons ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>À votre arrivée, vous répondrez à un questionnaire de personnalité. Vos réponses permettront de déterminer la maison qui correspond le mieux à votre personnage. La répartition a lieu lors d'une cérémonie officielle, en jeu — pas de tirage au sort dans un couloir.</p>
+            </div></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q"><span>Peut-on changer de maison ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>Non. Le choix de votre maison est définitif. Elle représente une partie importante de l'identité de votre personnage et de son parcours à Lunaria. <span class="faq-whisper">On ne change pas de famille parce qu'une autre a une couleur plus flatteuse.</span></p>
+            </div></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q"><span>Peut-on jouer une créature magique ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>Oui, sous conditions :</p>
+              <ul>
+                <li>Être au minimum en deuxième année d'études</li>
+                <li>Présenter un dossier validé par le staff</li>
+                <li>Respecter la cohérence du lore</li>
+                <li>Accepter que les places soient extrêmement limitées</li>
+              </ul>
+              <p>Les créatures magiques doivent rester exceptionnelles pour conserver tout leur intérêt narratif — pas question de croiser un loup-garou à chaque coin de couloir.</p>
+            </div></div>
+          </div>
+        </div>
+
+        <div class="faq-category-title"><h2>Études &amp; magie</h2></div>
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-q"><span>Comment fonctionnent les études ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>Le cursus se compose de 5 années d'études. Chaque année dure environ 3 semaines réelles : 2 semaines de cours, suivies d'une semaine d'examens.</p>
+              <p>Les cours ont lieu le lundi, le mardi, le jeudi et le vendredi. La semaine d'examens comprend trois épreuves permettant d'évaluer les connaissances acquises durant l'année.</p>
+            </div></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q"><span>Que peut-on faire après les études ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>De nombreuses voies s'offrent à vous une fois diplômé :</p>
+              <ul>
+                <li>Ouvrir votre propre entreprise</li>
+                <li>Reprendre un commerce existant</li>
+                <li>Intégrer le Congrès magique</li>
+                <li>Devenir professeur ou surveillant</li>
+                <li>Travailler dans une institution du monde magique</li>
+              </ul>
+              <p>Votre diplôme marque le début d'une nouvelle étape, pas la fin de votre aventure.</p>
+            </div></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q"><span>Y a-t-il des sorts et de la magie ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>Évidemment — ce serait embêtant, dans une université magique, de ne pas en proposer. L'apprentissage de la magie fait partie intégrante du RP : les sorts s'obtiennent et se maîtrisent grâce aux cours, à la pratique et à votre progression en jeu.</p>
+              <p>La magie n'est pas un bouton qui résout toutes les situations d'un coup de baguette : elle demande du temps, de l'investissement et du RP.</p>
+            </div></div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-q"><span>Les cours sont-ils obligatoires ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>Non. Personne ne viendra vous traîner par la manche jusqu'en salle de sortilèges. Mais assister aux cours reste la meilleure façon d'apprendre des sorts, de maîtriser les potions et de mettre la main sur des connaissances qui feront vraiment avancer votre histoire — ou qui vous sortiront d'une situation délicate le moment venu.</p>
+              <p>Plus vous progressez en années d'études, plus les enseignements deviennent pointus, rares, parfois même peu communs. <span class="faq-whisper">Autrement dit : sécher les cours, c'est votre droit — mais le jour où un sortilège bien senti vous sauverait la mise, il sera trop tard pour le regretter.</span></p>
+            </div></div>
+          </div>
+        </div>
+
+        <div class="faq-category-title"><h2>Infos pratiques</h2></div>
+        <div class="faq-list">
+          <div class="faq-item">
+            <div class="faq-q"><span>Quand ouvre le serveur ?</span><span class="faq-mark">+</span></div>
+            <div class="faq-a"><div class="faq-a-inner">
+              <p>L'ouverture de Lunaria est prévue pour fin août 2026, sous la direction du tout nouveau directeur, Makarov. En attendant, profitez-en pour découvrir le lore, préparer votre personnage et vous familiariser avec l'univers.</p>
+              <p><span class="faq-whisper">L'aventure ne fait que commencer — et les grilles de Lunaria ne s'ouvriront pas plus vite en actualisant frénétiquement le Discord.</span></p>
+            </div></div>
+          </div>
+        </div>
+
+        <footer class="faq-footer">
+          <p class="faq-rule">« Ce qui se cache derrière la lune n'attend que d'être découvert. »</p>
+          <p class="faq-date">Lunaria — Ouverture fin août 2026</p>
+          <button id="faq-discord-btn" class="btn btn-secondary faq-discord-btn">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.317 4.369a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.099.246.198.373.292a.077.077 0 0 1-.006.127c-.598.35-1.22.645-1.873.893a.076.076 0 0 0-.04.106c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.029 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.055c.5-5.177-.838-9.673-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.211 0 2.176 1.096 2.157 2.42 0 1.333-.955 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" /></svg>
+            Rejoindre le Discord
+          </button>
+        </footer>
+
       </div>
     </main>
   </section>

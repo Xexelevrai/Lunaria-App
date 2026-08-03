@@ -1521,3 +1521,273 @@ body.low-power .quiz-answer-btn {
   gap: 12px;
   justify-content: center;
 }
+
+/* --- FAQ --- */
+/* Reprend les couleurs du thème actif (--bg, --gold, --text-main...) au lieu de la
+   palette fixe du document HTML d'origine, pour que la FAQ suive Doré/Argent/Sombre
+   comme le reste du launcher. Les couleurs de maison restent volontairement fixes :
+   elles représentent une identité propre, pas le thème choisi par le joueur. */
+.faq-content {
+  align-items: center;
+}
+
+.faq-wrap {
+  max-width: 780px;
+  width: 100%;
+}
+
+.faq-header {
+  text-align: center;
+  padding: 12px 0 36px;
+}
+
+.faq-eyebrow {
+  font-family: var(--font-body);
+  font-style: italic;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+
+.faq-title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  margin: 0;
+  letter-spacing: 0.04em;
+  background: linear-gradient(180deg, var(--gold-bright) 0%, var(--gold) 60%, var(--text-muted) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.faq-subtitle {
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  font-style: italic;
+  color: var(--text-muted);
+  margin: 12px auto 0;
+  max-width: 460px;
+}
+
+.faq-seal {
+  width: 48px;
+  height: 48px;
+  margin: 24px auto 0;
+  color: var(--gold);
+  opacity: 0.8;
+}
+
+.faq-category-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 52px 0 22px;
+}
+
+.faq-category-title:first-of-type {
+  margin-top: 0;
+}
+
+.faq-category-title::before,
+.faq-category-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-gold), transparent);
+}
+
+.faq-category-title h2 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-bright);
+  white-space: nowrap;
+  margin: 0;
+}
+
+.faq-item {
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius);
+  background: var(--bg-elevated);
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+
+.faq-item:hover {
+  border-color: var(--gold);
+}
+
+.faq-item.open {
+  border-color: var(--gold-bright);
+}
+
+.faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 22px;
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-size: 0.98rem;
+  font-weight: 500;
+  color: var(--text-main);
+  user-select: none;
+}
+
+.faq-mark {
+  font-family: var(--font-body);
+  font-size: 1.4rem;
+  color: var(--gold);
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.faq-item.open .faq-mark {
+  transform: rotate(45deg);
+  color: var(--gold-bright);
+}
+
+.faq-a {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.faq-a-inner {
+  padding: 0 22px 22px;
+  color: var(--text-muted);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.faq-a-inner p {
+  margin: 0 0 12px;
+}
+
+.faq-a-inner p:last-child {
+  margin-bottom: 0;
+}
+
+.faq-a-inner ul {
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+
+.faq-a-inner li {
+  margin-bottom: 5px;
+}
+
+.faq-a-inner strong {
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+.faq-whisper {
+  font-family: var(--font-body);
+  font-style: italic;
+  color: var(--gold);
+}
+
+.faq-houses {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 4px 0 10px;
+}
+
+@media (max-width: 600px) {
+  .faq-houses {
+    grid-template-columns: 1fr;
+  }
+}
+
+.faq-house-card {
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  background: var(--bg-elevated);
+  border-top: 3px solid var(--house-color, var(--gold));
+}
+
+.faq-house-card h3 {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  margin: 0 0 6px;
+  color: var(--house-color, var(--gold-bright));
+}
+
+.faq-house-card p {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+}
+
+.faq-house-founder {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 0.84rem;
+  color: var(--gold);
+  margin-bottom: 8px !important;
+}
+
+.faq-house-arden { --house-color: #d17a63; }
+.faq-house-aerion { --house-color: #7fa8d6; }
+.faq-house-tanora { --house-color: #d6b563; }
+.faq-house-hydras { --house-color: #63b399; }
+
+.faq-houses-note {
+  text-align: center;
+  font-family: var(--font-body);
+  font-style: italic;
+  color: var(--text-muted);
+  margin: -4px 0 32px;
+  font-size: 0.9rem;
+}
+
+.faq-footer {
+  text-align: center;
+  margin-top: 56px;
+  padding-top: 28px;
+  padding-bottom: 20px;
+  border-top: 1px solid var(--border-gold);
+}
+
+.faq-rule {
+  font-family: var(--font-body);
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+}
+
+.faq-date {
+  font-family: var(--font-heading);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  color: var(--gold);
+  margin-top: 10px;
+}
+
+.faq-discord-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.faq-discord-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--gold-bright);
+  flex-shrink: 0;
+}

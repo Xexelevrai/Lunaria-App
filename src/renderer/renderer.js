@@ -3,7 +3,8 @@
   const viewMain = document.getElementById('view-main');
   const viewSettings = document.getElementById('view-settings');
   const viewQuiz = document.getElementById('view-quiz');
-  const ALL_VIEWS = [viewIntro, viewMain, viewSettings, viewQuiz];
+  const viewFaq = document.getElementById('view-faq');
+  const ALL_VIEWS = [viewIntro, viewMain, viewSettings, viewQuiz, viewFaq];
 
   const introVideo = document.getElementById('intro-video');
   const introOverlay = document.getElementById('intro-overlay');
@@ -59,6 +60,10 @@
   const toggleLowPower = document.getElementById('toggle-low-power');
   const statusSkeleton = document.getElementById('status-skeleton');
 
+  const openFaqBtn = document.getElementById('open-faq');
+  const closeFaqBtn = document.getElementById('close-faq');
+  const faqDiscordBtn = document.getElementById('faq-discord-btn');
+
   const openQuizBtn = document.getElementById('open-quiz');
   const closeQuizBtn = document.getElementById('close-quiz');
   const quizStartEl = document.getElementById('quiz-start');
@@ -91,6 +96,8 @@
 
   const bgMusic = document.getElementById('bg-music');
   const quizMusic = document.getElementById('quiz-music');
+  const faqMusic = document.getElementById('faq-music');
+  const settingsMusic = document.getElementById('settings-music');
   const clickSound = document.getElementById('click-sound');
   const muteToggleBtn = document.getElementById('mute-toggle');
   const volumeSlider = document.getElementById('volume-slider');
@@ -408,6 +415,8 @@
   introVideo.src = `${assetsBase}/video/intro.mp4`;
   bgMusic.src = `${assetsBase}/audio/background.mp3`;
   quizMusic.src = `${assetsBase}/audio/background-quizz.mp3`;
+  faqMusic.src = `${assetsBase}/audio/background-faq.mp3`;
+  settingsMusic.src = `${assetsBase}/audio/parametre.mp3`;
   clickSound.src = `${assetsBase}/audio/click2.mp3`;
   quizCorrectSound.src = `${assetsBase}/audio/valider.mp3`;
   quizWrongSound.src = `${assetsBase}/audio/refuser.mp3`;
@@ -423,6 +432,12 @@
   bgMusic.muted = musicIsMuted;
   quizMusic.volume = 0;
   quizMusic.muted = musicIsMuted;
+  faqMusic.volume = 0;
+  faqMusic.muted = musicIsMuted;
+  // settingsMusic n'est jamais seule à jouer : elle se superpose à bgMusic (jamais un
+  // fondu croisé qui l'éteindrait), d'où un volume cible séparé plutôt que musicTargetVolume.
+  settingsMusic.volume = 0;
+  settingsMusic.muted = musicIsMuted;
   volumeSlider.value = String(musicVolume ?? 25);
   muteToggleBtn.textContent = musicIsMuted ? '🔇' : '🔊';
 
@@ -479,6 +494,8 @@
     musicIsMuted = !musicIsMuted;
     bgMusic.muted = musicIsMuted;
     quizMusic.muted = musicIsMuted;
+    faqMusic.muted = musicIsMuted;
+    settingsMusic.muted = musicIsMuted;
     muteToggleBtn.textContent = musicIsMuted ? '🔇' : '🔊';
     window.lunaria.setMusicMuted(musicIsMuted);
   });
@@ -487,6 +504,8 @@
     musicTargetVolume = Number(volumeSlider.value) / 100;
     bgMusic.volume = musicTargetVolume;
     quizMusic.volume = musicTargetVolume;
+    faqMusic.volume = musicTargetVolume;
+    settingsMusic.volume = musicTargetVolume;
   });
   volumeSlider.addEventListener('change', () => {
     window.lunaria.setMusicVolume(Number(volumeSlider.value));
@@ -553,7 +572,7 @@
   // Fondu enchaîné (fondu de sortie court, puis l'entrée classique view-in) entre les
   // vues qu'on traverse en va-et-vient pendant l'usage normal (menu, Paramètres, Quiz).
   // L'intro garde son comportement instantané d'origine.
-  const FADEABLE_VIEWS = [viewMain, viewSettings, viewQuiz];
+  const FADEABLE_VIEWS = [viewMain, viewSettings, viewQuiz, viewFaq];
 
   function showView(view) {
     const current = ALL_VIEWS.find((v) => v.classList.contains('active') && v !== view);
@@ -653,6 +672,51 @@
   openSettingsBtn.addEventListener('click', () => {
     populateSettingsUI();
     showView(viewSettings);
+    // parametre.mp3 se superpose à bgMusic (qui continue de jouer normalement) plutôt que
+    // de le remplacer : on la cale sur l'instant de lecture actuel de bgMusic pour qu'elle
+    // reste synchronisée, puis on la fait seulement apparaître en fondu.
+    settingsMusic.currentTime = bgMusic.currentTime;
+    if (settingsMusic.paused) {
+      settingsMusic.volume = 0;
+      settingsMusic.play().catch(() => {});
+    }
+    fadeAudioVolume(settingsMusic, musicIsMuted ? 0 : musicTargetVolume, 900);
+  });
+
+  openFaqBtn.addEventListener('click', () => {
+    showView(viewFaq);
+    crossfadeMusic(faqMusic, bgMusic);
+  });
+  closeFaqBtn.addEventListener('click', () => {
+    showView(viewMain);
+    crossfadeMusic(bgMusic, faqMusic);
+  });
+  faqDiscordBtn.addEventListener('click', () => {
+    window.lunaria.openDiscord();
+  });
+
+  document.querySelectorAll('.faq-q').forEach((q) => {
+    const item = q.closest('.faq-item');
+    const answer = item.querySelector('.faq-a');
+    q.setAttribute('tabindex', '0');
+    q.setAttribute('role', 'button');
+    function toggleFaqItem() {
+      const isOpen = item.classList.contains('open');
+      if (isOpen) {
+        item.classList.remove('open');
+        answer.style.maxHeight = null;
+      } else {
+        item.classList.add('open');
+        answer.style.maxHeight = `${answer.scrollHeight}px`;
+      }
+    }
+    q.addEventListener('click', toggleFaqItem);
+    q.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleFaqItem();
+      }
+    });
   });
 
   openQuizBtn.addEventListener('click', () => {
@@ -682,6 +746,7 @@
     applyTheme(confirmedSettings.theme || 'gold');
     applyLowPower(confirmedSettings.lowPowerMode);
     showView(viewMain);
+    fadeAudioVolume(settingsMusic, 0, 900);
   }
 
   function hasUnsavedSettingsChanges() {
@@ -801,7 +866,7 @@
   // particules plus dense et lumineuse, qui s'estompe peu après. Marche sur toutes les
   // vues, contrairement à la traînée passive au survol ci-dessus (limitée au menu).
   const DRAW_BLOCKED_SELECTOR =
-    'button, input, a, .server-card, .settings-row, .quiz-card, .modal-box, .theme-swatch, .display-mode-btn, .social-button';
+    'button, input, a, .server-card, .settings-row, .quiz-card, .modal-box, .theme-swatch, .display-mode-btn, .social-button, .faq-item';
   let isDrawingActive = false;
   let lastDrawPoint = null;
 
