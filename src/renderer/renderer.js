@@ -453,10 +453,21 @@
 
   // Fondu enchaîné entre bgMusic et quizMusic, pour ne pas couper la musique net en
   // entrant/sortant du quiz.
+  // Un jeton de génération par élément évite que deux fondus qui se chevauchent (ex :
+  // Paramètres ouverts puis refermés avant la fin du fondu d'entrée) ne se battent sur le
+  // même <audio> : l'ancien fondu, dépassé, cesse de toucher .volume et surtout n'appelle
+  // plus .pause() une fois qu'un fondu plus récent a repris la main sur cet élément - sans
+  // ça, bgMusic pouvait se retrouver mis en pause en plein "reprise", donnant l'impression
+  // qu'il rejouait quelques secondes déjà entendues une fois relancé plus tard.
+  const fadeGenerations = new WeakMap();
+
   function fadeAudioVolume(el, target, duration) {
+    const generation = (fadeGenerations.get(el) || 0) + 1;
+    fadeGenerations.set(el, generation);
     const start = el.volume;
     const startTime = performance.now();
     function step(now) {
+      if (fadeGenerations.get(el) !== generation) return;
       const t = Math.min(1, (now - startTime) / duration);
       el.volume = Math.min(1, Math.max(0, start + (target - start) * t));
       if (t < 1) {
