@@ -398,6 +398,13 @@ body.low-power .dark-grain {
   padding: 0 clamp(24px, 4vmin, 56px) clamp(20px, 3vmin, 36px);
   overflow-y: auto;
   min-height: 0;
+  /* Le défilement reste actif, seule la barre visible disparaît - plus cohérent avec le
+     reste d'une interface qui n'a par ailleurs aucun autre indicateur de scroll natif. */
+  scrollbar-width: none;
+}
+
+.main-content::-webkit-scrollbar {
+  display: none;
 }
 
 .portal-wrapper {

@@ -672,15 +672,10 @@
   openSettingsBtn.addEventListener('click', () => {
     populateSettingsUI();
     showView(viewSettings);
-    // parametre.mp3 se superpose à bgMusic (qui continue de jouer normalement) plutôt que
-    // de le remplacer : on la cale sur l'instant de lecture actuel de bgMusic pour qu'elle
-    // reste synchronisée, puis on la fait seulement apparaître en fondu.
+    // parametre.mp3 prend le relais de bgMusic (qui se tait) plutôt que de s'y superposer -
+    // calée sur son instant de lecture actuel pour rester synchronisée au retour au menu.
     settingsMusic.currentTime = bgMusic.currentTime;
-    if (settingsMusic.paused) {
-      settingsMusic.volume = 0;
-      settingsMusic.play().catch(() => {});
-    }
-    fadeAudioVolume(settingsMusic, musicIsMuted ? 0 : musicTargetVolume, 900);
+    crossfadeMusic(settingsMusic, bgMusic);
   });
 
   openFaqBtn.addEventListener('click', () => {
@@ -746,7 +741,7 @@
     applyTheme(confirmedSettings.theme || 'gold');
     applyLowPower(confirmedSettings.lowPowerMode);
     showView(viewMain);
-    fadeAudioVolume(settingsMusic, 0, 900);
+    crossfadeMusic(bgMusic, settingsMusic);
   }
 
   function hasUnsavedSettingsChanges() {
