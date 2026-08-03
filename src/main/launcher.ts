@@ -33,7 +33,13 @@ export async function connectToServer(config: ServerConfig): Promise<boolean> {
   // from the shell or a web browser"), quel que soit le format d'argument. Faire résoudre
   // le lien par explorer.exe (comme un clic dans un navigateur) passe ce contrôle et fait
   // parvenir la cible de connexion jusqu'au processus de jeu.
-  const child = spawn('explorer.exe', [`fivem://connect/${config.connectFallback}`], {
+  //
+  // On cible le code Cfx.re (ex: e6eb3xd), pas l'IP brute (connectFallback) : une connexion
+  // par IP directe force FiveM à négocier "à froid" avec le serveur sans passer par
+  // l'infrastructure Cfx.re, sensiblement plus lent que la connexion via son propre
+  // historique/favoris (qui utilise ce même code). connectFallback reste disponible dans
+  // la config pour le statut serveur et en secours si jamais le code Cfx.re devait changer.
+  const child = spawn('explorer.exe', [`fivem://connect/${config.cfxCode}`], {
     detached: true,
     stdio: 'ignore',
   });
