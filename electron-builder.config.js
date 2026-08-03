@@ -34,14 +34,20 @@ module.exports = {
     icon: 'build/icon.ico',
   },
   nsis: {
-    // Mode assisté (pas oneClick) : affiche l'écran de choix "pour moi / tous les utilisateurs"
-    // et la case "lancer à la fin" (cochée par défaut, décochable). Les raccourcis Bureau/Menu
-    // Démarrer sont créés automatiquement sans case à cocher dédiée (comportement par défaut
-    // d'electron-builder, comme la plupart des installeurs Electron). On NE propose PAS de
-    // choisir le dossier d'installation (allowToChangeInstallationDirectory reste à false) :
-    // le chemin reste toujours le même, donc NSIS retrouve et met à jour la même installation
-    // à chaque nouvelle version, sans jamais créer de doublon.
+    // Mode assisté (pas oneClick) : affiche un écran avec la case "lancer à la fin"
+    // (cochée par défaut, décochable). Les raccourcis Bureau/Menu Démarrer sont créés
+    // automatiquement sans case à cocher dédiée (comportement par défaut d'electron-builder,
+    // comme la plupart des installeurs Electron). On NE propose PAS de choisir le dossier
+    // d'installation (allowToChangeInstallationDirectory reste à false) : le chemin reste
+    // toujours le même, donc NSIS retrouve et met à jour la même installation à chaque
+    // nouvelle version, sans jamais créer de doublon.
     oneClick: false,
+    // perMachine:false explicite (au lieu de laisser NSIS afficher l'écran de choix
+    // "pour moi / tous les utilisateurs") : install toujours par utilisateur courant, sans
+    // élévation UAC. Suspecté d'être la cause d'un raccourci Bureau manquant chez une
+    // testeuse - "tous les utilisateurs" demande une élévation qui, refusée ou échouée,
+    // peut laisser une install partielle sans raccourcis créés.
+    perMachine: false,
     createDesktopShortcut: true,
     runAfterFinish: true,
   },

@@ -307,7 +307,11 @@ body.low-power .dark-grain {
   object-fit: contain;
 }
 
-.intro-skip {
+/* Sélecteur combiné (.btn.intro-skip) plutôt que .intro-skip seul : .btn (plus bas dans
+   la feuille de style) impose sinon "position: relative" avec la même spécificité, et
+   l'emporte par ordre de déclaration - le bouton se retrouvait alors dans le flux normal
+   au lieu d'être épinglé en haut à droite, invisible hors de l'écran. */
+.btn.intro-skip {
   position: absolute;
   top: 24px;
   right: 24px;
