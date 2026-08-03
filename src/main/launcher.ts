@@ -15,6 +15,15 @@ export function isFiveMRunning(): Promise<boolean> {
   });
 }
 
+// Utilisé avant de vider le cache : les fichiers de data/ restent verrouillés tant que
+// FiveM tourne. taskkill retourne dès que la fermeture est demandée, avant que les
+// handles de fichiers ne soient réellement libérés par Windows - d'où le délai après.
+export function closeFiveM(): Promise<void> {
+  return new Promise((resolve) => {
+    exec('taskkill /IM FiveM.exe /F', () => resolve());
+  });
+}
+
 export async function connectToServer(config: ServerConfig): Promise<boolean> {
   const exePath = resolveFiveMPath();
   if (!exePath) return false;

@@ -27,10 +27,11 @@ import {
   setLowPowerMode,
 } from './store';
 import { isFiveMInstalled, resolveFiveMPath } from './fivemLocator';
-import { connectToServer, openFiveMDownloadPage, openDiscord, openTiktok, isFiveMRunning } from './launcher';
+import { connectToServer, openFiveMDownloadPage, openDiscord, openTiktok, isFiveMRunning, closeFiveM } from './launcher';
 import { fetchServerStatus } from './serverStatus';
 import { fetchNews } from './news';
 import { initAutoUpdater, installUpdateNow, checkForUpdatesManually } from './updater';
+import { clearFiveMCache } from './cacheCleaner';
 
 const STATUS_POLL_INTERVAL_MS = 30_000;
 const GITHUB_OWNER = 'Xexelevrai';
@@ -284,6 +285,17 @@ function registerIpcHandlers(): void {
 
   ipcMain.handle('news:get', async () => {
     return fetchNews(config);
+  });
+
+  ipcMain.handle('cache:isFiveMRunning', () => isFiveMRunning());
+
+  ipcMain.handle('cache:clear', () => clearFiveMCache());
+
+  ipcMain.handle('cache:closeFiveMAndClear', async () => {
+    await closeFiveM();
+    // Laisse le temps à Windows de libérer les handles de fichiers après la fermeture.
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return clearFiveMCache();
   });
 
   ipcMain.handle('app:quit', () => {

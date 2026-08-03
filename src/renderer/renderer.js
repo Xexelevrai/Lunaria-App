@@ -46,6 +46,16 @@
   const checkUpdateDesc = document.getElementById('check-update-desc');
   const DEFAULT_UPDATE_DESC = 'Vérifier manuellement si une nouvelle version est disponible.';
 
+  const clearCacheBtn = document.getElementById('clear-cache-btn');
+  const clearCacheDesc = document.getElementById('clear-cache-desc');
+  const DEFAULT_CLEAR_CACHE_DESC = "Supprime les fichiers temporaires de FiveM (ressources téléchargées, logs). Rien d'important n'est perdu.";
+  const clearCacheModal = document.getElementById('modal-clear-cache');
+  const clearCacheCancelBtn = document.getElementById('clear-cache-cancel-btn');
+  const clearCacheConfirmBtn = document.getElementById('clear-cache-confirm-btn');
+  const closeFivemModal = document.getElementById('modal-close-fivem');
+  const closeFivemCancelBtn = document.getElementById('close-fivem-cancel-btn');
+  const closeFivemConfirmBtn = document.getElementById('close-fivem-confirm-btn');
+
   const toggleLowPower = document.getElementById('toggle-low-power');
   const statusSkeleton = document.getElementById('status-skeleton');
 
@@ -392,6 +402,7 @@
     applyTheme(draftSettings.theme || 'gold');
     settingsSaveStatus.classList.remove('visible');
     checkUpdateDesc.textContent = DEFAULT_UPDATE_DESC;
+    clearCacheDesc.textContent = DEFAULT_CLEAR_CACHE_DESC;
   }
 
   introVideo.src = `${assetsBase}/video/intro.mp4`;
@@ -831,6 +842,14 @@
   // modifications non enregistrées).
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
+    if (!clearCacheModal.classList.contains('hidden')) {
+      clearCacheModal.classList.add('hidden');
+      return;
+    }
+    if (!closeFivemModal.classList.contains('hidden')) {
+      closeFivemModal.classList.add('hidden');
+      return;
+    }
     if (!unsavedSettingsModal.classList.contains('hidden')) {
       unsavedSettingsModal.classList.add('hidden');
       return;
@@ -905,6 +924,72 @@
     checkUpdateBtn.disabled = true;
     checkUpdateDesc.textContent = 'Vérification en cours...';
     window.lunaria.checkForUpdates();
+  });
+
+  let clearCacheRevertTimer = null;
+
+  function reportClearCacheResult(result) {
+    if (!result.fivemFound) {
+      clearCacheDesc.textContent = 'FiveM introuvable — rien à vider.';
+    } else if (result.cleared.length === 0) {
+      clearCacheDesc.textContent = 'Le cache était déjà vide.';
+    } else {
+      clearCacheDesc.textContent = '🪄 Méfaits accomplis !';
+    }
+    // Annule un précédent minuteur de retour au texte par défaut : sinon un clic rapproché
+    // sur le bouton pourrait voir son message écrasé par le retour à zéro programmé par
+    // le clic précédent.
+    clearTimeout(clearCacheRevertTimer);
+    clearCacheRevertTimer = setTimeout(() => { clearCacheDesc.textContent = DEFAULT_CLEAR_CACHE_DESC; }, 4000);
+  }
+
+  async function runClearCache() {
+    clearCacheBtn.disabled = true;
+    clearCacheDesc.textContent = 'Suppression en cours...';
+    try {
+      const result = await window.lunaria.clearFiveMCache();
+      reportClearCacheResult(result);
+    } finally {
+      clearCacheBtn.disabled = false;
+    }
+  }
+
+  async function runCloseFivemAndClearCache() {
+    clearCacheBtn.disabled = true;
+    clearCacheDesc.textContent = 'Fermeture de FiveM...';
+    try {
+      const result = await window.lunaria.closeFiveMAndClearCache();
+      reportClearCacheResult(result);
+    } finally {
+      clearCacheBtn.disabled = false;
+    }
+  }
+
+  clearCacheBtn.addEventListener('click', () => {
+    clearCacheModal.classList.remove('hidden');
+  });
+
+  clearCacheCancelBtn.addEventListener('click', () => {
+    clearCacheModal.classList.add('hidden');
+  });
+
+  clearCacheConfirmBtn.addEventListener('click', async () => {
+    clearCacheModal.classList.add('hidden');
+    const running = await window.lunaria.isFiveMRunning();
+    if (running) {
+      closeFivemModal.classList.remove('hidden');
+    } else {
+      await runClearCache();
+    }
+  });
+
+  closeFivemCancelBtn.addEventListener('click', () => {
+    closeFivemModal.classList.add('hidden');
+  });
+
+  closeFivemConfirmBtn.addEventListener('click', async () => {
+    closeFivemModal.classList.add('hidden');
+    await runCloseFivemAndClearCache();
   });
 
   window.lunaria.onUpdateStatus((status) => {
