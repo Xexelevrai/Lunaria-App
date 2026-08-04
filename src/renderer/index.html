@@ -34,6 +34,7 @@
   <audio id="bg-music" loop></audio>
   <audio id="quiz-music" loop></audio>
   <audio id="faq-music" loop></audio>
+  <audio id="lore-music" loop></audio>
   <!-- Couche sonore additionnelle qui se superpose à bg-music (jamais seule) : calée sur
        le même instant de lecture, elle apparaît en fondu uniquement dans les Paramètres. -->
   <audio id="settings-music" loop></audio>
@@ -71,12 +72,30 @@
       <div class="brand">
         <img id="brand-logo" alt="Lunaria" class="logo" />
       </div>
-      <div class="topbar-side topbar-side-right">
-        <button id="open-faq" class="btn btn-icon" title="FAQ Lunaria">❓</button>
-        <button id="open-quiz" class="btn btn-icon" title="Quiz Lunaria">📜</button>
-        <button id="open-settings" class="btn btn-icon" title="Paramètres">⚙</button>
-      </div>
+      <div class="topbar-side topbar-side-right"></div>
     </header>
+
+    <!-- Rail de navigation façon reliure de grimoire, accroché au bord droit de la
+         fenêtre - remplace les anciennes icônes seules de la topbar (peu lisibles sans
+         survol). Icône + libellé toujours visibles, pas besoin d'attendre une infobulle. -->
+    <nav class="nav-rail">
+      <button id="open-lore" class="btn nav-rail-item" title="Lore de Lunaria">
+        <span class="nav-icon">📖</span>
+        <span class="nav-label">Lore</span>
+      </button>
+      <button id="open-quiz" class="btn nav-rail-item" title="Quiz Lunaria">
+        <span class="nav-icon">📜</span>
+        <span class="nav-label">Quiz</span>
+      </button>
+      <button id="open-faq" class="btn nav-rail-item" title="FAQ Lunaria">
+        <span class="nav-icon">❓</span>
+        <span class="nav-label">FAQ</span>
+      </button>
+      <button id="open-settings" class="btn nav-rail-item" title="Paramètres">
+        <span class="nav-icon">⚙</span>
+        <span class="nav-label">Réglages</span>
+      </button>
+    </nav>
 
     <div id="autoconnect-banner" class="autoconnect-banner hidden">
       <span>Connexion automatique dans <strong id="autoconnect-count">5</strong>s...</span>
@@ -571,6 +590,134 @@
             Rejoindre le Discord
           </button>
         </footer>
+
+      </div>
+    </main>
+  </section>
+
+  <!-- Vue Lore -->
+  <section id="view-lore" class="view">
+    <header class="topbar">
+      <button id="close-lore" class="btn btn-icon" title="Retour">←</button>
+      <span class="brand-name">Lore de Lunaria</span>
+      <div class="topbar-side topbar-side-right"></div>
+    </header>
+    <main class="main-content lore-content">
+      <div class="lore-wrap">
+
+        <header class="lore-header">
+          <div class="lore-moon"></div>
+          <div class="lore-eyebrow">Académie Lunaria · Guide de l'élève</div>
+          <h1 class="lore-title">Brumelune</h1>
+          <p class="lore-subtitle">À toi qui poses le pied sur l'île pour la première fois — voici ce que tout nouvel élève doit savoir.</p>
+        </header>
+
+        <div class="lore-phases"><span></span><span></span><span></span><span></span><span></span></div>
+
+        <section class="lore-chapter">
+          <div class="lore-chapter-label">Chapitre Premier</div>
+          <h2>L'Île de Brumelune</h2>
+          <p class="lore-lettrine">Loin des regards des non-mages s'étend l'Île de Brumelune, terre ancestrale du monde magique. Depuis des temps immémoriaux, elle est dissimulée par le <strong>Voile</strong>, un enchantement millénaire qui la rend invisible aux yeux de ceux qui ne portent pas la magie en eux.</p>
+          <p>Le Voile est la première règle de notre monde. Tant qu'il tient, les sorciers vivent libres ; s'il se déchire, tout ce que nous sommes est exposé. C'est pourquoi le <strong>Secret</strong> n'est pas une coutume mais une loi : nul ne révèle la magie à un non-mage.</p>
+          <p>Mais le Voile n'est pas qu'un mur. C'est une frontière entre deux mondes — et de l'autre côté s'étend un <strong>entre-monde de brume</strong>, un océan de magie brute, informe et affamée. Ce que le Voile y retient exactement, les archives ne le disent pas aux élèves. On enseigne seulement ceci : la brume n'est pas un décor, et ceux qui s'y aventurent ne reviennent pas tous.</p>
+          <p>C'est sur Brumelune que battait autrefois le cœur de la société sorcière. Et c'est là que se dresse, fière et retrouvée, l'<strong>Académie Lunaria</strong>.</p>
+        </section>
+
+        <div class="lore-phases"><span></span><span></span><span></span><span></span><span></span></div>
+
+        <section class="lore-chapter">
+          <div class="lore-chapter-label">Chapitre II</div>
+          <h2>La Fondation de Lunaria</h2>
+          <p class="lore-lettrine">Aux origines du monde magique, la magie ne s'apprenait que de maître à apprenti, dans le secret et l'inégalité. <strong>Merlin</strong> fut le premier à rêver d'autre chose : un lieu où la magie s'enseignerait à tous. Sur l'île de Brumelune, il fonda l'Académie Lunaria et en devint le premier directeur.</p>
+          <p>Pour bâtir l'école, il fit appel à ses plus brillants disciples. Quatre d'entre eux fondèrent les quatre maisons, chacune à son image — et chacun lia son nom à une créature de l'île, dont l'école porte encore l'emblème.</p>
+          <p>Merlin disait d'eux : <em>« La magie n'est entière que lorsqu'ils se tiennent ensemble. »</em></p>
+          <p>Les fondateurs sont morts il y a bien longtemps, et Merlin s'en est allé peu après. Les circonstances exactes ne figurent dans aucun manuel remis aux élèves. Si tu veux les connaître, il faudra chercher — les archives de l'école ne sont pas toutes ouvertes.</p>
+        </section>
+
+        <div class="lore-phases"><span></span><span></span><span></span><span></span><span></span></div>
+
+        <section class="lore-chapter">
+          <div class="lore-chapter-label">Chapitre III</div>
+          <h2>Les Quatre Maisons</h2>
+          <p>Chaque élève de Lunaria appartient à une maison. Elle n'est pas un simple dortoir : c'est une famille, une réputation, une manière d'affronter les problèmes. On ne choisit pas tout à fait sa maison — on la mérite.</p>
+
+          <div class="lore-maison lore-maison-arden">
+            <h3>Arden</h3>
+            <p class="lore-blason">Feu · Phénix · Fondatrice : Maëve Arden</p>
+            <p>La maison du courage et de l'élan. On y forme ceux qui entrent dans le brasier quand les autres montent aux hauteurs — protecteurs, meneurs, têtes brûlées. Le phénix de Maëve, dit-on, n'a jamais quitté l'île ; sa lignée veille toujours sur Lunaria.</p>
+            <p class="lore-devise-maison">La maison Arden honore ceux qui avancent quand tout brûle.</p>
+          </div>
+
+          <div class="lore-maison lore-maison-hydras">
+            <h3>Hydras</h3>
+            <p class="lore-blason">Eau · Hydre · Fondateur : Aldéric Hydras</p>
+            <p>La maison de la ruse et de la patience. Aldéric n'a jamais vaincu l'hydre des récifs : il a négocié avec elle, et le pacte tient encore. On y forme les stratèges, les diplomates, les langues habiles — et parfois ceux qu'il vaut mieux avoir de son côté. Les marins jurent qu'on aperçoit encore, les nuits de tempête, douze paires d'yeux qui veillent sous l'écume.</p>
+            <p class="lore-devise-maison">La maison Hydras honore ceux qui gagnent par l'esprit ce que la force ne peut prendre.</p>
+          </div>
+
+          <div class="lore-maison lore-maison-aerion">
+            <h3>Aérion</h3>
+            <p class="lore-blason">Air · Hippogriffe · Fondatrice : Lyra Aérion</p>
+            <p>La maison du savoir et de la liberté. Lyra passa un hiver entier sur les falaises du nord, sans baguette, à apprendre la langue silencieuse des hippogriffes — jusqu'à ce que l'un d'eux la porte, non par dressage, mais par choix. On y forme les chercheurs, les explorateurs, ceux qui comprennent avant de conquérir. Ses carnets sont toujours conservés à l'école.</p>
+            <p class="lore-devise-maison">La maison Aérion honore ceux qui comprennent avant de conquérir.</p>
+          </div>
+
+          <div class="lore-maison lore-maison-tanora">
+            <h3>Tanora</h3>
+            <p class="lore-blason">Terre · Tanuki · Fondateur : Isandro Tanora</p>
+            <p>La maison de la loyauté et de l'endurance. Isandro passa sept ans sous l'école à souder la roche pendant que les autres élevaient les tours, accompagné d'un vieux tanuki métamorphe qui prenait chaque jour un visage différent. On y forme les bâtisseurs, les artisans, ceux qui restent. Le gouffre sous les fondations existe toujours — et les élèves de Tanora jurent qu'en y descendant, on entend parfois un rire.</p>
+            <p class="lore-devise-maison">La maison Tanora honore ceux qui restent, travaillent et rient malgré tout.</p>
+          </div>
+        </section>
+
+        <div class="lore-phases"><span></span><span></span><span></span><span></span><span></span></div>
+
+        <section class="lore-chapter">
+          <div class="lore-chapter-label">Chapitre IV</div>
+          <h2>Le Siècle Noir</h2>
+          <p class="lore-lettrine">Pendant des siècles, le monde magique eut deux écoles : Lunaria sur Brumelune, et sa sœur <strong>Arcanhem</strong> sur le continent. Il y a cent ans, tout s'est effondré en une génération.</p>
+          <p>Arcanhem disparut d'abord — en une seule nuit d'hiver. Les circonstances n'ont jamais été rendues publiques ; il ne resta ni bâtiment, ni élèves, ni explication officielle. Puis ce fut au tour des professeurs de Lunaria : assassinés, corrompus ou disparus, un à un, sans que personne ne parvienne à les protéger.</p>
+          <p>Décapitée, l'école ne pouvait plus ni enseigner ni protéger ses élèves. Le gouvernement de la magie prit alors la décision la plus lourde de son histoire : <strong>fermer Lunaria et sceller son domaine.</strong></p>
+          <p>Sans école, plus personne pour former les jeunes sorciers. Les familles firent ce qu'elles purent : transmission orale, vieux grimoires, maîtres privés réservés aux plus fortunés. Des générations entières grandirent en portant la magie en elles, sans jamais apprendre à la maîtriser. Les accidents magiques se multiplièrent, et à plusieurs reprises, les non-mages frôlèrent la découverte de notre monde.</p>
+          <div class="lore-encart">
+            <p>Pour limiter les catastrophes, le gouvernement de la magie imposa le <strong>Gel</strong> : l'interdiction de toute pratique magique non encadrée. La plupart des sorciers durent alors vivre comme des non-mages, leur magie bridée, cachée, ou simplement ignorée. L'île de Brumelune se vida peu à peu, ses habitants dispersés dans le monde des non-mages.</p>
+          </div>
+        </section>
+
+        <div class="lore-phases"><span></span><span></span><span></span><span></span><span></span></div>
+
+        <section class="lore-chapter">
+          <div class="lore-chapter-label">Chapitre V</div>
+          <h2>La Réouverture</h2>
+          <p class="lore-lettrine">Aujourd'hui, après cent ans de silence, le constat est sans appel : <strong>le monde magique manque cruellement d'écoles.</strong> Une génération entière de sorciers mal formés, des accidents en hausse, un secret de plus en plus difficile à garder.</p>
+          <p>Le gouvernement de la magie a donc nommé un nouveau directeur, <strong>Makarov</strong>, et lui a confié une mission historique : rouvrir l'Académie Lunaria et rebâtir, sur les cendres de l'ancien, un corps professoral digne de ce nom.</p>
+          <p>Les grilles de Lunaria se sont rouvertes. Avec elles, l'île de Brumelune revit : les familles reviennent, les commerces rouvrent, la vie sorcière renaît là où elle était née.</p>
+          <p>Tout n'est pas réglé pour autant. Les anciens murmurent que, les nuits sans lune, la brume s'épaissit anormalement sur les falaises du nord. On leur répond que ce sont des histoires de vieux. Peut-être.</p>
+        </section>
+
+        <div class="lore-phases"><span></span><span></span><span></span><span></span><span></span></div>
+
+        <section class="lore-reperes">
+          <h3>L'essentiel à retenir</h3>
+          <ul>
+            <li><strong>Le Voile</strong> cache Brumelune aux non-mages. Le Secret est une loi, pas une habitude.</li>
+            <li><strong>L'entre-monde de brume</strong> existe de l'autre côté du Voile. Il est réel, il est dangereux, et l'école n'en dit pas grand-chose.</li>
+            <li><strong>Lunaria</strong> a été fondée par Merlin, bâtie par ses disciples, et fermée pendant cent ans.</li>
+            <li><strong>Quatre maisons</strong> : Arden (feu), Hydras (eau), Aérion (air), Tanora (terre).</li>
+            <li><strong>Le Gel</strong> a interdit la magie non encadrée pendant un siècle. Ton personnage a grandi sous ce régime.</li>
+            <li><strong>Makarov</strong> dirige l'école rouverte et recrute encore ses professeurs.</li>
+            <li><strong>Le reste s'apprend en jeu.</strong> Les archives fermées, les rumeurs de la brume et les vieilles histoires ne se lisent pas : ils se découvrent.</li>
+          </ul>
+        </section>
+
+        <section class="lore-final">
+          <div class="lore-chapter-label">Dernier Chapitre</div>
+          <h2>Toi, l'élève</h2>
+          <p>Les premiers admis de la nouvelle Lunaria ne sont pas des enfants. Ce sont des adultes, âgés de 18 ans et plus — ceux qui ont grandi pendant le Gel, sans formation, sans guide.</p>
+          <p>Certains découvrent à peine leurs dons. D'autres ont pratiqué en secret, parfois au mépris des règles... et pas toujours de la magie propre.</p>
+          <p>Quelle que soit ton histoire, ta place est ici désormais. Une maison t'attend : le feu d'<strong>Arden</strong>, les eaux d'<strong>Hydras</strong>, les vents d'<strong>Aérion</strong> ou la terre de <strong>Tanora</strong>.</p>
+          <div class="lore-devise">Bienvenue à Lunaria</div>
+        </section>
 
       </div>
     </main>
