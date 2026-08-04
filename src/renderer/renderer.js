@@ -633,9 +633,11 @@
     document.body.setAttribute('data-theme', t);
     themeSwatches.forEach((sw) => sw.classList.toggle('active', sw.dataset.theme === t));
     brandLogo.src = `${assetsBase}/images/${THEME_LOGOS[t] || THEME_LOGOS.gold}`;
-    // Le reflet du logo (.brand::after) est masqué à cette même image pour rester
-    // cantonné aux lettres visibles - doit rester synchronisé à chaque changement de thème.
-    brandEl.style.setProperty('--logo-mask', `url(${brandLogo.src})`);
+    // Le reflet des logos (.brand::after et .topbar-brand-mini::after) est masqué à cette
+    // même image pour rester cantonné aux lettres visibles - posé sur :root (plutôt que
+    // sur .brand seul) pour que les deux logos en héritent, doit rester synchronisé à
+    // chaque changement de thème.
+    document.documentElement.style.setProperty('--logo-mask', `url(${brandLogo.src})`);
     quizBrandLogo.src = brandLogo.src;
     applyMenuMusicForTheme(t);
     setParticlesTheme();
@@ -742,6 +744,22 @@
     showView(viewMain);
     crossfadeMusic(bgMusic, loreMusic);
   });
+
+  // Apparition/disparition des sections du Lore au scroll (façon révélation magique) :
+  // .in-view bascule dans les deux sens selon isIntersecting, pas seulement à la première
+  // apparition - le texte s'efface donc aussi en remontant, pas juste en descendant.
+  const loreRevealEls = document.querySelectorAll('.lore-reveal');
+  if (loreRevealEls.length && 'IntersectionObserver' in window) {
+    const loreRevealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          entry.target.classList.toggle('in-view', entry.isIntersecting);
+        });
+      },
+      { threshold: 0.15 }
+    );
+    loreRevealEls.forEach((el) => loreRevealObserver.observe(el));
+  }
 
   document.querySelectorAll('.faq-q').forEach((q) => {
     const item = q.closest('.faq-item');

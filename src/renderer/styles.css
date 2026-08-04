@@ -404,6 +404,31 @@ body.low-power .dark-grain {
   justify-self: center;
   display: flex;
   align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Même reflet lumineux périodique que le logo du menu principal (.brand::after) - voir
+   plus bas dans ce fichier pour le détail du masquage via --logo-mask. */
+.topbar-brand-mini::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(75deg, transparent 42%, rgba(255, 255, 255, 0.75) 50%, transparent 58%);
+  background-size: 250% 100%;
+  background-position: -20% 0;
+  opacity: 0;
+  animation: logo-shine 6.5s ease-in-out infinite;
+  pointer-events: none;
+  -webkit-mask-image: var(--logo-mask, none);
+  mask-image: var(--logo-mask, none);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
 }
 
 .topbar-logo {
@@ -2121,6 +2146,23 @@ body:not(.low-power) .lore-moon::before {
   font-family: var(--font-body);
   font-size: 1rem;
   line-height: 1.7;
+}
+
+/* Apparition/disparition des sections au scroll (façon révélation magique), pilotée en
+   JS par un IntersectionObserver qui bascule .in-view dans les deux sens - contrairement
+   à un simple "reveal one-shot", le texte s'efface aussi en remontant. Décoratif, donc
+   désactivé en mode faible consommation (tout reste visible d'emblée). */
+body:not(.low-power) .lore-reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  filter: blur(6px);
+  transition: opacity 0.7s ease, transform 0.7s ease, filter 0.7s ease;
+}
+
+body:not(.low-power) .lore-reveal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
 }
 
 .lore-chapter p strong {
