@@ -261,6 +261,7 @@
     quizExplanationTimerFill.style.transition = 'none';
     quizExplanationTimerFill.style.width = '0%';
     quizNextBtn.classList.add('hidden');
+    quizNextBtn.disabled = false;
     quizAnswersEl.innerHTML = '';
     current.answers.forEach((answer, i) => {
       const btn = document.createElement('button');
@@ -308,8 +309,14 @@
   }
 
   // Passe à la question suivante (ou au résultat) - appelé soit par le minuteur de
-  // l'explication, soit immédiatement via le bouton "Passer".
+  // l'explication, soit immédiatement via le bouton "Passer". Le garde-fou sur
+  // quizNextBtn.disabled évite qu'un double-clic (ou un clic pile au moment où le minuteur
+  // se déclenche tout seul) ne fasse avancer le quiz de deux questions d'un coup - le
+  // second appel tombait alors sur un bouton déjà masqué par le premier, ce qui pouvait
+  // donner l'impression que "Passer" ne répondait plus.
   function advanceQuiz() {
+    if (quizNextBtn.disabled) return;
+    quizNextBtn.disabled = true;
     clearTimeout(quizAdvanceTimeout);
     quizIndex += 1;
     if (quizIndex < quizQuestions.length) {
