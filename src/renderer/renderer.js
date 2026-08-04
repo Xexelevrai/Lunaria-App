@@ -110,6 +110,7 @@
   const clickSound = document.getElementById('click-sound');
   const muteToggleBtn = document.getElementById('mute-toggle');
   const volumeSlider = document.getElementById('volume-slider');
+  const audioControlsEl = document.querySelector('.audio-controls');
 
   const updateBanner = document.getElementById('update-banner');
   const updateBannerText = document.getElementById('update-banner-text');
@@ -443,6 +444,8 @@
   settingsMusic.volume = 0;
   settingsMusic.muted = musicIsMuted;
   volumeSlider.value = String(musicVolume ?? 25);
+  volumeSlider.style.setProperty('--volume-pct', `${volumeSlider.value}%`);
+  audioControlsEl.classList.toggle('is-muted', musicIsMuted);
 
   // L'icône reflète le niveau réel (coupé/faible/moyen/fort) plutôt qu'un simple bascule
   // muet/non-muet : plus lisible d'un coup d'œil, et cohérent même quand le volume est
@@ -528,6 +531,7 @@
     loreMusic.muted = musicIsMuted;
     settingsMusic.muted = musicIsMuted;
     updateVolumeIcon();
+    audioControlsEl.classList.toggle('is-muted', musicIsMuted);
     window.lunaria.setMusicMuted(musicIsMuted);
   });
 
@@ -538,6 +542,7 @@
     faqMusic.volume = musicTargetVolume;
     loreMusic.volume = musicTargetVolume;
     settingsMusic.volume = musicTargetVolume;
+    volumeSlider.style.setProperty('--volume-pct', `${volumeSlider.value}%`);
     updateVolumeIcon();
   });
   volumeSlider.addEventListener('change', () => {
