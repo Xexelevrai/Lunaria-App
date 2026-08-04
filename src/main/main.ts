@@ -170,6 +170,7 @@ function startStatusPolling(): void {
   const pushStatus = async () => {
     if (!mainWindow) return;
     const status = await fetchServerStatus(config);
+    if (!mainWindow) return;
     mainWindow.webContents.send('status:update', status);
   };
 

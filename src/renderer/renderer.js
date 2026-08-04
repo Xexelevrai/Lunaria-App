@@ -921,8 +921,8 @@
   });
 
   // Échap : ferme la pop-up de confirmation si elle est ouverte (comme "Annuler"), sinon
-  // agit comme le bouton ← pour quitter Paramètres (avec la même vérification des
-  // modifications non enregistrées).
+  // agit comme la flèche ← de la vue active pour revenir au menu (Paramètres garde en plus
+  // sa vérification des modifications non enregistrées).
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (!clearCacheModal.classList.contains('hidden')) {
@@ -939,6 +939,18 @@
     }
     if (viewSettings.classList.contains('active')) {
       attemptLeaveSettings();
+      return;
+    }
+    if (viewQuiz.classList.contains('active')) {
+      closeQuizBtn.click();
+      return;
+    }
+    if (viewFaq.classList.contains('active')) {
+      closeFaqBtn.click();
+      return;
+    }
+    if (viewLore.classList.contains('active')) {
+      closeLoreBtn.click();
     }
   });
 
