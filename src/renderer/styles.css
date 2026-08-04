@@ -407,7 +407,7 @@ body.low-power .dark-grain {
 }
 
 .topbar-logo {
-  height: clamp(64px, 9vmin, 100px);
+  height: clamp(90px, 13vmin, 150px);
   width: auto;
 }
 

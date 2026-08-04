@@ -483,7 +483,12 @@
   // qu'il rejouait quelques secondes déjà entendues une fois relancé plus tard.
   const fadeGenerations = new WeakMap();
 
-  function fadeAudioVolume(el, target, duration) {
+  // pauseOnZero: la piste sortante d'un fondu croisé peut se mettre en pause une fois
+  // totalement éteinte (elle redémarrera via crossfadeMusic la prochaine fois). La piste
+  // entrante, elle, ne doit JAMAIS se mettre en pause même si sa cible est 0 (volume à 0
+  // ou muet) : sinon, remonter le volume ensuite ne change que .volume sans relancer la
+  // lecture, et le son reste coupé malgré un curseur non nul (bug reporté par l'utilisateur).
+  function fadeAudioVolume(el, target, duration, pauseOnZero = true) {
     const generation = (fadeGenerations.get(el) || 0) + 1;
     fadeGenerations.set(el, generation);
     const start = el.volume;
@@ -494,7 +499,7 @@
       el.volume = Math.min(1, Math.max(0, start + (target - start) * t));
       if (t < 1) {
         requestAnimationFrame(step);
-      } else if (target === 0) {
+      } else if (target === 0 && pauseOnZero) {
         el.pause();
       }
     }
@@ -507,7 +512,7 @@
       nextEl.volume = 0;
       nextEl.play().catch(() => {});
     }
-    fadeAudioVolume(nextEl, target, 900);
+    fadeAudioVolume(nextEl, target, 900, false);
     fadeAudioVolume(prevEl, 0, 900);
   }
 
@@ -779,8 +784,10 @@
   // Point d'entrée commun pour quitter Quiz (flèche ← ou touche Échap) : ne demande
   // confirmation que si une question est en cours (quiz-question visible), puisque c'est
   // le seul moment où quitter fait perdre une progression réelle.
+  // Ne demande confirmation qu'à partir de la question 2 (quizIndex > 0) : à la toute
+  // première question, aucune réponse n'a encore été donnée, il n'y a donc rien à perdre.
   function attemptLeaveQuiz() {
-    if (!quizQuestionEl.classList.contains('hidden')) {
+    if (!quizQuestionEl.classList.contains('hidden') && quizIndex > 0) {
       quizLeaveModal.classList.remove('hidden');
     } else {
       leaveQuizView();
