@@ -70,6 +70,10 @@
 
   const openQuizBtn = document.getElementById('open-quiz');
   const closeQuizBtn = document.getElementById('close-quiz');
+  const quizBrandLogo = document.getElementById('quiz-brand-logo');
+  const quizLeaveModal = document.getElementById('modal-quiz-leave');
+  const quizLeaveCancelBtn = document.getElementById('quiz-leave-cancel-btn');
+  const quizLeaveConfirmBtn = document.getElementById('quiz-leave-confirm-btn');
   const quizStartEl = document.getElementById('quiz-start');
   const quizQuestionEl = document.getElementById('quiz-question');
   const quizResultEl = document.getElementById('quiz-result');
@@ -168,7 +172,6 @@
     const unlocked = isDarkThemeUnlocked();
     darkThemeSwatch.classList.toggle('locked', !unlocked);
     darkThemeSwatch.disabled = !unlocked;
-    darkThemeSwatch.title = unlocked ? 'Sombre' : 'Sombre — débloqué en obtenant 10/10 au quiz';
   }
 
   function unlockDarkTheme() {
@@ -440,7 +443,22 @@
   settingsMusic.volume = 0;
   settingsMusic.muted = musicIsMuted;
   volumeSlider.value = String(musicVolume ?? 25);
-  muteToggleBtn.textContent = musicIsMuted ? '🔇' : '🔊';
+
+  // L'icône reflète le niveau réel (coupé/faible/moyen/fort) plutôt qu'un simple bascule
+  // muet/non-muet : plus lisible d'un coup d'œil, et cohérent même quand le volume est
+  // descendu à 0 via le curseur sans que "muet" soit activé.
+  function updateVolumeIcon() {
+    if (musicIsMuted || musicTargetVolume <= 0) {
+      muteToggleBtn.textContent = '🔇';
+    } else if (musicTargetVolume < 0.34) {
+      muteToggleBtn.textContent = '🔈';
+    } else if (musicTargetVolume < 0.67) {
+      muteToggleBtn.textContent = '🔉';
+    } else {
+      muteToggleBtn.textContent = '🔊';
+    }
+  }
+  updateVolumeIcon();
 
   function maybeStartMusic() {
     if (musicStarted || !viewMain.classList.contains('active')) return;
@@ -509,7 +527,7 @@
     faqMusic.muted = musicIsMuted;
     loreMusic.muted = musicIsMuted;
     settingsMusic.muted = musicIsMuted;
-    muteToggleBtn.textContent = musicIsMuted ? '🔇' : '🔊';
+    updateVolumeIcon();
     window.lunaria.setMusicMuted(musicIsMuted);
   });
 
@@ -520,6 +538,7 @@
     faqMusic.volume = musicTargetVolume;
     loreMusic.volume = musicTargetVolume;
     settingsMusic.volume = musicTargetVolume;
+    updateVolumeIcon();
   });
   volumeSlider.addEventListener('change', () => {
     window.lunaria.setMusicVolume(Number(volumeSlider.value));
@@ -607,6 +626,7 @@
     // Le reflet du logo (.brand::after) est masqué à cette même image pour rester
     // cantonné aux lettres visibles - doit rester synchronisé à chaque changement de thème.
     brandEl.style.setProperty('--logo-mask', `url(${brandLogo.src})`);
+    quizBrandLogo.src = brandLogo.src;
     applyMenuMusicForTheme(t);
     setParticlesTheme();
   }
@@ -745,17 +765,37 @@
     showView(viewQuiz);
     crossfadeMusic(quizMusic, bgMusic);
   });
-  closeQuizBtn.addEventListener('click', () => {
-    showView(viewMain);
-    crossfadeMusic(bgMusic, quizMusic);
-  });
-  quizStartBtn.addEventListener('click', startQuiz);
-  quizReplayBtn.addEventListener('click', startQuiz);
-  quizBackBtn.addEventListener('click', () => {
+  function leaveQuizView() {
     clearTimeout(quizAdvanceTimeout);
     showView(viewMain);
     crossfadeMusic(bgMusic, quizMusic);
+  }
+
+  // Point d'entrée commun pour quitter Quiz (flèche ← ou touche Échap) : ne demande
+  // confirmation que si une question est en cours (quiz-question visible), puisque c'est
+  // le seul moment où quitter fait perdre une progression réelle.
+  function attemptLeaveQuiz() {
+    if (!quizQuestionEl.classList.contains('hidden')) {
+      quizLeaveModal.classList.remove('hidden');
+    } else {
+      leaveQuizView();
+    }
+  }
+
+  closeQuizBtn.addEventListener('click', attemptLeaveQuiz);
+
+  quizLeaveCancelBtn.addEventListener('click', () => {
+    quizLeaveModal.classList.add('hidden');
   });
+
+  quizLeaveConfirmBtn.addEventListener('click', () => {
+    quizLeaveModal.classList.add('hidden');
+    leaveQuizView();
+  });
+
+  quizStartBtn.addEventListener('click', startQuiz);
+  quizReplayBtn.addEventListener('click', startQuiz);
+  quizBackBtn.addEventListener('click', leaveQuizView);
   quizJokerBtn.addEventListener('click', handleQuizJoker);
   quizNextBtn.addEventListener('click', advanceQuiz);
   // Reviens à l'état confirmé si on quitte sans sauvegarder (ex : thème/mode faible
@@ -935,6 +975,10 @@
     }
     if (!unsavedSettingsModal.classList.contains('hidden')) {
       unsavedSettingsModal.classList.add('hidden');
+      return;
+    }
+    if (!quizLeaveModal.classList.contains('hidden')) {
+      quizLeaveModal.classList.add('hidden');
       return;
     }
     if (viewSettings.classList.contains('active')) {

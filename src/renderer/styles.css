@@ -398,6 +398,19 @@ body.low-power .dark-grain {
   justify-self: center;
 }
 
+/* Logo réduit utilisé dans la topbar du Quiz, à la place d'un texte "Quiz Lunaria" -
+   même image que le logo principal (suit le thème), simplement plus petite. */
+.topbar-brand-mini {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+}
+
+.topbar-logo {
+  height: clamp(36px, 5vmin, 56px);
+  width: auto;
+}
+
 /* --- Main content --- */
 .main-content {
   flex: 1;
@@ -959,8 +972,10 @@ body.low-power .dark-grain {
 }
 
 /* --- Contrôles audio (musique de fond) --- */
+/* position:fixed (et non plus absolute imbriqué dans #view-main) : visible sur toutes les
+   vues (menu, Paramètres, Quiz, FAQ, Lore), pas seulement le menu principal. */
 .audio-controls {
-  position: absolute;
+  position: fixed;
   bottom: clamp(16px, 3vmin, 32px);
   right: clamp(16px, 3vmin, 32px);
   z-index: 2;
@@ -972,6 +987,12 @@ body.low-power .dark-grain {
   border: 1px solid var(--border-gold);
   border-radius: 999px;
   backdrop-filter: blur(4px);
+}
+
+/* Masqués pendant l'intro : ils ne pilotent pas le son de la vidéo, les afficher là
+   laisserait croire qu'ils agissent sur quelque chose qu'ils ne contrôlent pas. */
+body:has(#view-intro.active) .audio-controls {
+  display: none;
 }
 
 .volume-slider {
@@ -1897,7 +1918,11 @@ body.low-power .nav-rail-item:hover {
 
 .lore-header {
   text-align: center;
-  padding: 16px 0 40px;
+  /* Le padding du haut donne de la place au halo de la lune (voir .lore-moon::before) :
+     .main-content défile (overflow-y:auto, qui force aussi un clip en x), donc sans cette
+     marge le halo se retrouvait tronqué net contre le bord du conteneur au lieu de
+     s'estomper progressivement. */
+  padding: 96px 0 40px;
 }
 
 .lore-moon {
@@ -1916,7 +1941,7 @@ body.low-power .nav-rail-item:hover {
 .lore-moon::before {
   content: '';
   position: absolute;
-  inset: -130px;
+  inset: -80px;
   border-radius: 50%;
   background: radial-gradient(
     circle,
