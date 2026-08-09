@@ -2379,6 +2379,78 @@ body:not(.low-power) .lore-reveal.in-view {
   margin-right: auto;
 }
 
+/* Sections de la boutique (Balais, puis d'autres types d'articles à venir) : seule
+   "Balais" a du contenu pour l'instant, les autres restent grisées jusqu'à l'ajout de
+   nouveaux articles - même logique que les cases "à venir" de la grille elle-même. */
+.boutique-categories {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 34px;
+}
+
+.boutique-category {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 96px;
+  padding: 14px 22px;
+  border: 1px solid var(--border-gold);
+  background: var(--bg-elevated);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.boutique-category:hover {
+  transform: translateY(-3px);
+  border-color: var(--gold-bright);
+}
+
+.boutique-category.is-active {
+  border-color: var(--gold-bright);
+  box-shadow: 0 0 16px rgba(var(--glow-rgb), 0.2);
+}
+
+.boutique-category.is-active .boutique-category-name {
+  color: var(--gold-bright);
+}
+
+.boutique-category-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.boutique-category-name {
+  font-family: var(--font-heading);
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.boutique-category-locked {
+  cursor: default;
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+.boutique-category-locked:hover {
+  transform: none;
+  border-color: var(--border-gold);
+  box-shadow: none;
+}
+
+body.low-power .boutique-category {
+  transition: none;
+}
+
+body.low-power .boutique-category:hover {
+  transform: none;
+}
+
 .boutique-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));

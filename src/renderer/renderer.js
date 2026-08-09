@@ -71,6 +71,7 @@
 
   const openBoutiqueBtn = document.getElementById('open-boutique');
   const closeBoutiqueBtn = document.getElementById('close-boutique');
+  const boutiqueCategoriesEl = document.getElementById('boutique-categories');
   const boutiqueGrid = document.getElementById('boutique-grid');
 
   const openQuizBtn = document.getElementById('open-quiz');
@@ -793,7 +794,48 @@
   ];
   const BOUTIQUE_PLACEHOLDER_COUNT = 4;
 
+  // Sections de la boutique : seule "Balais" a du contenu pour l'instant. D'autres types
+  // d'articles arriveront plus tard - en attendant, leur section reste grisée et non
+  // cliquable, comme les cases "à venir" à l'intérieur d'une section.
+  const BOUTIQUE_CATEGORIES = [
+    { id: 'balais', icon: '🧹', name: 'Balais', available: true },
+    { id: 'bientot-1', icon: '🔒', name: 'Bientôt disponible', available: false },
+    { id: 'bientot-2', icon: '🔒', name: 'Bientôt disponible', available: false },
+  ];
+  let activeBoutiqueCategory = 'balais';
+
+  function renderBoutiqueCategories() {
+    boutiqueCategoriesEl.innerHTML = '';
+    BOUTIQUE_CATEGORIES.forEach((cat) => {
+      const el = document.createElement('div');
+      el.className = 'boutique-category';
+      if (!cat.available) el.classList.add('boutique-category-locked');
+      if (cat.id === activeBoutiqueCategory) el.classList.add('is-active');
+      const icon = document.createElement('span');
+      icon.className = 'boutique-category-icon';
+      icon.textContent = cat.icon;
+      const name = document.createElement('span');
+      name.className = 'boutique-category-name';
+      name.textContent = cat.name;
+      el.appendChild(icon);
+      el.appendChild(name);
+      if (cat.available) {
+        el.addEventListener('click', () => {
+          if (activeBoutiqueCategory === cat.id) return;
+          activeBoutiqueCategory = cat.id;
+          renderBoutiqueCategories();
+          renderBoutique();
+        });
+      }
+      boutiqueCategoriesEl.appendChild(el);
+    });
+  }
+
   function renderBoutique() {
+    if (activeBoutiqueCategory !== 'balais') {
+      boutiqueGrid.innerHTML = '';
+      return;
+    }
     boutiqueGrid.innerHTML = '';
 
     BOUTIQUE_ITEMS.forEach((item, i) => {
@@ -864,6 +906,7 @@
       boutiqueGrid.appendChild(placeholder);
     }
   }
+  renderBoutiqueCategories();
   renderBoutique();
 
   openBoutiqueBtn.addEventListener('click', () => {
@@ -1068,7 +1111,7 @@
   // particules plus dense et lumineuse, qui s'estompe peu après. Marche sur toutes les
   // vues, contrairement à la traînée passive au survol ci-dessus (limitée au menu).
   const DRAW_BLOCKED_SELECTOR =
-    'button, input, a, .server-card, .settings-row, .quiz-card, .modal-box, .theme-swatch, .display-mode-btn, .social-button, .faq-item, .lore-maison, .lore-reperes, .lore-final, .boutique-card';
+    'button, input, a, .server-card, .settings-row, .quiz-card, .modal-box, .theme-swatch, .display-mode-btn, .social-button, .faq-item, .lore-maison, .lore-reperes, .lore-final, .boutique-card, .boutique-category';
   let isDrawingActive = false;
   let lastDrawPoint = null;
 
