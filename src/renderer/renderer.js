@@ -5,7 +5,8 @@
   const viewQuiz = document.getElementById('view-quiz');
   const viewFaq = document.getElementById('view-faq');
   const viewLore = document.getElementById('view-lore');
-  const ALL_VIEWS = [viewIntro, viewMain, viewSettings, viewQuiz, viewFaq, viewLore];
+  const viewBoutique = document.getElementById('view-boutique');
+  const ALL_VIEWS = [viewIntro, viewMain, viewSettings, viewQuiz, viewFaq, viewLore, viewBoutique];
 
   const introVideo = document.getElementById('intro-video');
   const introOverlay = document.getElementById('intro-overlay');
@@ -68,6 +69,10 @@
   const openLoreBtn = document.getElementById('open-lore');
   const closeLoreBtn = document.getElementById('close-lore');
 
+  const openBoutiqueBtn = document.getElementById('open-boutique');
+  const closeBoutiqueBtn = document.getElementById('close-boutique');
+  const boutiqueGrid = document.getElementById('boutique-grid');
+
   const openQuizBtn = document.getElementById('open-quiz');
   const closeQuizBtn = document.getElementById('close-quiz');
   const quizBrandLogo = document.getElementById('quiz-brand-logo');
@@ -106,6 +111,7 @@
   const quizMusic = document.getElementById('quiz-music');
   const faqMusic = document.getElementById('faq-music');
   const loreMusic = document.getElementById('lore-music');
+  const boutiqueMusic = document.getElementById('boutique-music');
   const settingsMusic = document.getElementById('settings-music');
   const clickSound = document.getElementById('click-sound');
   const muteToggleBtn = document.getElementById('mute-toggle');
@@ -419,6 +425,7 @@
   quizMusic.src = `${assetsBase}/audio/background-quizz.mp3`;
   faqMusic.src = `${assetsBase}/audio/background-faq.mp3`;
   loreMusic.src = `${assetsBase}/audio/background-Lore.mp3`;
+  boutiqueMusic.src = `${assetsBase}/audio/Background-Boutique.mp3`;
   settingsMusic.src = `${assetsBase}/audio/parametre.mp3`;
   clickSound.src = `${assetsBase}/audio/click2.mp3`;
   quizCorrectSound.src = `${assetsBase}/audio/valider.mp3`;
@@ -439,6 +446,8 @@
   faqMusic.muted = musicIsMuted;
   loreMusic.volume = 0;
   loreMusic.muted = musicIsMuted;
+  boutiqueMusic.volume = 0;
+  boutiqueMusic.muted = musicIsMuted;
   // settingsMusic remplace bgMusic (qui se tait) le temps des Paramètres, via le même
   // fondu croisé que les autres vues - voir openSettingsBtn/leaveSettingsView plus bas.
   settingsMusic.volume = 0;
@@ -534,6 +543,7 @@
     quizMusic.muted = musicIsMuted;
     faqMusic.muted = musicIsMuted;
     loreMusic.muted = musicIsMuted;
+    boutiqueMusic.muted = musicIsMuted;
     settingsMusic.muted = musicIsMuted;
     updateVolumeIcon();
     audioControlsEl.classList.toggle('is-muted', musicIsMuted);
@@ -546,6 +556,7 @@
     quizMusic.volume = musicTargetVolume;
     faqMusic.volume = musicTargetVolume;
     loreMusic.volume = musicTargetVolume;
+    boutiqueMusic.volume = musicTargetVolume;
     settingsMusic.volume = musicTargetVolume;
     volumeSlider.style.setProperty('--volume-pct', `${volumeSlider.value}%`);
     updateVolumeIcon();
@@ -615,7 +626,7 @@
   // Fondu enchaîné (fondu de sortie court, puis l'entrée classique view-in) entre les
   // vues qu'on traverse en va-et-vient pendant l'usage normal (menu, Paramètres, Quiz).
   // L'intro garde son comportement instantané d'origine.
-  const FADEABLE_VIEWS = [viewMain, viewSettings, viewQuiz, viewFaq, viewLore];
+  const FADEABLE_VIEWS = [viewMain, viewSettings, viewQuiz, viewFaq, viewLore, viewBoutique];
 
   function showView(view) {
     const current = ALL_VIEWS.find((v) => v.classList.contains('active') && v !== view);
@@ -760,6 +771,109 @@
     );
     loreRevealEls.forEach((el) => loreRevealObserver.observe(el));
   }
+
+  // --- Boutique : articles cosmétiques (balais), vendus via Ko-fi. Rendu depuis un
+  // tableau plutôt qu'en HTML statique - la liste est amenée à s'agrandir au fil du temps.
+  const BOUTIQUE_ITEMS = [
+    {
+      id: 'chromaflight',
+      name: 'ChromaFlight',
+      image: 'boutique/chromaflight.jpg',
+      price: '4,99 €',
+      badge: 'Jetons',
+      note: 'Débloquable gratuitement en jeu (contre des jetons) • Couleur au choix',
+    },
+    { id: 'bloomweaver', name: 'Bloomweaver', image: 'boutique/bloomweaver.jpg', price: '9,99 €' },
+    { id: 'grim-jester', name: 'Grim Jester', image: 'boutique/grim-jester.jpg', price: '9,99 €' },
+    { id: 'nightreaper', name: 'Nightreaper', image: 'boutique/nightreaper.jpg', price: '9,99 €' },
+    { id: 'ravenfang', name: 'Ravenfang', image: 'boutique/ravenfang.jpg', price: '9,99 €' },
+    { id: 'velocity-x', name: 'Velocity-X', image: 'boutique/velocity-x.jpg', price: '9,99 €' },
+    { id: 'verdant-whisper', name: 'Verdant Whisper', image: 'boutique/verdant-whisper.jpg', price: '9,99 €' },
+    { id: 'void-dragon', name: 'Void Dragon', image: 'boutique/void-dragon.jpg', price: '9,99 €' },
+  ];
+  const BOUTIQUE_PLACEHOLDER_COUNT = 4;
+
+  function renderBoutique() {
+    boutiqueGrid.innerHTML = '';
+
+    BOUTIQUE_ITEMS.forEach((item, i) => {
+      const card = document.createElement('div');
+      card.className = 'boutique-card';
+      card.dataset.id = item.id;
+
+      const media = document.createElement('div');
+      media.className = 'boutique-card-media';
+      // Décale le scintillement de chaque carte pour éviter qu'elles ne clignotent
+      // toutes en même temps (5 décalages qui se répètent, purement cosmétique).
+      media.style.setProperty('--shine-delay', `${(i % 5) * 1.4}s`);
+      const img = document.createElement('img');
+      img.src = `${assetsBase}/images/${item.image}`;
+      img.alt = item.name;
+      media.appendChild(img);
+      if (item.badge) {
+        const badge = document.createElement('span');
+        badge.className = 'boutique-card-badge';
+        badge.textContent = item.badge;
+        media.appendChild(badge);
+      }
+      card.appendChild(media);
+
+      const body = document.createElement('div');
+      body.className = 'boutique-card-body';
+      const h3 = document.createElement('h3');
+      h3.textContent = item.name;
+      body.appendChild(h3);
+      card.appendChild(body);
+
+      const reveal = document.createElement('div');
+      reveal.className = 'boutique-card-reveal';
+      const price = document.createElement('p');
+      price.className = 'boutique-card-price';
+      price.textContent = item.price;
+      reveal.appendChild(price);
+      if (item.note) {
+        const note = document.createElement('p');
+        note.className = 'boutique-card-note';
+        note.textContent = item.note;
+        reveal.appendChild(note);
+      }
+      const kofiBtn = document.createElement('button');
+      kofiBtn.className = 'btn btn-primary boutique-kofi-btn';
+      kofiBtn.textContent = '✦ Soutenir sur Ko-fi';
+      kofiBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.lunaria.openKofi();
+      });
+      reveal.appendChild(kofiBtn);
+      card.appendChild(reveal);
+
+      card.addEventListener('click', () => {
+        card.classList.toggle('is-revealed');
+      });
+
+      boutiqueGrid.appendChild(card);
+    });
+
+    // Cases grisées "à venir" - la boutique n'affiche pas encore tous les articles prévus.
+    for (let i = 0; i < BOUTIQUE_PLACEHOLDER_COUNT; i += 1) {
+      const placeholder = document.createElement('div');
+      placeholder.className = 'boutique-card boutique-card-placeholder';
+      placeholder.innerHTML =
+        '<div class="boutique-card-media"><span class="boutique-placeholder-icon">🔒</span></div>' +
+        '<div class="boutique-card-body"><h3>Bientôt disponible</h3></div>';
+      boutiqueGrid.appendChild(placeholder);
+    }
+  }
+  renderBoutique();
+
+  openBoutiqueBtn.addEventListener('click', () => {
+    showView(viewBoutique);
+    crossfadeMusic(boutiqueMusic, bgMusic);
+  });
+  closeBoutiqueBtn.addEventListener('click', () => {
+    showView(viewMain);
+    crossfadeMusic(bgMusic, boutiqueMusic);
+  });
 
   document.querySelectorAll('.faq-q').forEach((q) => {
     const item = q.closest('.faq-item');
@@ -954,7 +1068,7 @@
   // particules plus dense et lumineuse, qui s'estompe peu après. Marche sur toutes les
   // vues, contrairement à la traînée passive au survol ci-dessus (limitée au menu).
   const DRAW_BLOCKED_SELECTOR =
-    'button, input, a, .server-card, .settings-row, .quiz-card, .modal-box, .theme-swatch, .display-mode-btn, .social-button, .faq-item, .lore-maison, .lore-reperes, .lore-final';
+    'button, input, a, .server-card, .settings-row, .quiz-card, .modal-box, .theme-swatch, .display-mode-btn, .social-button, .faq-item, .lore-maison, .lore-reperes, .lore-final, .boutique-card';
   let isDrawingActive = false;
   let lastDrawPoint = null;
 
@@ -1025,6 +1139,10 @@
     }
     if (viewLore.classList.contains('active')) {
       closeLoreBtn.click();
+      return;
+    }
+    if (viewBoutique.classList.contains('active')) {
+      closeBoutiqueBtn.click();
     }
   });
 

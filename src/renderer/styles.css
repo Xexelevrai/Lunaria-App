@@ -2331,3 +2331,223 @@ body:not(.low-power) .lore-reveal.in-view {
   color: var(--gold-bright);
   margin-top: 22px;
 }
+
+/* --- Boutique --- */
+.boutique-content {
+  align-items: center;
+}
+
+.boutique-wrap {
+  max-width: 1080px;
+  width: 100%;
+}
+
+.boutique-header {
+  text-align: center;
+  padding: 16px 0 36px;
+}
+
+.boutique-eyebrow {
+  font-family: var(--font-body);
+  font-style: italic;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: var(--gold);
+  margin-bottom: 14px;
+}
+
+.boutique-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.2;
+  margin: 0;
+  letter-spacing: 0.04em;
+  color: var(--text-main);
+  text-shadow: 0 0 24px rgba(var(--glow-rgb), 0.18);
+}
+
+.boutique-subtitle {
+  margin-top: 20px;
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.boutique-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 22px;
+  padding-bottom: 24px;
+}
+
+.boutique-card {
+  position: relative;
+  border: 1px solid var(--border-gold);
+  background: var(--bg-elevated);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.boutique-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--gold-bright);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4), 0 0 22px rgba(var(--glow-rgb), 0.16);
+}
+
+.boutique-card-media {
+  position: relative;
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
+}
+
+.boutique-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.boutique-card:hover .boutique-card-media img {
+  transform: scale(1.06);
+}
+
+/* Reflet lumineux périodique, même logique que le logo (.brand::after) mais sans masque
+   puisque l'image remplit tout le cadre, sans zones transparentes à respecter. Décalé par
+   article (--shine-delay, posé en JS) pour que les cartes ne scintillent pas à l'unisson. */
+body:not(.low-power) .boutique-card-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(75deg, transparent 42%, rgba(255, 255, 255, 0.55) 50%, transparent 58%);
+  background-size: 250% 100%;
+  background-position: -20% 0;
+  opacity: 0;
+  animation: logo-shine 7s ease-in-out infinite;
+  animation-delay: var(--shine-delay, 0s);
+  pointer-events: none;
+}
+
+.boutique-card-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(8, 5, 15, 0.72);
+  border: 1px solid var(--gold-bright);
+  color: var(--gold-bright);
+  font-family: var(--font-heading);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  backdrop-filter: blur(3px);
+}
+
+.boutique-card-body {
+  padding: 14px 16px;
+  text-align: center;
+}
+
+.boutique-card-body h3 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-main);
+}
+
+/* Voile qui révèle le prix + le lien Ko-fi au clic (.is-revealed), plutôt qu'une bascule
+   binaire cachée/visible - fondu + léger zoom pour rester dans le ton "magique" du reste
+   de l'app. */
+.boutique-card-reveal {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  text-align: center;
+  background: rgba(8, 5, 15, 0.86);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transform: scale(0.96);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.boutique-card.is-revealed .boutique-card-reveal {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.boutique-card-price {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--gold-bright);
+  text-shadow: 0 0 18px rgba(var(--glow-rgb), 0.3);
+}
+
+.boutique-card-note {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  max-width: 220px;
+}
+
+.boutique-kofi-btn {
+  margin-top: 4px;
+}
+
+.boutique-card-placeholder {
+  cursor: default;
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+.boutique-card-placeholder:hover {
+  transform: none;
+  border-color: var(--border-gold);
+  box-shadow: none;
+}
+
+.boutique-card-placeholder .boutique-card-media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), transparent);
+}
+
+.boutique-placeholder-icon {
+  font-size: 30px;
+  opacity: 0.7;
+}
+
+body.low-power .boutique-card {
+  transition: none;
+}
+
+body.low-power .boutique-card:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+body.low-power .boutique-card:hover .boutique-card-media img {
+  transform: none;
+}

@@ -35,6 +35,7 @@
   <audio id="quiz-music" loop></audio>
   <audio id="faq-music" loop></audio>
   <audio id="lore-music" loop></audio>
+  <audio id="boutique-music" loop></audio>
   <!-- Couche sonore additionnelle qui se superpose à bg-music (jamais seule) : calée sur
        le même instant de lecture, elle apparaît en fondu uniquement dans les Paramètres. -->
   <audio id="settings-music" loop></audio>
@@ -90,6 +91,10 @@
       <button id="open-faq" class="btn nav-rail-item">
         <span class="nav-icon">❓</span>
         <span class="nav-label">FAQ</span>
+      </button>
+      <button id="open-boutique" class="btn nav-rail-item">
+        <span class="nav-icon">🧹</span>
+        <span class="nav-label">Boutique</span>
       </button>
       <button id="open-settings" class="btn nav-rail-item">
         <span class="nav-icon">⚙</span>
@@ -716,6 +721,25 @@
           <div class="lore-devise">Bienvenue à Lunaria</div>
         </section>
 
+      </div>
+    </main>
+  </section>
+
+  <!-- Vue Boutique -->
+  <section id="view-boutique" class="view">
+    <header class="topbar">
+      <button id="close-boutique" class="btn btn-icon">←</button>
+      <div class="topbar-side"></div>
+      <div class="topbar-side topbar-side-right"></div>
+    </header>
+    <main class="main-content boutique-content">
+      <div class="boutique-wrap">
+        <header class="boutique-header">
+          <div class="boutique-eyebrow">Grimoire des Objets</div>
+          <h1 class="boutique-title">Boutique</h1>
+          <p class="boutique-subtitle">Soutiens Lunaria et débloque des balais exclusifs pour ton personnage. Clique sur un article pour voir son prix.</p>
+        </header>
+        <div id="boutique-grid" class="boutique-grid"></div>
       </div>
     </main>
   </section>

@@ -27,7 +27,7 @@ import {
   setLowPowerMode,
 } from './store';
 import { isFiveMInstalled, resolveFiveMPath } from './fivemLocator';
-import { connectToServer, openFiveMDownloadPage, openDiscord, openTiktok, isFiveMRunning, closeFiveM } from './launcher';
+import { connectToServer, openFiveMDownloadPage, openDiscord, openTiktok, openKofi, isFiveMRunning, closeFiveM } from './launcher';
 import { fetchServerStatus } from './serverStatus';
 import { fetchNews } from './news';
 import { initAutoUpdater, installUpdateNow, checkForUpdatesManually } from './updater';
@@ -282,6 +282,10 @@ function registerIpcHandlers(): void {
 
   ipcMain.handle('launcher:openTiktok', async () => {
     await openTiktok(config);
+  });
+
+  ipcMain.handle('launcher:openKofi', async () => {
+    await openKofi(config);
   });
 
   ipcMain.handle('news:get', async () => {

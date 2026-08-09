@@ -57,3 +57,7 @@ export async function openDiscord(config: ServerConfig): Promise<void> {
 export async function openTiktok(config: ServerConfig): Promise<void> {
   await shell.openExternal(config.tiktokUrl);
 }
+
+export async function openKofi(config: ServerConfig): Promise<void> {
+  await shell.openExternal(config.kofiUrl);
+}

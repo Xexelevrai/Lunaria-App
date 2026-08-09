@@ -30,6 +30,7 @@ const api = {
   openDownload: () => ipcRenderer.invoke('launcher:openDownload'),
   openDiscord: () => ipcRenderer.invoke('launcher:openDiscord'),
   openTiktok: () => ipcRenderer.invoke('launcher:openTiktok'),
+  openKofi: () => ipcRenderer.invoke('launcher:openKofi'),
   getNews: () => ipcRenderer.invoke('news:get'),
   isFiveMRunning: () => ipcRenderer.invoke('cache:isFiveMRunning'),
   clearFiveMCache: () => ipcRenderer.invoke('cache:clear'),

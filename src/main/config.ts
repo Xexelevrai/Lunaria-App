@@ -9,6 +9,7 @@ export interface ServerConfig {
   newsUrl: string;
   discordUrl: string;
   tiktokUrl: string;
+  kofiUrl: string;
 }
 
 const DEFAULT_CONFIG: ServerConfig = {
@@ -18,6 +19,7 @@ const DEFAULT_CONFIG: ServerConfig = {
   newsUrl: '',
   discordUrl: 'https://discord.gg/BfuCxJquRw',
   tiktokUrl: 'https://www.tiktok.com/@lunaria.wl',
+  kofiUrl: 'https://ko-fi.com/lunariawl',
 };
 
 function resolveConfigPath(): string {
