@@ -838,16 +838,13 @@
     }
     boutiqueGrid.innerHTML = '';
 
-    BOUTIQUE_ITEMS.forEach((item, i) => {
+    BOUTIQUE_ITEMS.forEach((item) => {
       const card = document.createElement('div');
       card.className = 'boutique-card';
       card.dataset.id = item.id;
 
       const media = document.createElement('div');
       media.className = 'boutique-card-media';
-      // Décale le scintillement de chaque carte pour éviter qu'elles ne clignotent
-      // toutes en même temps (5 décalages qui se répètent, purement cosmétique).
-      media.style.setProperty('--shine-delay', `${(i % 5) * 1.4}s`);
       const img = document.createElement('img');
       img.src = `${assetsBase}/images/${item.image}`;
       img.alt = item.name;
@@ -889,8 +886,16 @@
       reveal.appendChild(kofiBtn);
       card.appendChild(reveal);
 
+      // Un seul article révélé à la fois (clic sur un autre = referme le précédent), et
+      // repasse à l'état normal dès que la souris quitte la carte, plutôt qu'un bascule
+      // qui reste ouvert indéfiniment.
       card.addEventListener('click', () => {
-        card.classList.toggle('is-revealed');
+        const wasRevealed = card.classList.contains('is-revealed');
+        boutiqueGrid.querySelectorAll('.boutique-card.is-revealed').forEach((c) => c.classList.remove('is-revealed'));
+        if (!wasRevealed) card.classList.add('is-revealed');
+      });
+      card.addEventListener('mouseleave', () => {
+        card.classList.remove('is-revealed');
       });
 
       boutiqueGrid.appendChild(card);

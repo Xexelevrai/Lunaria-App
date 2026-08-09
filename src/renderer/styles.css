@@ -2394,13 +2394,15 @@ body:not(.low-power) .lore-reveal.in-view {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  min-width: 96px;
-  padding: 14px 22px;
+  width: 150px;
+  padding: 14px 12px;
   border: 1px solid var(--border-gold);
   background: var(--bg-elevated);
   border-radius: var(--radius);
   cursor: pointer;
+  text-align: center;
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -2504,8 +2506,12 @@ body:not(.low-power) .boutique-card-media::after {
   background-position: -20% 0;
   opacity: 0;
   animation: logo-shine 7s ease-in-out infinite;
-  animation-delay: var(--shine-delay, 0s);
   pointer-events: none;
+}
+
+/* Les cases "à venir" n'ont rien à révéler - pas de scintillement dessus. */
+.boutique-card-placeholder .boutique-card-media::after {
+  display: none;
 }
 
 .boutique-card-badge {
