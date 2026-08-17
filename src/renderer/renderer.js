@@ -485,9 +485,25 @@
     if (musicStarted || !viewMain.classList.contains('active')) return;
     musicStarted = true;
     bgMusic.play().catch(() => {
-      // Autoplay bloqué : la musique démarrera au premier clic de l'utilisateur.
+      // Autoplay bloqué : la musique démarrera au premier clic de l'utilisateur. Le
+      // déclencheur est retardé de 250ms (au-delà du fondu de 180ms entre vues) avant de
+      // relire l'état réel : sinon, si ce tout premier clic navigue ailleurs (ex : Quiz),
+      // il satisfaisait ce listener et relançait bgMusic par-dessus la musique de la page
+      // réellement affichée - c'était la cause des "deux musiques en même temps".
       musicStarted = false;
-      document.addEventListener('click', () => { if (!musicStarted) { musicStarted = true; bgMusic.play().catch(() => {}); } }, { once: true });
+      document.addEventListener(
+        'click',
+        () => {
+          if (musicStarted) return;
+          setTimeout(() => {
+            if (!musicStarted && viewMain.classList.contains('active')) {
+              musicStarted = true;
+              bgMusic.play().catch(() => {});
+            }
+          }, 250);
+        },
+        { once: true }
+      );
     });
   }
 
@@ -524,6 +540,15 @@
     requestAnimationFrame(step);
   }
 
+  // Toutes les pistes de musique de fond gérées par crossfadeMusic - utilisé pour garantir
+  // qu'une seule reste jamais audible à la fois (voir crossfadeMusic ci-dessous).
+  const ALL_MUSIC_TRACKS = [bgMusic, quizMusic, faqMusic, loreMusic, boutiqueMusic, reglementMusic, settingsMusic];
+
+  // N'éteint pas seulement "prevEl" (la piste qu'on croit être l'unique autre piste en
+  // cours) mais TOUTES les autres pistes : garantit qu'une seule reste audible même si un
+  // bug ailleurs (ex : la relance de bgMusic après un blocage d'autoplay) en avait laissé
+  // une allumée par erreur - plutôt que de dépendre de chaque appelant pour identifier
+  // correctement "l'autre" piste à couper.
   function crossfadeMusic(nextEl, prevEl) {
     const target = musicIsMuted ? 0 : musicTargetVolume;
     if (nextEl.paused) {
@@ -531,7 +556,9 @@
       nextEl.play().catch(() => {});
     }
     fadeAudioVolume(nextEl, target, 900, false);
-    fadeAudioVolume(prevEl, 0, 900);
+    ALL_MUSIC_TRACKS.forEach((el) => {
+      if (el !== nextEl) fadeAudioVolume(el, 0, 900);
+    });
   }
 
   function playClickSound() {
