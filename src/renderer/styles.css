@@ -2629,3 +2629,268 @@ body.low-power .boutique-card:hover {
 body.low-power .boutique-card:hover .boutique-card-media img {
   transform: none;
 }
+
+/* --- Règlement --- */
+/* Contenu porté depuis le document fourni par l'utilisateur, mais restylé pour suivre le
+   système de thèmes (Doré/Argent/Sombre) au lieu de la palette fixe de l'artefact d'origine -
+   même logique que la FAQ et le Lore. */
+.reglement-content {
+  align-items: center;
+}
+
+.reglement-wrap {
+  max-width: 820px;
+  width: 100%;
+}
+
+.reglement-header {
+  text-align: center;
+  padding: 16px 0 40px;
+}
+
+.reglement-crest {
+  font-size: 48px;
+  line-height: 1;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 0 20px rgba(var(--glow-rgb), 0.4));
+}
+
+.reglement-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  line-height: 1.2;
+  margin: 0;
+  letter-spacing: 0.04em;
+  color: var(--text-main);
+  text-shadow: 0 0 24px rgba(var(--glow-rgb), 0.18);
+}
+
+.reglement-subtitle {
+  margin-top: 12px;
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.reglement-intro {
+  background: linear-gradient(135deg, rgba(var(--glow-rgb), 0.1), rgba(124, 92, 191, 0.08));
+  border: 1px solid var(--border-gold);
+  border-left: 3px solid var(--gold);
+  border-radius: 2px 8px 8px 2px;
+  padding: 22px 26px;
+  margin-bottom: 44px;
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+.reglement-intro strong {
+  color: var(--gold-bright);
+  font-style: normal;
+}
+
+.reglement-chapter {
+  margin-top: 52px;
+}
+
+.reglement-chapter-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.reglement-chapter-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 8px rgba(var(--glow-rgb), 0.5));
+}
+
+.reglement-chapter h2 {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  border-bottom: 1px solid var(--border-gold);
+  padding-bottom: 8px;
+  flex: 1;
+  margin: 0;
+}
+
+.reglement-chapter h3 {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--gold-bright);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 26px 0 10px;
+}
+
+.reglement-chapter h3::before {
+  content: '✦ ';
+  color: var(--gold);
+  font-size: 0.65rem;
+}
+
+.reglement-chapter p {
+  margin-bottom: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  line-height: 1.7;
+}
+
+.reglement-chapter em {
+  color: var(--gold-bright);
+  font-style: normal;
+}
+
+.reglement-rule-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-gold);
+  border-radius: 6px;
+  padding: 15px 19px;
+  margin-bottom: 12px;
+  position: relative;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  line-height: 1.7;
+}
+
+.reglement-rule-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  background: var(--accent-violet);
+  border-radius: 0 2px 2px 0;
+}
+
+.reglement-rule-card em {
+  color: var(--gold-bright);
+  font-style: normal;
+}
+
+.reglement-warning {
+  background: rgba(224, 106, 106, 0.14);
+  border: 1px solid rgba(224, 106, 106, 0.4);
+  border-left: 3px solid var(--offline);
+  border-radius: 2px 6px 6px 2px;
+  padding: 15px 19px;
+  margin: 14px 0;
+  color: #e8b3b3;
+  font-family: var(--font-body);
+  line-height: 1.7;
+}
+
+.reglement-warning strong {
+  color: #ff9b9b;
+}
+
+.reglement-tip {
+  background: rgba(var(--glow-rgb), 0.06);
+  border: 1px solid var(--border-gold);
+  border-left: 3px solid var(--gold);
+  border-radius: 2px 6px 6px 2px;
+  padding: 15px 19px;
+  margin: 14px 0;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  line-height: 1.7;
+}
+
+.reglement-tip strong {
+  color: var(--gold-bright);
+}
+
+.reglement-list {
+  list-style: none;
+  margin: 10px 0;
+  padding: 0;
+}
+
+.reglement-list li {
+  padding-left: 20px;
+  position: relative;
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+
+.reglement-list li::before {
+  content: '›';
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  font-weight: bold;
+}
+
+.reglement-list em {
+  color: var(--gold-bright);
+  font-style: normal;
+}
+
+.reglement-divider {
+  text-align: center;
+  margin: 44px 0;
+  color: var(--gold);
+  font-size: 1rem;
+  letter-spacing: 0.5em;
+}
+
+.reglement-philosophy-intro {
+  color: var(--text-muted);
+  margin-bottom: 18px;
+  font-family: var(--font-body);
+}
+
+.reglement-philosophy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.reglement-philo-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-gold);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+
+.reglement-principle {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.reglement-philo-card p {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  margin: 0;
+  font-family: var(--font-body);
+}
+
+.reglement-footer {
+  text-align: center;
+  padding: 30px 0 10px;
+  margin-top: 20px;
+  border-top: 1px solid var(--border-gold);
+  font-family: var(--font-heading);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  color: var(--gold);
+  text-transform: uppercase;
+}

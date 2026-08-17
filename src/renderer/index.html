@@ -36,6 +36,7 @@
   <audio id="faq-music" loop></audio>
   <audio id="lore-music" loop></audio>
   <audio id="boutique-music" loop></audio>
+  <audio id="reglement-music" loop></audio>
   <!-- Couche sonore additionnelle qui se superpose à bg-music (jamais seule) : calée sur
        le même instant de lecture, elle apparaît en fondu uniquement dans les Paramètres. -->
   <audio id="settings-music" loop></audio>
@@ -95,6 +96,10 @@
       <button id="open-boutique" class="btn nav-rail-item">
         <span class="nav-icon">💵</span>
         <span class="nav-label">Boutique</span>
+      </button>
+      <button id="open-reglement" class="btn nav-rail-item">
+        <span class="nav-icon">⚖️</span>
+        <span class="nav-label">Règlement</span>
       </button>
       <button id="open-settings" class="btn nav-rail-item">
         <span class="nav-icon">⚙</span>
@@ -741,6 +746,211 @@
         </header>
         <div id="boutique-categories" class="boutique-categories"></div>
         <div id="boutique-grid" class="boutique-grid"></div>
+      </div>
+    </main>
+  </section>
+
+  <!-- Vue Règlement -->
+  <section id="view-reglement" class="view">
+    <header class="topbar">
+      <button id="close-reglement" class="btn btn-icon">←</button>
+      <div class="topbar-side"></div>
+      <div class="topbar-side topbar-side-right"></div>
+    </header>
+    <main class="main-content reglement-content">
+      <div class="reglement-wrap">
+
+        <header class="reglement-header">
+          <div class="reglement-crest">🌙</div>
+          <h1 class="reglement-title">Règlement Lunaria</h1>
+          <p class="reglement-subtitle">Serveur Roleplay · Univers Magique · Île de Brumelune</p>
+        </header>
+
+        <div class="reglement-intro">
+          Ce règlement garantit à l'ensemble de notre communauté une expérience RolePlay <strong>unique et cohérente</strong>. Il délimite les actions possibles et prévient tout débordement pouvant nuire à votre expérience de jeu.
+          <br><br>
+          En cas de non-respect, des sanctions seront appliquées à hauteur des fautes commises : de l'<strong>avertissement simple</strong> jusqu'au <strong>ban définitif</strong>. Ce règlement est susceptible d'évoluer dans un objectif d'amélioration continue.
+          <br><br>
+          <strong>L'ignorance d'une règle ne pourra jamais être retenue comme justification.</strong>
+        </div>
+
+        <section class="reglement-chapter">
+          <div class="reglement-chapter-header">
+            <span class="reglement-chapter-icon">🕰️</span>
+            <h2>Absence &amp; Disponibilité</h2>
+          </div>
+
+          <h3>Prévenir en cas d'absence</h3>
+          <div class="reglement-rule-card">
+            Si vous prévoyez une absence <em>supérieure à une semaine</em>, prévenez l'équipe de modération ou votre groupe RP. Cela permet d'adapter les scénarios en cours et d'éviter des situations bloquantes pour les autres joueurs.
+          </div>
+
+          <h3>Inactivité prolongée</h3>
+          <div class="reglement-rule-card">
+            Les joueurs inactifs sans avertissement risquent de <em>perdre leurs biens ou postes en jeu</em>, surtout si cela impacte des scénarios ou des factions en cours.
+          </div>
+
+          <h3>Âge des personnages</h3>
+          <div class="reglement-warning">
+            <strong>⚠️ Interdit :</strong> jouer un personnage mineur sur le serveur. Votre personnage a <strong>au minimum 18 ans</strong> à son arrivée — la majorité dans le monde sorcier comme sur Brumelune est fixée à 18 ans.
+          </div>
+        </section>
+
+        <section class="reglement-chapter">
+          <div class="reglement-chapter-header">
+            <span class="reglement-chapter-icon">📜</span>
+            <h2>Règlement RP</h2>
+          </div>
+
+          <h3>Créneaux horaires</h3>
+          <div class="reglement-rule-card">
+            Les scènes intenses ou marquantes pour vos personnages doivent se dérouler entre <em>17h et 3h du matin</em>.
+          </div>
+
+          <h3>Cohérence avec le lore</h3>
+          <div class="reglement-rule-card">
+            Votre comportement, vos actions et votre personnage doivent être en adéquation avec l'univers du serveur. Évitez les anachronismes ou incohérences majeures.
+          </div>
+
+          <h3>RP Famille</h3>
+          <div class="reglement-rule-card">
+            Le RP famille est <em>autorisé</em>, mais uniquement <em>sur dossier</em> validé par le staff et en <em>nombre limité</em>. Présentez votre projet (liens de parenté, histoire commune, objectifs RP) avant de commencer à le jouer.
+          </div>
+
+          <h3>Créatures &amp; autres peuples</h3>
+          <div class="reglement-rule-card">
+            Jouer un elfe, un nain ou une autre créature n'est pas interdit, mais là aussi <em>uniquement sur dossier</em>. Les places sont <em>extrêmement limitées</em> et l'acceptation dépend aussi de nos possibilités techniques du moment : si nous ne pouvons pas le faire correctement, le dossier sera refusé même s'il est bon.
+          </div>
+
+          <h3>Création de contenu RP</h3>
+          <div class="reglement-rule-card">
+            Les joueurs sont encouragés à proposer des scénarios RP, mais ceux ayant un <em>impact majeur sur l'histoire globale</em> du serveur doivent être validés par la modération avant d'être mis en place.
+          </div>
+
+          <div class="reglement-warning">
+            <strong>⚠️ Affiches du lore :</strong> si vous voyez le symbole dédié sur une affiche, c'est du lore officiel. <strong>Ne pas enlever ces affiches</strong>, sous peine de sanction.
+          </div>
+
+          <h3>Sorts &amp; utilisations</h3>
+          <div class="reglement-rule-card">
+            L'utilisation abusive ou incohérente de sorts est formellement interdite. On ne balance pas des sorts de feu sur ses camarades pour s'amuser.
+          </div>
+          <div class="reglement-warning">
+            <strong>⚠️ Win RP :</strong> strictement interdit et sévèrement puni. Les potions de vérité et les sorts d'effacement de mémoire nécessitent un accord staff. Si vous en subissez sans raison valable, ouvrez un ticket pour en contester la légitimité.
+          </div>
+
+          <h3>Transplanage</h3>
+          <ul class="reglement-list">
+            <li>Ne pas l'utiliser pour de courtes distances.</li>
+            <li>Impossible de passer à travers les murs ou d'atterrir sur un toit.</li>
+            <li>Il est interdit de lancer des sorts pendant un transplanage.</li>
+          </ul>
+
+          <h3>Personnages masqués</h3>
+          <div class="reglement-rule-card">
+            <em>Une personne masquée est totalement méconnaissable.</em> Vous ne pouvez identifier un personnage masqué, que ce soit par sa voix, sa démarche, ses tatouages ou sa coupe de cheveux. Toute identification est interdite pour préserver l'immersion.
+          </div>
+
+          <h3>Médicomagie</h3>
+          <div class="reglement-rule-card">
+            Les médicomages ne lisent pas dans les esprits. Vous devez leur indiquer a minima vos symptômes ou faire des <em>/me</em> pour les aiguiller dans leur diagnostic.
+          </div>
+
+          <h3>Consentement</h3>
+          <div class="reglement-rule-card">
+            Toute situation impliquant des filtres d'amour ou des scènes sensibles doit être <em>préalablement discutée et acceptée</em> par toutes les parties via un ticket ou une validation claire.
+          </div>
+
+          <h3>Portoloins</h3>
+          <div class="reglement-rule-card">
+            Les portoloins doivent être joués de manière RP. Si personne ne vous a explicitement informé de l'existence d'un portoloin, vous ne pouvez pas en deviner la présence, même si vous le voyez en jeu. <em>Toute utilisation méta sera sanctionnée par un warn.</em>
+          </div>
+        </section>
+
+        <div class="reglement-divider">· ✦ · ✦ · ✦ ·</div>
+
+        <section class="reglement-chapter">
+          <div class="reglement-chapter-header">
+            <span class="reglement-chapter-icon">⚔️</span>
+            <h2>Factions</h2>
+          </div>
+
+          <p>Une faction est un groupe de joueurs menant des actions communes ayant une <em>incidence sur le plateau de jeu</em>.</p>
+
+          <div class="reglement-tip">
+            <strong>Déclaration obligatoire :</strong> au-delà de 3 membres, vous devez vous déclarer au staff en tant que faction, avec un dossier comprenant votre lore et vos objectifs communs.
+          </div>
+
+          <h3>Règles fondamentales</h3>
+          <ul class="reglement-list">
+            <li>Un joueur ne peut appartenir qu'à <em>une seule faction</em> à la fois.</li>
+            <li>Une faction ne peut pas excéder <em>10 joueurs</em>.</li>
+            <li>Quitter une faction peut mener à la <em>mort RP</em> (sous dossier staff).</li>
+            <li>Pas d'alliance entre factions pour le moment — toute sollicitation externe se fait sous forme de paiement.</li>
+          </ul>
+
+          <h3>Fairplay envers son ancienne faction</h3>
+          <div class="reglement-rule-card">
+            <strong>Secrets de faction :</strong> un personnage ne peut révéler aucune information sensible (stratégies, emplacements, codes…) apprise durant son appartenance à la faction.
+          </div>
+          <div class="reglement-rule-card">
+            <strong>Pas de trahison active :</strong> un personnage ne peut s'allier activement contre son ancienne faction ni agir de manière délibérément nuisible envers elle.
+          </div>
+          <div class="reglement-rule-card">
+            <strong>RP de transition :</strong> les départs de faction doivent être joués de manière réfléchie et progressive, en offrant des opportunités de jeu aux deux parties. Soyez conscients que quitter certaines factions peut entraîner la mort.
+          </div>
+        </section>
+
+        <div class="reglement-divider">· ✦ · ✦ · ✦ ·</div>
+
+        <section class="reglement-chapter">
+          <div class="reglement-chapter-header">
+            <span class="reglement-chapter-icon">🔮</span>
+            <h2>Philosophie du jeu</h2>
+          </div>
+          <p class="reglement-philosophy-intro">Ces principes guident l'esprit de jeu attendu de chaque joueur de Lunaria.</p>
+          <div class="reglement-philosophy-grid">
+            <div class="reglement-philo-card">
+              <div class="reglement-principle">Voir ≠ Comprendre</div>
+              <p>Être témoin d'un événement extraordinaire n'en révèle pas la cause.</p>
+            </div>
+            <div class="reglement-philo-card">
+              <div class="reglement-principle">Comprendre ≠ Maîtriser</div>
+              <p>Découvrir une pratique ne permet pas automatiquement de l'utiliser.</p>
+            </div>
+            <div class="reglement-philo-card">
+              <div class="reglement-principle">Savoir ≠ Prouver</div>
+              <p>Une théorie RP n'est pas nécessairement une vérité.</p>
+            </div>
+            <div class="reglement-philo-card">
+              <div class="reglement-principle">Entendre ≠ Croire</div>
+              <p>Les rumeurs et témoignages peuvent être faux, exagérés ou incomplets.</p>
+            </div>
+            <div class="reglement-philo-card">
+              <div class="reglement-principle">Le mystère est un moteur</div>
+              <p>Les réponses se gagnent par l'enquête, les rencontres et les événements RP.</p>
+            </div>
+            <div class="reglement-philo-card">
+              <div class="reglement-principle">Le secret est une ressource</div>
+              <p>Toutes les informations ne sont pas destinées à être partagées immédiatement.</p>
+            </div>
+            <div class="reglement-philo-card">
+              <div class="reglement-principle">Le Voile protège</div>
+              <p>Certaines vérités existent pour une raison — les révéler peut avoir des conséquences.</p>
+            </div>
+            <div class="reglement-philo-card">
+              <div class="reglement-principle">L'échec enrichit</div>
+              <p>Une erreur de jugement crée souvent davantage de jeu qu'une réussite immédiate.</p>
+            </div>
+            <div class="reglement-philo-card">
+              <div class="reglement-principle">Le monde évolue</div>
+              <p>Les décisions des personnages peuvent modifier durablement le lore et l'univers.</p>
+            </div>
+          </div>
+        </section>
+
+        <footer class="reglement-footer">Lunaria · Règlement Officiel · Sujet à modifications</footer>
+
       </div>
     </main>
   </section>

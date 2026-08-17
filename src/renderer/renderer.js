@@ -6,7 +6,8 @@
   const viewFaq = document.getElementById('view-faq');
   const viewLore = document.getElementById('view-lore');
   const viewBoutique = document.getElementById('view-boutique');
-  const ALL_VIEWS = [viewIntro, viewMain, viewSettings, viewQuiz, viewFaq, viewLore, viewBoutique];
+  const viewReglement = document.getElementById('view-reglement');
+  const ALL_VIEWS = [viewIntro, viewMain, viewSettings, viewQuiz, viewFaq, viewLore, viewBoutique, viewReglement];
 
   const introVideo = document.getElementById('intro-video');
   const introOverlay = document.getElementById('intro-overlay');
@@ -74,6 +75,9 @@
   const boutiqueCategoriesEl = document.getElementById('boutique-categories');
   const boutiqueGrid = document.getElementById('boutique-grid');
 
+  const openReglementBtn = document.getElementById('open-reglement');
+  const closeReglementBtn = document.getElementById('close-reglement');
+
   const openQuizBtn = document.getElementById('open-quiz');
   const closeQuizBtn = document.getElementById('close-quiz');
   const quizBrandLogo = document.getElementById('quiz-brand-logo');
@@ -113,6 +117,7 @@
   const faqMusic = document.getElementById('faq-music');
   const loreMusic = document.getElementById('lore-music');
   const boutiqueMusic = document.getElementById('boutique-music');
+  const reglementMusic = document.getElementById('reglement-music');
   const settingsMusic = document.getElementById('settings-music');
   const clickSound = document.getElementById('click-sound');
   const muteToggleBtn = document.getElementById('mute-toggle');
@@ -427,6 +432,7 @@
   faqMusic.src = `${assetsBase}/audio/background-faq.mp3`;
   loreMusic.src = `${assetsBase}/audio/background-Lore.mp3`;
   boutiqueMusic.src = `${assetsBase}/audio/Background-Boutique.mp3`;
+  reglementMusic.src = `${assetsBase}/audio/background-reglement.mp3`;
   settingsMusic.src = `${assetsBase}/audio/parametre.mp3`;
   clickSound.src = `${assetsBase}/audio/click2.mp3`;
   quizCorrectSound.src = `${assetsBase}/audio/valider.mp3`;
@@ -449,6 +455,8 @@
   loreMusic.muted = musicIsMuted;
   boutiqueMusic.volume = 0;
   boutiqueMusic.muted = musicIsMuted;
+  reglementMusic.volume = 0;
+  reglementMusic.muted = musicIsMuted;
   // settingsMusic remplace bgMusic (qui se tait) le temps des Paramètres, via le même
   // fondu croisé que les autres vues - voir openSettingsBtn/leaveSettingsView plus bas.
   settingsMusic.volume = 0;
@@ -545,6 +553,7 @@
     faqMusic.muted = musicIsMuted;
     loreMusic.muted = musicIsMuted;
     boutiqueMusic.muted = musicIsMuted;
+    reglementMusic.muted = musicIsMuted;
     settingsMusic.muted = musicIsMuted;
     updateVolumeIcon();
     audioControlsEl.classList.toggle('is-muted', musicIsMuted);
@@ -558,6 +567,7 @@
     faqMusic.volume = musicTargetVolume;
     loreMusic.volume = musicTargetVolume;
     boutiqueMusic.volume = musicTargetVolume;
+    reglementMusic.volume = musicTargetVolume;
     settingsMusic.volume = musicTargetVolume;
     volumeSlider.style.setProperty('--volume-pct', `${volumeSlider.value}%`);
     updateVolumeIcon();
@@ -627,7 +637,7 @@
   // Fondu enchaîné (fondu de sortie court, puis l'entrée classique view-in) entre les
   // vues qu'on traverse en va-et-vient pendant l'usage normal (menu, Paramètres, Quiz).
   // L'intro garde son comportement instantané d'origine.
-  const FADEABLE_VIEWS = [viewMain, viewSettings, viewQuiz, viewFaq, viewLore, viewBoutique];
+  const FADEABLE_VIEWS = [viewMain, viewSettings, viewQuiz, viewFaq, viewLore, viewBoutique, viewReglement];
 
   function showView(view) {
     const current = ALL_VIEWS.find((v) => v.classList.contains('active') && v !== view);
@@ -923,6 +933,15 @@
     crossfadeMusic(bgMusic, boutiqueMusic);
   });
 
+  openReglementBtn.addEventListener('click', () => {
+    showView(viewReglement);
+    crossfadeMusic(reglementMusic, bgMusic);
+  });
+  closeReglementBtn.addEventListener('click', () => {
+    showView(viewMain);
+    crossfadeMusic(bgMusic, reglementMusic);
+  });
+
   document.querySelectorAll('.faq-q').forEach((q) => {
     const item = q.closest('.faq-item');
     const answer = item.querySelector('.faq-a');
@@ -1116,7 +1135,7 @@
   // particules plus dense et lumineuse, qui s'estompe peu après. Marche sur toutes les
   // vues, contrairement à la traînée passive au survol ci-dessus (limitée au menu).
   const DRAW_BLOCKED_SELECTOR =
-    'button, input, a, .server-card, .settings-row, .quiz-card, .modal-box, .theme-swatch, .display-mode-btn, .social-button, .faq-item, .lore-maison, .lore-reperes, .lore-final, .boutique-card, .boutique-category';
+    'button, input, a, .server-card, .settings-row, .quiz-card, .modal-box, .theme-swatch, .display-mode-btn, .social-button, .faq-item, .lore-maison, .lore-reperes, .lore-final, .boutique-card, .boutique-category, .reglement-rule-card, .reglement-philo-card';
   let isDrawingActive = false;
   let lastDrawPoint = null;
 
@@ -1191,6 +1210,10 @@
     }
     if (viewBoutique.classList.contains('active')) {
       closeBoutiqueBtn.click();
+      return;
+    }
+    if (viewReglement.classList.contains('active')) {
+      closeReglementBtn.click();
     }
   });
 
