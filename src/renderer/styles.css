@@ -2152,14 +2152,14 @@ body:not(.low-power) .lore-moon::before {
    JS par un IntersectionObserver qui bascule .in-view dans les deux sens - contrairement
    à un simple "reveal one-shot", le texte s'efface aussi en remontant. Décoratif, donc
    désactivé en mode faible consommation (tout reste visible d'emblée). */
-body:not(.low-power) .lore-reveal {
+body:not(.low-power) .scroll-reveal {
   opacity: 0;
   transform: translateY(28px);
   filter: blur(6px);
   transition: opacity 0.7s ease, transform 0.7s ease, filter 0.7s ease;
 }
 
-body:not(.low-power) .lore-reveal.in-view {
+body:not(.low-power) .scroll-reveal.in-view {
   opacity: 1;
   transform: translateY(0);
   filter: blur(0);
