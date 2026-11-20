@@ -1020,12 +1020,6 @@ body.low-power .dark-grain {
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4), 0 0 14px rgba(var(--glow-rgb), 0.15);
 }
 
-/* Masqués pendant l'intro : ils ne pilotent pas le son de la vidéo, les afficher là
-   laisserait croire qu'ils agissent sur quelque chose qu'ils ne contrôlent pas. */
-body:has(#view-intro.active) .audio-controls {
-  display: none;
-}
-
 /* Bouton rond dédié (plutôt qu'un simple .btn-icon carré) pour affirmer le côté "molette
    de volume" du widget - légèrement plus grand pour rester une cible confortable. */
 .volume-icon-btn {

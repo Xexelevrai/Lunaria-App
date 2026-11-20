@@ -461,6 +461,10 @@
   // fondu croisé que les autres vues - voir openSettingsBtn/leaveSettingsView plus bas.
   settingsMusic.volume = 0;
   settingsMusic.muted = musicIsMuted;
+  // La vidéo d'intro suit le même volume/muet que la musique : le curseur global est
+  // visible (et actif) pendant l'intro aussi, plutôt que de la laisser à fond sans recours.
+  introVideo.volume = musicTargetVolume;
+  introVideo.muted = musicIsMuted;
   volumeSlider.value = String(musicVolume ?? 25);
   volumeSlider.style.setProperty('--volume-pct', `${volumeSlider.value}%`);
   audioControlsEl.classList.toggle('is-muted', musicIsMuted);
@@ -582,6 +586,7 @@
     boutiqueMusic.muted = musicIsMuted;
     reglementMusic.muted = musicIsMuted;
     settingsMusic.muted = musicIsMuted;
+    introVideo.muted = musicIsMuted;
     updateVolumeIcon();
     audioControlsEl.classList.toggle('is-muted', musicIsMuted);
     window.lunaria.setMusicMuted(musicIsMuted);
@@ -596,6 +601,7 @@
     boutiqueMusic.volume = musicTargetVolume;
     reglementMusic.volume = musicTargetVolume;
     settingsMusic.volume = musicTargetVolume;
+    introVideo.volume = musicTargetVolume;
     volumeSlider.style.setProperty('--volume-pct', `${volumeSlider.value}%`);
     updateVolumeIcon();
   });
